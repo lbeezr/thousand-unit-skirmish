@@ -77,18 +77,31 @@ for (const line of dockerfile.split(/\r?\n/)) {
 }
 const ignoreRules = (await readFile(path.join(root, '.dockerignore'), 'utf8'))
   .split(/\r?\n/).map((line) => line.trim()).filter((line) => line && !line.startsWith('#'));
-if (ignoreRules[0] !== '*') {
+if (ignoreRules[0] !== '*' || ignoreRules.slice(1).some(rule => !rule.startsWith('!'))) {
   throw new Error('Release packer expects the Docker context to use an explicit allowlist');
 }
+const copiedDirectories = [];
 for (const [source, pattern] of dockerSources) {
-  if ((await lstat(path.join(root, source))).isFile()
+  const sourceInfo = await lstat(path.join(root, source));
+  if (sourceInfo.isDirectory()) copiedDirectories.push(source);
+  if (sourceInfo.isFile()
     && !ignoreRules.includes(`!${source}`) && !ignoreRules.includes(`!${pattern}`)) {
     throw new Error(`Docker COPY source is excluded by .dockerignore: ${source}`);
   }
 }
-for (const runtimeSource of ['room-supervisor.mjs', 'server.mjs', 'origin-policy.mjs', 'simulation-scheduler.mjs']) {
-  if (!entries.has(runtimeSource)) {
+// The packer copies the complete source tree rather than evaluating Docker glob
+// exclusions. Require the same complete-tree admission before counting nested
+// policies as Docker inputs; unsupported later exclusions fail above.
+if (copiedDirectories.includes('src')
+  && (!ignoreRules.includes('!src/') || !ignoreRules.includes('!src/**'))) {
+  throw new Error('Docker COPY source is excluded by .dockerignore: src (requires !src/ and !src/**)');
+}
+for (const runtimeSource of ['room-supervisor.mjs', 'server.mjs', 'src/server/transport/origin-policy.mjs', 'src/server/orchestration/simulation-scheduler.mjs']) {
+  if (!entries.has(runtimeSource) && !(runtimeSource.startsWith('src/') && copiedDirectories.includes('src'))) {
     throw new Error(`Dockerfile COPY sources must include runtime source ${runtimeSource}`);
+  }
+  if (!(await lstat(path.join(root, runtimeSource))).isFile()) {
+    throw new Error(`Required runtime source must be a regular file: ${runtimeSource}`);
   }
 }
 try {

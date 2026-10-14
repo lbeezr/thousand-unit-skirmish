@@ -52,7 +52,7 @@ import { loadBuildIdentity } from './src/server/build-identity.mjs';
 import { deflateRawSync, inflateRawSync, constants as zlibConstants } from 'node:zlib';
 import { encodeWebSocketFrame, websocketFrameBytes } from './src/networking/websocket-frame.mjs';
 import { hasCompatiblePerMessageDeflateOffer } from './src/networking/websocket-deflate-offer.mjs';
-import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
+import { configuredPublicOrigins, sameOriginRequest } from './src/server/transport/origin-policy.mjs';
 import { capturePrerequisiteIds, findInvalidCapturePrerequisite } from './src/world/capture-prerequisites.mjs';
 import { findInvalidScenarioEventChain, scenarioEventSourceIds } from './src/world/scenario-event-chain.mjs';
 import {
@@ -66,7 +66,7 @@ import { orderUnitsForFormation } from './src/simulation/movement/formation-assi
 import { createDeterministicPolicy, toOpponentObservation } from './src/pve-opponent.mjs';
 import { readPveLaunchOptions } from './src/pve-match.mjs';
 import { townCenterSpawnPosition, townCenterFootprintCells } from './src/town-center-spawn.mjs';
-import { advanceTickDeadline } from './simulation-scheduler.mjs';
+import { advanceTickDeadline } from './src/server/orchestration/simulation-scheduler.mjs';
 import { privateProductionView } from './src/simulation/economy/snapshot-private-production.mjs';
 import { RoomPregame, validatePregameCheckpoint } from './src/server/orchestration/room-pregame.mjs';
 import { RoomLobbyChat } from './src/server/orchestration/room-lobby-chat.mjs';

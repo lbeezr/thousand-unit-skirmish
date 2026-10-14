@@ -372,6 +372,7 @@ const scenarios = [
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
   ['scripts/docker-ui-assets-context-scenario.mjs', 'Docker UI asset context'],
   ['scripts/origin-policy-scenario.mjs', 'Origin policy'],
+  ['scripts/simulation-scheduler-test.mjs', 'Fixed-step scheduler cadence and injected stall'],
   ['scripts/origin-proxy-scenario.mjs', 'Origin policy through room proxy'],
   ['scripts/audio-library.test.mjs', 'Audio library and portable originals'],
   ['scripts/validate-zone-audio.mjs', 'All-zone audio source coverage and integrity'],

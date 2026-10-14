@@ -299,6 +299,33 @@ test('private launch contract has its Node orchestration home, exact callers and
       'src/server/persistence/room-index-store.mjs']);
 });
 
+test('origin policy and scheduler have private server homes and no retired root implementations', async () => {
+  const sources = await readRuntimeSources(new URL('../', import.meta.url).pathname);
+  const graph = runtimeImportGraph(sources);
+  for (const [canonical, retired, bindings, callers] of [
+    ['src/server/transport/origin-policy.mjs', 'origin-policy.mjs',
+      ['configuredPublicOrigins', 'sameOriginRequest'], ['room-supervisor.mjs', 'server.mjs']],
+    ['src/server/orchestration/simulation-scheduler.mjs', 'simulation-scheduler.mjs',
+      ['advanceTickDeadline'], ['server.mjs']],
+  ]) {
+    assert.ok(sources.has(canonical));
+    assert.equal(sources.has(retired), false);
+    assert.ok(RUNTIME_DOMAINS.server.includes(canonical));
+    assert.equal(Object.hasOwn(RUNTIME_DOMAIN_HOSTS, retired), false);
+    assert.ok(RETIRED_RUNTIME_PATHS.includes(retired));
+    assert.deepEqual(Object.keys(await import(`../${canonical}`)), bindings);
+    assert.deepEqual(graph.get(canonical), { local: [], external: [] });
+    assert.deepEqual([...graph].filter(([, node]) => node.local.includes(canonical)).map(([name]) => name).sort(), callers);
+    for (const source of ['', `export * from './${canonical}';`]) {
+      assert.throws(() => checkRuntimeImports(new Map(sources).set(retired, source)), /retired implementation path/);
+    }
+    const relative = path.posix.relative('src', canonical);
+    for (const source of [`import './${relative}';`, `export * from './${relative}';`, `import('./${relative}');`]) {
+      assert.throws(() => checkRuntimeImports(new Map(sources).set('src/game-entry.mjs', source)), /browser reaches a server-private module/);
+    }
+  }
+});
+
 test('water rendering stays outside authoritative domains and server hosts through every import form', () => {
   for (const target of Object.values(WATER_RENDER_MODULES)) {
     for (const root of ['src/rules/gameplay-action-rules.mjs', 'src/map-utils.mjs',
