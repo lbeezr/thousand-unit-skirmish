@@ -9,10 +9,18 @@ binding on this map alone.
 
 ## Checkpoint
 
-Implementation is on `codex/terraced-vale-surround`, over baseline
-`a22819577ae1d93c84b8df1b44718019ffc4ec3a`. Source SHA, clean release digest and
-deployed revision will be recorded as those steps complete. No in-game
-appearance pass is claimed.
+[PR678](https://github.com/lbeezr/thousand-unit-skirmish/pull/678) merged as
+`5f2c653477016e3a0949fc01ba63bacd03757b46`. The clean
+[release receipt](qa-evidence/battlefield-surround-2026-10-14/release.json)
+records 1,853 files and digest
+`sha256:86d4394e9dedaa5578443be82b80a34cf2852b462d523d1ee8b16b33ceaa1e0b`.
+Staging deployment `1dfb6b16-cb42-4b56-902e-ce1f19f928c3` reached SUCCESS at
+2026-10-14 15:11:41 UTC on that exact source. The
+[public source receipt](qa-evidence/battlefield-surround-2026-10-14/served-source.json)
+matches the served main, scenery and camera modules at 15:13:34 UTC. The isolated
+packed-release scenario passed HTTP/auth/WebSocket/assets/transitive import
+checks. Production remains on `67b166748f6cc82c0a76319478f4475da1ab9083`.
+These are delivery receipts; no in-game appearance pass is claimed yet.
 
 [Focused source receipt](qa-evidence/battlefield-surround-2026-10-14/focused-source.json)
 retains tested-file hashes and 38/38 focused scenery, cliff, Terraced Vale,
@@ -24,7 +32,9 @@ the authorized loopback rerun passed all 38.
 [First fast report](qa-evidence/battlefield-surround-2026-10-14/fast-first.json.gz):
 1,148 passed, one cloud-install fixture assertion failed because macOS exposed
 `/var/...` while the shell resolved `/private/var/...`; 214 remained unrun.
-A canonical `TMPDIR=/private/tmp` rerun is in progress.
+The [canonical-temp fast rerun](qa-evidence/battlefield-surround-2026-10-14/fast-canonical-tmp.json.gz)
+passed 1,198/1,363 checks before unrelated pathing-replay assertions failed;
+164 remained unrun.
 [First simulation report](qa-evidence/battlefield-surround-2026-10-14/simulation-first.json.gz):
 17 passed, queued-wall team 1 hit a checkpoint timeout, 177 remained unrun. The
 same unchanged native scenario reproduced its checkpoint timeout in an isolated
@@ -48,20 +58,36 @@ ignored local `node_modules` directory with package symlinks reuses that existin
 installation for CPU validation. It is not a shipped path or a changed dependency
 version.
 
-The current task runs on macOS. The repo Start skill requires the intended
-cloud runtime for browser qualification and disallows a Mac fallback. The
-[cloud setup record](cloud-environment.md#optional-browser-readiness-and-known-provisioning-blocker)
-retains the existing normal-sandbox startup failure. Read-only inspection of
-**Audit cloud game tooling**, chat `01a11bb4-4629-71b9-9a94-88cdc4817013`, found
-its setup-source delivery complete and actual environment provisioning/browser
-qualification unperformed. There is no qualified cloud executor attached here.
-No Mac browser was launched. This bounds the presently unavailable appearance
-evidence; implementation, CPU contracts, packaging and staging continue.
+The current task runs on macOS; no Mac game browser was launched. The initial
+local cloud executor was unavailable, but subsequent inspection found the
+[qualified hosted Ubuntu path](renderer-qualification.md). Its normal sandboxed
+WebGL2 backend is reusable. An attempted `tree-targeting` dispatch was rejected
+by automatic approval review before starting a run because that case's scenery
+coverage was not established. It was not retried through another route.
+
+A dedicated [Terraced Vale appearance workflow](../.github/workflows/battlefield-surround-capture.yml)
+and [feature-owned driver](../scripts/renderer-battlefield-surround-staging.mjs)
+prepare the matching capture. It uses normal New Game, two human seats,
+`skirmish@1`, the unchanged shipped Terraced Vale, actual pointer Move, native
+camera/minimap controls, rematch and normal lobby map changes. It neither imports
+a lab map nor edits world state. Twenty-six frames cover both seats, 0.91/0.48,
+Fit map, corners, 1920×1080/1024×768, visible edge Workers, unexplored fog,
+rematch, another shipped map and return. Five focused CPU tests establish fixed
+public-source hash comparison, bounded streamed files, reachable native edge
+destinations and live WebGL2/frame validation. These tests do not establish pixels.
+
+The workflow accepts only an exact 40-character active staging source revision,
+has read-only repository permission, a ten-minute job bound, one six-minute
+capture deadline and one-day artifacts. It compares eight public setting files
+against immutable GitHub bytes before and after capture. Runner SHA, captured
+source SHA, clean release digest and provider deployment identity stay separate.
+The driver leaves appearance status pending until the owner inspects actual PNGs.
 
 ## Retained acceptance
 
 Pending: actual ordinary-game images at 0.91/0.48, Fit map, edge pans, both teams,
 wide/narrow viewports, fogged/visible edge troops, map switch and rematch. The
-owner retains this work at the identified deployed release. A qualified cloud
-browser is the resume condition; the original concept image and CPU checks do
-not replace those captures.
+owner retains this work at the identified deployed release. Next: independently
+review and publish the dedicated case, dispatch once for a confirmed stable
+staging revision, download evidence before expiry and inspect actual images.
+The original concept image and CPU checks do not replace those captures.

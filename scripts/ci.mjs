@@ -86,6 +86,7 @@ run(['--test', 'scripts/map-studio-import-errors.test.mjs'], 'Map Studio import 
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');
 run(['scripts/check-docs.mjs'], 'Documentation links');
 run(['--test', 'scripts/battlefield-surround.test.mjs'], 'Terraced Vale scenic hole, grounded lip, static clouds and noninteractive batches');
+run(['--test', 'scripts/renderer-battlefield-surround-staging.test.mjs'], 'Terraced Vale public source, connected edge destinations and real frame contracts');
 run(['--test', 'scripts/meshy-source-archive.test.mjs'], 'Permanent Meshy source integrity, deduplication and CLI write boundary');
 run(['--test', 'scripts/cloud-install.test.mjs'], 'Cloud install paths, failure propagation and Start skill');
 run(['--test', 'scripts/public-gameplay.test.mjs'], 'Default-off anonymous gameplay and protected private routes');
