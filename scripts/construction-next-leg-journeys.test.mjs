@@ -7,7 +7,7 @@ for (const team of [0, 1]) {
     });
   }
   for (const interruption of ['stop', 'holdPosition', 'queuedMove']) {
-    test(`seat ${team}: ${interruption} supersedes completion egress through cold recovery`, async () => {
+    test(`seat ${team}: ${interruption} ${interruption === 'queuedMove' ? 'follows' : 'supersedes'} completion egress through cold recovery`, async () => {
       await constructionNextLegJourney(team, { interruption });
     });
   }

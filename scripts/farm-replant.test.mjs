@@ -75,6 +75,28 @@ test('both seats naturally pay, deplete, renew once, recover and deliver first f
     }
   } finally { await f.dispose(); }
 });
+for (const team of [0, 1]) for (const cold of [false, true]) test(`seat ${team}: queued travel overrides renewal harvest after construction, cold=${cold}`, async () => {
+  const f = await fixture(), r = f.replay;
+  try {
+    const old = state(r).buildings.find(b => b.team === team);
+    const workers = state(r).units.filter(u => u.team === team && u.kind === 'worker').slice(0, 1);
+    const id = workers[0].id, x = team ? 28.5 : -28.5, z = 10.5;
+    await order(r, team, 'replantFarm', workers, { buildingId: old.id });
+    const plotId = state(r).buildings.find(b => b.team === team).id;
+    assert.ok((await order(r, team, 'move', workers, { x, z, queue: true })).some(n => /WAYPOINT QUEUED/.test(n.message)));
+    const before = state(r);
+    if (cold) r.restore(r.checkpoint());
+    until(r, s => s.units[id].queuedWaypoints.length === 0 && s.units[id].workIntent === null
+      && Math.hypot(s.units[id].x - x, s.units[id].z - z) < .02);
+    const after = state(r), plot = after.buildings.find(b => b.id === plotId);
+    assert.ok(plot.complete); assert.equal(plot.harvestStock, 200);
+    assert.equal(after.units[id].gatherNodeId, null);
+    assert.equal(after.units[id].cargo, before.units[id].cargo);
+    assert.deepEqual(after.teamFood, before.teamFood);
+    assert.deepEqual(after.teamWood, before.teamWood);
+  } finally { await f.dispose(); }
+});
+
 for (const team of [0, 1]) test(`seat ${team} refuses invalid plots, funds, stale/busy Workers without mutation`, async () => {
   const f = await fixture(), r = f.replay;
   try {

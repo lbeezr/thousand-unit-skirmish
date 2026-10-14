@@ -312,6 +312,14 @@ choices, rather than copying its dated statuses into new work.
 
 ## Army-command foundations
 
+The unit functionality owner `01a13a88-6b18-7821-9ca1-5856d78ad67b` is delivering
+[Worker completion before queued travel](qa-worker-queued-jobs-2026-10-14.md):
+Shift Move/Attack Move waits for construction, remaining wall sites or repair,
+with Farm renewal, cancellation and recovery coverage. Review, clean release,
+identified integration and ordinary-game acceptance remain owned. Next, inspect
+queued combat targeting and mixed-roster control on representative maps; choose
+the next bounded outcome from a reproduced control or movement gap.
+
 Stop and Hold Position establish explicit task/route interruption and stationary
 in-range defense, with both-seat authority and checkpoint/rematch regressions.
 Patrol and Follow are integrated bounded additions to these semantics. Use the

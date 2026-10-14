@@ -434,6 +434,15 @@ attack order interrupts it, and another repair order can resume. Checkpoints
 retain active repair targets. Finishing construction and repairing damaged HP
 are separate jobs. No repair restores defeated buildings.
 
+Shift Move or Shift Attack Move during Worker construction or repair queues
+travel after the accepted job. A paid wall sequence finishes its remaining
+assigned sites before departing; a blocked approach or a repair waiting for Wood
+keeps the queued route waiting. Farm renewal finishes planting, then honors queued
+travel instead of automatically harvesting. Canceling or destroying the current
+site releases later travel, after any remaining assigned construction. Ordinary
+Move, Stop, Hold and other replacement orders still interrupt work immediately.
+Queue limits, selected-unit ownership and checkpoint recovery apply as usual.
+
 Town Center expansions cost 100 food and 400 wood, take 60 seconds to build,
 have 2,400 HP, and add five population slots when complete. They train Workers
 and accept food/wood cargo. Starting centers keep the initial population baseline

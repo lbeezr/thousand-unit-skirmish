@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { observeWorkerPatrolAcquired } from './worker-patrol-acquired-clearance.mjs';
 import { workerPatrolAcquiredMovementActive } from '../src/combat-movement.mjs';
-import { activeLandMovementBodyRadius } from '../src/unit-movement.mjs';
+import { activeLandMovementBodyRadius, workerEconomyBodyRadius } from '../src/unit-movement.mjs';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { constructionMovementActive } from '../src/construction-work-intent.mjs';
@@ -12,7 +12,7 @@ const source = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
 const radiusStart = source.indexOf('function workerLocalBodyRadius(');
 const radiusEnd = source.indexOf('\nfunction ', radiusStart + 1);
 assert.ok(radiusStart >= 0 && radiusEnd > radiusStart);
-const radiusContext = vm.createContext({ constructionMovementActive, workerPatrolAcquiredMovementActive,
+const radiusContext = vm.createContext({ workerEconomyBodyRadius, constructionMovementActive, workerPatrolAcquiredMovementActive,
   LAND_CLEARANCE_PROFILE });
 vm.runInContext(source.slice(radiusStart, radiusEnd), radiusContext);
 
