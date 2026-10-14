@@ -178,7 +178,21 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     await point(await page.wait(`(${interactionTargetPoint.toString()})('building',${buildingId})`, 'ordinary Barracks picking'));
     stage('queue-paid-products');
     const queue = ['spearman', 'infantry', 'spearman'];
-    for (const kind of queue) await click(`[data-context-products] [data-product="${kind}"]`);
+    const paidStart = await observe();
+    // The first purchase expands the bottom-anchored queue panel and moves
+    // its product buttons. Acknowledge each paid snapshot before locating the
+    // next button; never retry an ambiguous purchase or click stale bounds.
+    for (const [index, kind] of queue.entries()) {
+      stage(`queue-paid-product-${index + 1}`);
+      await click(`[data-context-products] [data-product="${kind}"]`);
+      await waitQueue(queue.slice(0, index + 1));
+    }
+    const paidEnd = await observe();
+    assert.deepEqual({ food: paidStart.bank.food - paidEnd.bank.food,
+      wood: paidStart.bank.wood - paidEnd.bank.wood }, queue.reduce((cost, kind) => ({
+      food: cost.food + UNIT_DEFINITIONS[kind].cost.food, wood: cost.wood + UNIT_DEFINITIONS[kind].cost.wood,
+    }), { food: 0, wood: 0 }));
+    report.initialPurchases = { before: paidStart, after: paidEnd }; await persist();
     await waitQueue(queue); await capture('building-queue-mixed', queue);
     let before = await observe(); await click('[data-queue-index="1"]'); await waitQueue(['spearman', 'spearman']);
     await retainRefund('pointer', before, 1);
