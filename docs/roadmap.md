@@ -39,9 +39,10 @@ Creative stewardship across the entry, lobby, modes, art, voice and lore now
 belongs to **Unify game art direction and lore**, chat `01a13a8a-37a9-7812-800a-12e48c842b52`.
 Its [connected direction and reference atlas](creative-direction.md) provide
 the first source-only outcome: curated existing art, provenance/status and a
-journey storyboard. The next application is the pregame-lobby material/hierarchy
-bridge, retaining its room/mode contracts and requiring identified release and
-normal-room visual evidence. This complements core-match work without adding
+journey storyboard. The [pregame-lobby material/hierarchy increment](qa-vaelora-lobby-2026-10-14.md)
+now has runtime/contract work, retaining its room/mode behavior; the same owner
+retains identified release, staging and normal-room visual evidence. Result/return
+identity is the next independent creative seam. This complements core-match work without adding
 another approval queue or changing approved client/HUD selections.
 
 The [canonical building action matrix](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)

@@ -27,6 +27,15 @@ ready gate; normal map validation and host-only controls still apply. Use
 [the entry guide](game-entry.md) for this route rather than filling two lobby
 seats solely to test a map.
 
+## Client presentation
+
+The [Vaelora lobby treatment](qa-vaelora-lobby-2026-10-14.md) carries the client
+pine/parchment/brass palette into this planning surface. Written Azure/Ember
+seat identities have distinct square/diamond marks, and the full selected map
+label remains readable below its picker. Confirmed readiness, pending requests,
+rejections and reconnecting retain their actual meanings; rendered acceptance
+at an identified release remains separate from contract checks.
+
 ## Room chat
 
 The two connected seats can exchange plain text in **Room chat** before launch.
