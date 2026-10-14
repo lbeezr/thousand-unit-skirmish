@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { createFortifiedBrowser } from './fortified-browser-fixture.mjs';
 import { checkRendererCapability } from './renderer-capability.mjs';
 import { captureBuildingOrientation } from './renderer-qualification-building-orientation.mjs';
+import { captureBuildingQueue } from './renderer-qualification-building-queue.mjs';
 import { stopChild } from './temporary-resources.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -340,6 +341,9 @@ export async function qualifyPackedGame(packFile, evidenceDirectory, { captureCa
     if (buildingPlacement) {
       stage = 'building-placement';
       report.buildingPlacement = await captureBuildingOrientation(page, evidenceDirectory, { onStage: value => { stage = value; } });
+      report.buildingQueue = await captureBuildingQueue(page, evidenceDirectory, {
+        source: report.source, release: report.release, onStage: value => { stage = value; },
+      });
     }
   } catch (error) {
     report.status = 'failed';

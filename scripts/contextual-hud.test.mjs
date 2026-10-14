@@ -1848,13 +1848,18 @@ for (const team of [0, 1]) test(`seat ${team}: Obsidian building controls follow
   f.select([], barracks(51));
   assert.equal(f.bar.querySelector('[data-product="infantry"]'), train);
   f.click(train); assert.equal(w.sentCommands.at(-1).buildingId, 51);
-  assert.deepEqual([...f.bar.querySelectorAll('[data-building-queue-list] li')].map(node => node.textContent), ['1. Infantry', '2. Spearman']);
+  assert.deepEqual([...f.bar.querySelectorAll('[data-building-queue-list] li')].map(node => node.textContent), ['1. Infantry · Cancel', '2. Spearman · Cancel']);
+  const queueCancel = f.bar.querySelector('[data-queue-index="1"]');
+  f.click(queueCancel);
+  assert.deepEqual(JSON.parse(JSON.stringify(w.sentCommands.at(-1))), {
+    type: 'cancelTraining', buildingId: 51, queueIndex: 1, expectedQueue: ['infantry', 'spearman'],
+  });
   const open = f.bar.querySelector('[data-building-action="research"]'); f.click(open);
   const research = f.bar.querySelector('[data-technology="infantry-attack"]'); research.focus();
   const cancel = f.bar.querySelector('[data-action="cancelTraining"]');
   w.socket.readyState = 3; w.updateContextualCommands();
   const count = w.sentCommands.length;
-  train.click(); research.click(); cancel.click(); assert.equal(w.sentCommands.length, count);
+  train.click(); research.click(); cancel.click(); queueCancel.click(); assert.equal(w.sentCommands.length, count);
   assert.equal(f.d.activeElement, research); assert.match(f.bar.querySelector('[data-building-hint]').textContent, /Reconnecting/);
   w.socket.readyState = 1; w.updateContextualCommands();
   assert.equal(f.d.activeElement, research); assert.doesNotMatch(research.title, /Reconnecting/); assert.doesNotMatch(cancel.title, /Reconnecting/);

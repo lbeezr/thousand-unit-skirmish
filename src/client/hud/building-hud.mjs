@@ -6,6 +6,7 @@ import { setHudActionAvailability, isHudActionUnavailable } from '../../hud-layo
 const views = new WeakMap();
 const text = (node, value) => { if (node.textContent !== value) node.textContent = value; };
 const percent = value => Math.round(Math.max(0, Math.min(1, Number(value) || 0)) * 100);
+const queueSignature = facts => JSON.stringify([facts.key, facts.queue.map(item => item.kind)]);
 
 // Presentation consumes disclosed snapshots only. Existing production, research
 // and lifecycle consumers continue to own availability and command dispatch.
@@ -50,12 +51,25 @@ export function updateBuildingHud(root, state, onAction) {
     view = { state, onAction, key: null, researchOpen: false };
     views.set(root, view);
     panel.addEventListener('click', event => {
-      if (!event.target.closest('[data-product], [data-technology], [data-action]')) return;
+      if (!event.target.closest('[data-product], [data-technology], [data-action], [data-queue-index]')) return;
       if (!buildingHudFacts(view.state) || !view.state.connected || view.state.matchFinished) {
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);
     panel.addEventListener('click', event => {
+      const cancel = event.target.closest('[data-queue-index]');
+      if (cancel) {
+        const facts = buildingHudFacts(view.state);
+        if (!facts || cancel.closest('[hidden]') || isHudActionUnavailable(cancel)) return;
+        // A snapshot may have changed before the next HUD refresh. Never reuse
+        // a queue slot from the previous building or queue contents.
+        if (!view.state.building.complete || cancel.dataset.queueSignature !== queueSignature(facts)) {
+          updateBuildingHud(root, view.state, view.onAction); return;
+        }
+        view.onAction('cancel-training', { buildingId: view.state.building.id,
+          queueIndex: Number(cancel.dataset.queueIndex), expectedQueue: facts.queue.map(item => item.kind) });
+        return;
+      }
       const button = event.target.closest('[data-building-action]');
       if (!button || button.closest('[hidden]') || isHudActionUnavailable(button)) return;
       const action = button.dataset.buildingAction;
@@ -123,12 +137,29 @@ export function updateBuildingHud(root, state, onAction) {
   const progress = panel.querySelector('[data-building-progress]');
   progress.value = facts.progress / 100; progress.hidden = !facts.queue.length;
   const list = panel.querySelector('[data-building-queue-list]');
-  const signature = facts.queue.map(item => item.kind).join(',');
+  const signature = queueSignature(facts);
   if (list.dataset.signature !== signature) {
+    const focused = root.activeElement?.closest('[data-queue-index]');
+    const focusedIndex = focused?.parentElement?.parentElement === list && list.dataset.buildingKey === facts.key
+      ? Number(focused.dataset.queueIndex) : null;
     list.dataset.signature = signature;
+    list.dataset.buildingKey = facts.key;
     list.replaceChildren(...facts.queue.map((item, index) => {
-      const entry = root.createElement('li'); entry.textContent = `${index + 1}. ${item.label}`;
+      const entry = root.createElement('li'), button = root.createElement('button');
+      button.type = 'button'; button.dataset.queueIndex = String(index); button.dataset.queueSignature = signature;
+      button.textContent = `${index + 1}. ${item.label} · Cancel`;
+      button.title = `Cancel ${item.label} · queue position ${index + 1} · ${index === 0
+        ? 'refund remaining training only; a finished unit waiting for space refunds nothing'
+        : 'full food and wood refund'}`;
+      button.setAttribute('aria-label', button.title);
+      entry.append(button);
       return entry;
     }));
+    if (focusedIndex !== null) {
+      const buttons = list.querySelectorAll('button');
+      (buttons[Math.min(focusedIndex, buttons.length - 1)] || panel.querySelector('[data-product]'))?.focus({ preventScroll: true });
+    }
   }
+  for (const button of list.querySelectorAll('button'))
+    setHudActionAvailability(button, Boolean(blocked) || !state.building.complete, true);
 }

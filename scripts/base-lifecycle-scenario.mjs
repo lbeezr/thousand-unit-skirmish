@@ -45,7 +45,8 @@ function connect(port) {
     return new Promise((resolve, reject) => {
       const waiter = { predicate, resolve, timer: setTimeout(() => {
         waiters.splice(waiters.indexOf(waiter), 1);
-        reject(new Error('Timed out waiting for server message'));
+        reject(new Error(`Timed out waiting for server message: ${predicate.toString()}; recent notices: ${JSON.stringify(
+          messages.filter(message => message.type === 'notice').slice(-3).map(message => message.message))}`));
       }, TIMEOUT_MS) };
       waiters.push(waiter);
     });
@@ -152,7 +153,15 @@ try {
   for (const [team, client] of clients.entries()) {
     const barracks = client.latest.buildings.find((b) => b.team === team && b.type === 'barracks');
     client.clearMessages();
-    for (const kind of ['spearman', 'infantry', 'spearman']) send(client, { type: 'trainUnit', kind, buildingId: barracks.id });
+    for (const kind of ['spearman', 'spearman', 'infantry']) send(client, { type: 'trainUnit', kind, buildingId: barracks.id });
+    await client.wait((m) => m.type === 'state' && m.buildings.find((b) => b.id === barracks.id)?.queue === 3);
+    const cancelMiddle = { type: 'cancelTraining', buildingId: barracks.id, queueIndex: 1,
+      expectedQueue: ['spearman', 'spearman', 'infantry'] };
+    client.clearMessages(); send(client, cancelMiddle);
+    await client.wait((m) => m.type === 'notice' && m.message === 'TRAINING CANCELLED · SPEARMAN · REFUND 60 FOOD + 20 WOOD');
+    client.clearMessages(); send(client, cancelMiddle);
+    await client.wait((m) => m.type === 'notice' && m.message === 'CANCEL REJECTED · QUEUE CHANGED · SELECT THE UNIT AGAIN');
+    send(client, { type: 'trainUnit', kind: 'spearman', buildingId: barracks.id });
     await client.wait((m) => m.type === 'state' && m.buildings.find((b) => b.id === barracks.id)?.queue === 3);
     send(client, { type: 'cancelTraining', buildingId: barracks.id });
     await client.wait((m) => m.type === 'notice' && m.message.startsWith('TRAINING CANCELLED'));
@@ -164,7 +173,7 @@ try {
     await client.wait((m) => m.type === 'notice' && m.message.startsWith('RESEARCH CANCELLED'));
     send(client, { type: 'trainWorker' }); send(client, { type: 'trainWorker' });
     await client.wait((m) => m.type === 'state' && m.workerProduction[team]?.queue === 2);
-    client.clearMessages(); send(client, { type: 'cancelTraining', kind: 'worker' });
+    client.clearMessages(); send(client, { type: 'cancelTraining', kind: 'worker', queueIndex: 1, expectedQueue: ['worker', 'worker'] });
     await client.wait((m) => m.type === 'notice' && m.message.startsWith('TRAINING CANCELLED'));
   }
   const settled = await checkpointWith(checkpointPath, (s) => s.state.workerProduction.every((p) => p.queue === 1)

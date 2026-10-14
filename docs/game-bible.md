@@ -428,6 +428,11 @@ Canceling unfinished construction refunds the unbuilt fraction of its food/wood
 cost and removes the footprint. Canceling a pending training entry refunds its
 full cost; canceling the active entry refunds its remaining training fraction.
 A completed training timer blocked by the exit has no unfinished work to refund.
+Each unit in a selected producer's ordered HUD queue has a Cancel control. A
+waiting entry refunds its full food/wood price; the active entry refunds only
+unfinished training. Controls retain keyboard focus through queue updates.
+If the submitted ordered queue differs from the server's current queue, the
+cancellation is refused and the player chooses again from the refreshed queue.
 The next head begins with its full training duration. Canceling research refunds
 its remaining time fraction and applies no upgrade. Refunds are credited once,
 rounded to six decimal places; UI notices show whole resource amounts. Destroying

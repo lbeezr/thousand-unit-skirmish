@@ -681,3 +681,123 @@ the existing qualified workflow. Exact-head review, clean package, default
 integration and identified deployment remain recorded in the slice PR. Further
 progression design depends on B1/B3 observations; no additional economy
 technology or farmhouse action is justified by this source audit alone.
+
+### Building production queue control — 14 October 2026
+
+Building outcome owner: chat `01a13a88-e316-7760-9201-6a5ba3a121c9` retains
+implementation, review, integration, clean packaging, identified staging delivery
+and ordinary-game verification. At main `dcde6da3`, the authority already supports
+indexed training cancellation, but the normal Obsidian queue is an inert ordered
+list and the lifecycle surface exposes only Cancel last queued unit. A player
+cannot choose a waiting product or stop the active product from that list.
+
+The bounded increment puts a Cancel button in each existing queue slot across
+Town Center (home and expansion), Barracks, Range, Stable, Workshop and Dock.
+Waiting entries disclose full refunds; active training discloses remaining-work
+refunds, including no refund when a finished timer is waiting for spawn space.
+The server remains responsible for debits, refunds, FIFO advancement and reserved
+population. New controls submit the observed ordered kinds with their index;
+an ordered-content mismatch refuses without mutating the queue or bank. Legacy
+Cancel last and Worker cancellation commands keep their existing behavior.
+This guard compares queue contents, not durable individual production IDs.
+
+Backing reuses the approved [72px Obsidian building specimen](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026),
+including its active-versus-waiting refund exploration. The selected treatment
+keeps the queue inside the current building dock with existing theme variables,
+wrapped compact buttons, 44px narrow-screen targets and no new artwork. State
+storyboard: select producer → enqueue mixed products → inspect ordered entries
+and refund explanation → cancel chosen entry → authoritative queue/bank update
+→ focus moves to the next slot (or product when empty). Reconnect, match end and
+unfinished/opponent selection block activation; an unrendered queue change
+refreshes the controls before a new choice. Timer-only updates preserve nodes.
+
+Write scope is the existing building HUD module/CSS, its main-client callback,
+the queue explanation in `index.html`, the optional authority content guard,
+existing building/contextual/lifecycle tests and this guide/game bible. The
+existing Linux renderer qualification additionally owns a bounded production
+capture after its paid orientation checks, with registered rejection controls
+and own-team-only production facts in the existing opt-in diagnostic. No
+production, research, audio, economy, checkpoint or asset-format redesign is
+required. The public module and stylesheet already have exact HTTP admission;
+the ordinary HTML imports and release inputs already include these files.
+
+Acceptance uses both-seat actual DOM input/command tests, all-producer authority
+refund and stale-request controls, and the existing native lifecycle scenario
+for paid mixed-slot cancellation, duplicate refusal and cold reservations.
+The slice PR retains exact checks, source and clean release digest. Ordinary
+game screenshots, native keyboard/touch usability and identified deployment
+remain incomplete until separately observed at the containing release. Owner
+retains the existing Linux staging HUD capture route; stopped Mac captures are
+not a fallback. The source change is useful independently of that evidence.
+
+The clean-pack cloud capture pays for a Barracks on the existing authored flat
+fixture, queues Spearman/Infantry/Spearman through visible HUD controls, cancels
+the waiting Infantry by pointer, cancels the active Spearman and activates the
+remaining focused entry with Enter. Four PNG/canvas pairs bracket observations
+of the actual disclosed queue and bank. Waiting refunds must equal the complete
+price; active food/wood fractions must match, stay below the complete price and
+not exceed observed unfinished work. A failure retains its partial sidecar;
+success remains `captured-needs-review`. This is an authored seat-0 production
+capture, not normal Tiny entry, seat-1 acceptance or a deployed listening proof.
+The existing workflow's normal sandbox, clean pack, non-root Linux runner,
+read-only permissions and ten-minute limit remain in force. Registration and
+CPU rejection controls alone do not claim a cloud run or actual images.
+
+The first cloud attempt at `6673c5a2`, [run 38573973100](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38573973100),
+passed sandboxed WebGL2 capability and retained two movement frames plus the
+House/Mill/Farm placement PNGs. It stopped in the pre-existing Dock orientation
+sequence: applying its shoreline map closes Commands, but the next step tried
+the hidden Worker control. The bounded fixture correction reopens Commands and
+Economy after that real map reset. It changes no game state or security policy.
+Artifact `11898612152` ZIP SHA-256 is
+`f35ec06a9c8aca6352f32a75b86aca01209cefe01bbfc623c6081863ff75fcab`.
+The retained House Complete image was inspected; this partial run supplies no
+queue interaction or Dock acceptance. The source owner retains the corrected
+run and image review before claiming the production capture complete.
+
+The corrected [run 38575271173](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38575271173)
+at `6b57830f` completed Dock orientation and reached the new HUD. Its inspected
+mixed-queue and waiting-cancel images retain the exact 50-food Infantry refund.
+Active-refund validation failed after the first head had only 2.13 seconds left
+in the last retained observation; it supplied no complete active/keyboard proof.
+The next bounded adapter sequence lets that paid head finish naturally, pays
+for a waiting Spearman behind its fresh successor and retains before/after facts
+even when a refund assertion fails. No timer, rule, balance, deadline or refund
+assertion is relaxed. Artifact `11899852841` ZIP hash is
+`f774d71515b04ce51e2e5b402a6f8abf1d1d94654bd0395bcc322c21258a7f3c`.
+
+The fresh-head [run 38576741835](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38576741835)
+at `1530298c` retained three inspected queue frames and both successful pointer
+refunds: waiting Infantry 50F/0W; active Spearman 48.166667F/16.055556W. The
+following slot remained focused. Its Enter attempt did not credit a refund;
+the empty queue alone correctly failed acceptance. The driver had supplied only
+DOM key/code names. The next correction supplies Enter's virtual key code 13 and
+carriage-return text, matching the [official Puppeteer CDP driver](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/cdp/Input.ts)
+and [key definition](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/common/USKeyboardLayout.ts).
+A bounded observer additionally requires trusted Enter down/keypress/up and the
+focused queue button's trusted click; it retains no unrelated key content.
+ZIP `11902705128` SHA-256 is
+`4f83978977d405495956a3bf2c340a5e3a646243ba6dd3264269825f1847c562`.
+Keyboard acceptance remains open until the corrected native input succeeds.
+
+At `eba96491`, [run 38578365165](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38578365165)
+passed the complete clean-pack movement, House/Mill/Farm/Dock placement and
+Barracks queue sequence. All four queue PNGs were inspected: labels/refund note
+fit, the waiting unit refunded 50 food, active pointer cancellation refunded
+38.333333 food / 12.777778 wood, and trusted Enter activation refunded
+29.166667 food / 9.722222 wood before the queue emptied and focus returned to
+Train Infantry. The [retained inspection receipt](qa-evidence/building-queue-2026-10-14/packed-eba96491.json)
+records source, release digest, ZIP hash, input and scope. This proves the
+authored blue-seat Barracks at 1280×720, not deployment, normal Tiny, the other
+seat, touch/narrow viewports or unassisted-human use. The expanded dock covers
+part of the selected structure in this camera view; framing remains a follow-up.
+The immutable ZIP, reports and four inspected images are retained outside the
+disposable worktree. [PR665](https://github.com/lbeezr/thousand-unit-skirmish/pull/665)
+owns current-main integration, independent review, current source/package and
+the remaining identified staging/ordinary-game acceptance.
+
+Next building work is ranked by actual observation: finish this queue interaction
+at an identified release; inspect construction/repair and utility-state feedback;
+then verify building purpose, research and characteristic audio together in
+ordinary matches. Existing B1 Farm/progression capture and audio-roster listening
+remain their own retained artifacts; this increment does not claim them closed.

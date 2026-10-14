@@ -69,6 +69,9 @@ async function captureBuildingFamily(page, evidenceDirectory, { type, onStage })
     onStage('building-map');
     assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify({ type: 'publishMap', map })})`), true);
     await page.wait(`window.__rtsEnvironmentStateSnapshot?.mapId === '${map.id}'`, 'applied disclosed two-shore map');
+    // Applying the shoreline map closes the old drawer like any map reset.
+    if (await page.cdp.evaluate('document.querySelector("#command-deck").hidden')) await click('#dock-toggle');
+    await click('#dock-tab-economy');
     await click('#select-workers'); await click(buildSelector);
     await page.cdp.call('Input.dispatchMouseEvent', { type: 'mouseMoved', ...pointer });
   }

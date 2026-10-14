@@ -75,6 +75,56 @@ for (const team of [0, 1]) test(`seat ${team}: stable building dock, research Es
   s.building = null; update(); assert.equal(panel.hidden, true);
 });
 
+for (const team of [0, 1]) test(`seat ${team}: queue cancellation binds a paid slot, retains focus and refuses stale UI`, t => {
+  const dom = new JSDOM(html); t.after(() => dom.window.close());
+  const d = dom.window.document, s = state(team), actions = [];
+  d.querySelector('.contextual-command-bar').hidden = false;
+  const update = () => updateBuildingHud(d, s, (action, request) => actions.push({ action, request }));
+  const buttons = () => [...d.querySelectorAll('[data-queue-index]')];
+  update();
+  const middle = buttons()[1]; middle.focus();
+  assert.match(middle.getAttribute('aria-label'), /Cancel Spearman.*position 2.*full food and wood refund/);
+  assert.match(buttons()[0].title, /refund remaining training only.*refunds nothing/);
+  s.building.trainingProgress = .5; update();
+  assert.equal(buttons()[1], middle); assert.equal(d.activeElement, middle);
+  middle.click();
+  assert.deepEqual(actions, [{ action: 'cancel-training', request: { buildingId: 8, queueIndex: 1,
+    expectedQueue: ['infantry', 'spearman', 'infantry'] } }]);
+  s.building.productionQueue = ['infantry', 'infantry']; update();
+  assert.equal(d.activeElement, buttons()[1], 'focus moves to the next paid slot');
+  middle.click(); assert.equal(actions.length, 1, 'detached controls cannot cancel a shifted queue');
+  s.building.productionQueue = ['infantry'];
+  buttons()[1].click(); assert.equal(actions.length, 1, 'activation rechecks an unrendered snapshot change');
+  assert.equal(buttons().length, 1);
+  for (const patch of [{ connected: false }, { matchFinished: true }]) {
+    Object.assign(s, patch); update();
+    assert.equal(buttons()[0].getAttribute('aria-disabled'), 'true'); buttons()[0].click();
+    assert.equal(actions.length, 1); Object.assign(s, { connected: true, matchFinished: false });
+  }
+  update(); buttons()[0].click(); assert.equal(actions.length, 2);
+  s.building.complete = false; update(); buttons()[0].click(); assert.equal(actions.length, 2);
+  s.building.complete = true; s.building.team = 1 - team; update(); buttons()[0].click(); assert.equal(actions.length, 2);
+  s.building.team = team; update(); buttons()[0].focus();
+  s.building.productionQueue = []; update();
+  assert.equal(buttons().length, 0); assert.equal(d.activeElement.closest('[data-queue-index]'), null);
+});
+
+test('every registered producer exposes its disclosed queue, including home, expansion and Dock', t => {
+  const dom = new JSDOM(html); t.after(() => dom.window.close());
+  const d = dom.window.document, s = state(), requests = [];
+  d.querySelector('.contextual-command-bar').hidden = false;
+  for (const [type, rule] of Object.entries(BUILDING_DEFINITIONS)) {
+    if (!rule.products.length) continue;
+    for (const home of type === 'town-center' ? [true, false] : [false]) {
+      s.building = { ...s.building, id: s.building.id + 1, type, home, productionQueue: [...rule.products] };
+      updateBuildingHud(d, s, (action, request) => requests.push({ action, request }));
+      d.querySelector('[data-queue-index="0"]').click();
+      assert.deepEqual(requests.at(-1), { action: 'cancel-training', request: {
+        buildingId: s.building.id, queueIndex: 0, expectedQueue: [...rule.products] } });
+    }
+  }
+});
+
 test('shared dock and building files ship, with one stylesheet import each', () => {
   for (const file of ['selection-hud.css', 'building-hud.css', 'building-hud.mjs'])
     assert.equal(isClientStaticAsset(`src/client/hud/${file}`), true, file);
