@@ -4,13 +4,15 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { matureSettlementPlan } from './mature-settlement-scenario.mjs';
 import { buildingPad, validateStagingOrigin } from './renderer-roster-audio-plan.mjs';
-import { rosterControlPoint } from './renderer-roster-audio-capture.mjs';
+import { rosterControlPoint, frameRosterArea } from './renderer-roster-audio-capture.mjs';
 import { interactionTargetPoint } from './renderer-interaction-audio-scenario.mjs';
 import { installCatalogImportObserver } from './renderer-building-catalog-scenario.mjs';
 import { ORDINARY_MAP_MIN_SIDE } from '../src/map-size-policy.mjs';
+import { readQueueObservation, validateQueueObservation, validateQueueRefund } from './renderer-qualification-building-queue.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const stateExpression = 'window.__rtsInteractionAudioSnapshot()';
+export const HUD_BUILDING_SEQUENCE = Object.freeze(['house','barracks']);
 // Match the ordinary command gate before pressing a control. Studio keeps
 // Save & Play enabled during recovery so a human can retry; a capture must wait.
 export function hudInputReady() {
@@ -96,7 +98,8 @@ async function enter(page,origin,map,mapFile,bytes) {
   assert.equal(imported.sha256,hash(bytes));
   await control(page,'#studio-publish');
   await page.wait(`!document.querySelector('#map-studio')?.open&&${stateExpression}?.mapId===${JSON.stringify(map.id)}&&${stateExpression}.team===0`,'Save & Play applies fixture',35000);
-  await control(page,'#camera-fit-map');
+  await page.wait(`(${hudInputReady.toString()})()`,'live authored game before native camera framing');
+  await frameRosterArea(page);
 }
 export async function captureHudStaging({page,origin,subset,directory,signal}) {
   const map=hudFixture(subset),bytes=Buffer.from(JSON.stringify(map,null,2)+'\n'),mapFile=path.join(directory,'authored-map.json');
@@ -121,7 +124,13 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
     validateHudFrame(view,map.id,context,image,previousTick);
     return view;
   }
-  async function worker() { const unit=(await state()).units.find(u=>u.kind==='worker'&&u.point); assert.ok(unit); await select(page,'unit',unit.id); return unit; }
+  async function worker() {
+    // A tall building dock can cover every nearby Worker. Use the ordinary
+    // header selection and safe-area camera control before picking one body.
+    await control(page,'#quick-idle'); await control(page,'#camera-center-selection');
+    const unit=await page.wait(`${stateExpression}.units.find(u=>u.kind==='worker'&&u.selected&&u.point)`,'native camera reveals owned idle Worker');
+    await select(page,'unit',unit.id); return unit;
+  }
   try {
     await enter(page,origin,map,mapFile,bytes); await persist();
     await worker(); await capture('worker','workers');
@@ -137,23 +146,51 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       await key(page,'Escape'); await capture('empty','none');
     }
     if(subset==='buildings'||subset==='rollout') {
+      stage='town-center-selection';
       const town=(await state()).buildings.find(b=>b.type==='town-center'&&b.complete&&b.point); assert.ok(town);
       await select(page,'building',town.id); await capture('town-center','building');
+      stage='town-center-training';
       await control(page,'[data-context-products] [data-product="worker"]');
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Worker in production queue');
       await capture('town-center-training','building');
-      stage='paid-barracks';
-      await worker(); await control(page,'[data-worker-action="build"]'); await control(page,'[data-worker-build="barracks"]');
-      const pad=buildingPad('barracks');
-      const point=await page.wait(`window.__rtsInteractionAudioProject(${pad.x},${pad.z})`,'visible build site');
-      await page.cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
-      await page.wait('window.__rtsBuildingPlacementSnapshot?.active&&window.__rtsBuildingPlacementSnapshot.valid','valid Barracks placement');
-      await pointer(page,point);
-      const barracks=await page.wait(`${stateExpression}.buildings.find(b=>b.type==='barracks'&&b.complete&&b.point)`,'paid Barracks completes',60000);
-      await select(page,'building',barracks.id); await capture('barracks','building');
+      let barracks;
+      // The paid Worker and first Infantry leave only one opening population
+      // slot. Build real capacity before buying the two-entry cancellation queue.
+      for(const type of HUD_BUILDING_SEQUENCE) {
+        stage=`paid-${type}`;
+        await worker(); await control(page,'[data-worker-action="build"]'); await control(page,`[data-worker-build="${type}"]`);
+        const pad=buildingPad(type);
+        const point=await page.wait(`window.__rtsInteractionAudioProject(${pad.x},${pad.z})`,'visible build site');
+        await page.cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
+        await page.wait('window.__rtsBuildingPlacementSnapshot?.active&&window.__rtsBuildingPlacementSnapshot.valid','valid paid building placement');
+        await pointer(page,point);
+        const building=await page.wait(`${stateExpression}.buildings.find(b=>b.type===${JSON.stringify(type)}&&b.complete&&b.point)`,'paid building completes',60000);
+        stage=`${type}-selection`;
+        await select(page,'building',building.id); await capture(type,'building');
+        if(type==='barracks') barracks=building;
+      }
+      assert.ok(barracks);
       await control(page,'[data-context-products] [data-product="infantry"]');
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Infantry queue');
       await capture('barracks-training','building');
+      // Let the photographed paid unit finish, then exercise a chosen waiting
+      // entry on a fresh paid queue. No timer, stock or selection injection.
+      stage='barracks-queue-cancellation';
+      const queueState=`window.__rtsEnvironmentStateSnapshot.buildings.find(b=>b.id===${barracks.id}).productionQueue`;
+      const waitQueue=queue=>page.wait(`JSON.stringify(${queueState})===${JSON.stringify(JSON.stringify(queue))}`,'ordered paid staging queue');
+      await waitQueue([]);
+      for(const [index,kind] of ['infantry','spearman'].entries()) {
+        await control(page,`[data-context-products] [data-product="${kind}"]`);
+        await waitQueue(['infantry','spearman'].slice(0,index+1));
+      }
+      const observe=()=>page.cdp.evaluate(`(${readQueueObservation.toString()})(${barracks.id})`);
+      const before=await observe(); validateQueueObservation(before,['infantry','spearman'],map.id);
+      await control(page,'[data-queue-index="1"]'); await waitQueue(['infantry']);
+      const after=await observe();
+      const attempt={action:'cancel-chosen-waiting-unit',buildingId:barracks.id,before,after};
+      report.steps.push(attempt); await persist();
+      Object.assign(attempt,validateQueueRefund(before,after,1,map.id)); await persist();
+      await capture('barracks-queue-cancelled','building');
       await control(page,'[data-building-action="research"]'); await capture('barracks-research','building');
     }
     if(subset==='panels'||subset==='rollout') {

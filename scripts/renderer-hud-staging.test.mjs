@@ -6,9 +6,11 @@ import path from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
 import { HUD_PUBLIC_FILES, HUD_CASES, hudMatrix, identifyHudSource, runHudStaging } from './renderer-hud-staging.mjs';
-import { hudFixture, hudInputReady, validateHudFrame } from './renderer-hud-staging-scenario.mjs';
+import { hudFixture, hudInputReady, validateHudFrame, HUD_BUILDING_SEQUENCE } from './renderer-hud-staging-scenario.mjs';
 import { STAGING_ORIGIN } from './renderer-roster-audio-plan.mjs';
 import { mapSizeIdentity } from '../src/map-size-policy.mjs';
+import { teamPopulation } from '../src/rules/population.mjs';
+import { BUILDING_DEFINITIONS, UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
 const revision='a'.repeat(40);
 test('native control readiness waits through recovery and closed sockets without blocking menu entry',()=>{
@@ -30,6 +32,21 @@ test('explicit bounded subsets and authored fixtures cannot dispatch arbitrary w
     assert.equal(mapSizeIdentity(map).ordinarySelectable,true);
     assert.equal(map.id,`hud-${id}`); assert.equal(map.startingArmySize,24); assert.deepEqual(map.scenarioEvents,[]); }
   for(const bad of ['','../secret','all,selections','shell','buildings;echo']) { assert.throws(()=>hudMatrix(bad)); assert.throws(()=>hudFixture(bad)); }
+});
+test('the paid staged opening has capacity and stock for its two-entry cancellation queue',()=>{
+  const map=hudFixture('buildings');
+  const units=Array.from({length:map.startingArmySize/2},()=>({team:0,kind:'infantry',hp:100}));
+  for(const kind of ['worker','infantry']) units.push({team:0,kind,hp:100});
+  const buildings=HUD_BUILDING_SEQUENCE.map(type=>({team:0,type,complete:true,
+    productionQueue:type==='barracks'?['infantry','spearman']:[]}));
+  const state={units,buildings,workerProduction:[{},{}],openingArmySize:map.startingArmySize};
+  const population=teamPopulation(state,0);
+  assert.ok(population.used+population.reserved<=population.capacity,'paid House must admit the real mixed queue');
+  const withoutHouse=teamPopulation({...state,buildings:buildings.filter(b=>b.type!=='house')},0);
+  assert.ok(withoutHouse.used+withoutHouse.reserved>withoutHouse.capacity,'the original opening cannot admit both queued units');
+  const purchases=[...HUD_BUILDING_SEQUENCE.map(type=>BUILDING_DEFINITIONS[type]),
+    ...['worker','infantry','infantry','spearman'].map(kind=>UNIT_DEFINITIONS[kind])];
+  for(const resource of ['food','wood']) assert.ok(purchases.reduce((sum,rule)=>sum+rule.cost[resource],0)<=map.startingResources[resource]);
 });
 test('source verification is staging-only, omits credentials and rejects drift/redirect/error',async()=>{
   const seen=[],read=async file=>Buffer.from(file);
