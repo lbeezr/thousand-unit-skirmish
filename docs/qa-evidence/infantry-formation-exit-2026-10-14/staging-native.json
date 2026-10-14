@@ -1,0 +1,182 @@
+{
+  "expectedSource": "e50d499fccebf9de609ef059d5c7d340b315abec",
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "e50d499fccebf9de609ef059d5c7d340b315abec"
+    },
+    "served": {
+      "sourceRevision": "e50d499fccebf9de609ef059d5c7d340b315abec",
+      "sourceDirty": null,
+      "digest": null,
+      "origin": "railway-git"
+    },
+    "scope": "source",
+    "issues": []
+  },
+  "records": [
+    {
+      "team": 0,
+      "mapId": "veyrholds-terraced-vale",
+      "firstInfantry": 4,
+      "start": {
+        "x": -58.82,
+        "z": 0.5
+      },
+      "firstDestination": {
+        "x": -51.5,
+        "z": 0.5
+      },
+      "finalDestination": {
+        "x": -51.5,
+        "z": 7.5
+      },
+      "observedFirstLeg": true,
+      "reconnectRetainedQueue": true,
+      "arrivedAtTick": 327,
+      "finalPosition": {
+        "x": -51.5,
+        "z": 7.5
+      },
+      "idlePeersUnchanged": true,
+      "banksUnchanged": true,
+      "groupMove": {
+        "infantry": 8,
+        "stableTicks": 60,
+        "settledAtTick": 564,
+        "positions": [
+          {
+            "id": 4,
+            "x": -47.5,
+            "z": 11.5
+          },
+          {
+            "id": 5,
+            "x": -48.5,
+            "z": 9.5
+          },
+          {
+            "id": 6,
+            "x": -47.5,
+            "z": 9.5
+          },
+          {
+            "id": 7,
+            "x": -46.5,
+            "z": 9.5
+          },
+          {
+            "id": 8,
+            "x": -48.5,
+            "z": 10.5
+          },
+          {
+            "id": 9,
+            "x": -47.5,
+            "z": 10.5
+          },
+          {
+            "id": 10,
+            "x": -46.5,
+            "z": 10.5
+          },
+          {
+            "id": 11,
+            "x": -48.5,
+            "z": 11.5
+          }
+        ]
+      }
+    },
+    {
+      "team": 1,
+      "mapId": "veyrholds-terraced-vale",
+      "firstInfantry": 16,
+      "start": {
+        "x": 56.18,
+        "z": 0.5
+      },
+      "firstDestination": {
+        "x": 51.5,
+        "z": 0.5
+      },
+      "finalDestination": {
+        "x": 51.5,
+        "z": 7.5
+      },
+      "observedFirstLeg": true,
+      "reconnectRetainedQueue": true,
+      "arrivedAtTick": 207,
+      "finalPosition": {
+        "x": 51.5,
+        "z": 7.5
+      },
+      "idlePeersUnchanged": true,
+      "banksUnchanged": true,
+      "groupMove": {
+        "infantry": 8,
+        "stableTicks": 60,
+        "settledAtTick": 564,
+        "positions": [
+          {
+            "id": 16,
+            "x": 47.5,
+            "z": 11.5
+          },
+          {
+            "id": 17,
+            "x": 47.5,
+            "z": 9.5
+          },
+          {
+            "id": 18,
+            "x": 48.5,
+            "z": 9.5
+          },
+          {
+            "id": 19,
+            "x": 46.5,
+            "z": 9.5
+          },
+          {
+            "id": 20,
+            "x": 46.5,
+            "z": 10.5
+          },
+          {
+            "id": 21,
+            "x": 47.5,
+            "z": 10.5
+          },
+          {
+            "id": 22,
+            "x": 48.5,
+            "z": 10.5
+          },
+          {
+            "id": 23,
+            "x": 46.5,
+            "z": 11.5
+          }
+        ]
+      }
+    }
+  ],
+  "archivedOwnedFixture": true,
+  "scope": "hosted native normal Tiny Skirmish entry, both-seat selected Infantry/queued Move/reconnect and whole Infantry army exit; no browser/render claim",
+  "deployment": {
+    "id": "010f3fcb-2ca1-4333-bd6a-50fb0ae20275",
+    "sourceRevision": "e50d499fccebf9de609ef059d5c7d340b315abec",
+    "status": "SUCCESS",
+    "updatedAt": "2026-10-14T14:51:45.350Z"
+  },
+  "verifiedAt": "2026-10-14T14:53:27.245377+00:00",
+  "ordinaryEntry": "Create PvP Room \u2192 two ready human seats \u2192 Tiny Terraced Vale Skirmish launch",
+  "stateInjection": false,
+  "orders": [
+    "selected Infantry Move inward",
+    "Shift Move north",
+    "resume each human seat with queued leg retained",
+    "all eight Infantry group Move"
+  ]
+}

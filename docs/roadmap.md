@@ -330,9 +330,13 @@ Independent review, clean packaging and hosted native authority checks pass;
 rendered Shift-click usability remains owned. The current increment fixes
 [Infantry trapped in the parked starting formation](qa-infantry-formation-exit-2026-10-14.md)
 through local passage alignment. Every starting Infantry slot exits in eight
-cardinal/diagonal directions on both teams with body/static admission preserved; independent
-review and exact-release staging verification remain in progress. The separate
-schema-25 migration-Gather setup failure remains owned and unresolved.
+cardinal/diagonal directions on both teams with body/static admission preserved.
+PR675 is merged and verified on staging `e50d499f`: both ordinary Tiny Skirmish
+seats complete selected Infantry/queued Moves through reconnect, and all eight
+Infantry per seat leave and settle after a group Move. Independent review and
+clean packaging pass; rendered usability remains open. Next: resolve the
+reproduced occupied Sheep approach in the schema-25 Gather setup, while retaining
+the separate incomplete 64-unit queued-gate journeys and broader qualification.
 
 Stop and Hold Position establish explicit task/route interruption and stationary
 in-range defense, with both-seat authority and checkpoint/rematch regressions.
