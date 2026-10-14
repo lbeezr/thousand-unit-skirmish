@@ -73,6 +73,7 @@ export const CLIENT_ASSET_PATHS = Object.freeze([
   'src/presentation/assets/plant-packs/veilcap-worked-pack.mjs',
   'src/presentation/assets/plant-packs/sunbloom-low-pack.mjs',
   'src/presentation/rendering/ground-surfaces.mjs',
+  'src/presentation/rendering/battlefield-surround.mjs',
   'src/presentation/audio/composition.mjs',
   'src/presentation/audio/composition-player.mjs',
   'src/presentation/audio/composition-wav.mjs',

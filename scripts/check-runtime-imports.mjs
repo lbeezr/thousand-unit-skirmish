@@ -106,6 +106,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'presentation/assets/plant-packs/veilcap-worked-pack',
     'presentation/assets/plant-packs/sunbloom-low-pack',
     'presentation/rendering/ground-surfaces',
+    'presentation/rendering/battlefield-surround',
     'presentation/audio/composition',
     'presentation/audio/composition-player',
     'presentation/audio/composition-wav',

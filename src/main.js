@@ -70,6 +70,7 @@ import {
   RESOURCE_STATE_ASSETS_AVAILABLE, RESOURCE_STATE_ASSET_STATUS, resourceStateAssetsReady,
 } from './environment-art.mjs';
 import { createSettlementWearCache, updateSettlementWearMesh } from './settlement-wear.mjs';
+import { battlefieldSurroundEnabled, createBattlefieldSurround, BATTLEFIELD_SURROUND_BACKGROUND, BATTLEFIELD_SURROUND_FAR_MARGIN } from './presentation/rendering/battlefield-surround.mjs';
 import { planPalisadeConstructionGround, updatePalisadeConstructionGroundMesh } from './palisade-construction-ground.mjs';
 import { createEnvironmentInstancePicker } from './environment-instance-picking.mjs';
 import {
@@ -805,8 +806,9 @@ function setCamera() {
     cameraOffsetX: cameraOffset.x,
     cameraOffsetZ: cameraOffset.z,
   });
-  if (camera.far !== clipPlanes.far) {
-    camera.far = clipPlanes.far;
+  const far = clipPlanes.far + (mapDefinition && battlefieldSurroundEnabled(mapDefinition) ? BATTLEFIELD_SURROUND_FAR_MARGIN : 0);
+  if (camera.far !== far) {
+    camera.far = far;
     camera.updateProjectionMatrix();
   }
   camera.position.copy(cameraTarget).addScaledVector(cameraOffset, clipPlanes.distance);
@@ -2456,18 +2458,27 @@ function buildMap(definition) {
   latestPopulation = [null, null];
   if (buildPlacementActive) cancelBuildPlacement(false);
 
-  const base = new THREE.Mesh(
-    new THREE.PlaneGeometry(MAP_WIDTH + 4, MAP_HEIGHT + 4),
-    new THREE.MeshStandardMaterial({ color: regionalGroundColor(definition, groundBaseMaterial(definition)), roughness: 1 }),
-  );
-  base.rotation.x = -Math.PI / 2;
-  base.position.y = -0.075;
-  addMapObject(base);
+  const hasSurround = battlefieldSurroundEnabled(definition);
+  const background = hasSurround ? BATTLEFIELD_SURROUND_BACKGROUND : 0x859175;
+  scene.background.setHex(background);
+  scene.fog.color.setHex(background);
+  renderer.setClearColor(background, 1);
+  if (!hasSurround) {
+    const base = new THREE.Mesh(
+      new THREE.PlaneGeometry(MAP_WIDTH + 4, MAP_HEIGHT + 4),
+      new THREE.MeshStandardMaterial({ color: regionalGroundColor(definition, groundBaseMaterial(definition)), roughness: 1 }),
+    );
+    base.rotation.x = -Math.PI / 2;
+    base.position.y = -0.075;
+    addMapObject(base);
+  }
   for (const surface of createGroundSurfaces(definition)) {
     if(surface.userData.terrainSurface) terrainSurface=surface;
     if (surface.userData.waterStudy?.quality === 'study') waterStudyFishBinding = createWaterStudyFishBinding(definition, surface);
     addMapObject(surface);
   }
+  const surround = createBattlefieldSurround(definition, { texture: terrainSurface?.material.map });
+  if (surround) addMapObject(surround);
   settlementWearCache = createSettlementWearCache(definition, BUILDING_DEFINITIONS);
   settlementWearMesh = createSettlementGround(definition);
   addMapObject(settlementWearMesh);
@@ -2527,7 +2538,7 @@ function buildMap(definition) {
   ];
   addMapObject(new THREE.LineSegments(
     new THREE.BufferGeometry().setFromPoints(drapeLineSegments(borderPoints)),
-    new THREE.LineBasicMaterial({ color: 0xc5d59b, transparent: true, opacity: 0.64 }),
+    new THREE.LineBasicMaterial({ color: hasSurround ? 0xb7c5bc : 0xc5d59b, transparent: true, opacity: hasSurround ? 0.48 : 0.64 }),
   ));
 
   const gridPoints = [];
