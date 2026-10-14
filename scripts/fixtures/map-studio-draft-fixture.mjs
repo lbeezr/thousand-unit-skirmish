@@ -5,6 +5,8 @@ import { createMapImportValidator } from '../../src/authoring/map-import-validat
 import { createMapStudioFormState } from '../../src/authoring/map-studio-form-state.mjs';
 import * as terrainPacking from '../../src/authoring/map-studio-terrain-packing.mjs';
 import { MapStudioTerrainHistory } from '../../src/authoring/map-studio-terrain-history.mjs';
+import { mountMapResourceDiagnostics } from '../../src/authoring/map-resource-diagnostics-controls.mjs';
+import { mountResourceBrushControls } from '../../src/resource-brush-controls.mjs';
 import { generateRollingGround, smoothGround } from '../../src/terrain-authoring.mjs';
 import { resizeWorldMarkers } from '../../src/authoring/map-resize.mjs';
 import { mapStudioCellAtPointer } from '../../src/map-studio-viewport.mjs';
@@ -32,7 +34,7 @@ function between(start, end) {
 
 // Real host draft, map population/validation/import/export and dialog handlers.
 // Only rendering/audio/subpanel synchronization and browser platform APIs are stubbed.
-export function mapStudioDraftFixture(t, { roomId = null, saved = {}, terrainGestures = false } = {}) {
+export function mapStudioDraftFixture(t, { roomId = null, saved = {}, terrainGestures = false, resourceDiagnostics = false } = {}) {
   const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost/' });
   t.after(() => dom.window.close());
   const w = dom.window, d = w.document, timers = new Map(), downloads = [];
@@ -45,7 +47,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {}, terrainGes
   }
   Object.assign(w, mapUtils, scenarioRegions, definitions, terrainPacking, {
     createMapImportValidator, createMapStudioFormState, MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore,
-    MapStudioTerrainHistory, generateRollingGround, smoothGround, resizeWorldMarkers, mapStudioCellAtPointer,
+    MapStudioTerrainHistory, mountMapResourceDiagnostics, mountResourceBrushControls, generateRollingGround, smoothGround, resizeWorldMarkers, mapStudioCellAtPointer,
     economyResources, validateMapAudioReference, validateMapRegion, validWildlifeNodeDefinition,
     findInvalidResourceVariant, TERRAIN_MATERIALS, ROOM_ID: roomId,
     SESSION_STORAGE_KEY: 'thousand-unit-skirmish-session', isHost: true, knownMaps: [],
@@ -57,10 +59,10 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {}, terrainGes
     editorDefinition: null, editorTool: 'stone', editorDrag: null, editorPanDrag: null,
     scenarioEditHistory: new ScenarioEditHistory(64), createScenarioEditCoordinator,
     scenarioEventCaptureRootId, scenarioEventSourceWouldCycle,
-    selectedEditorRegionId: null, resourceBrushControls: null, redraws: 0,
+    selectedEditorRegionId: null, resourceBrushControls: null, mapResourceDiagnostics: null, redraws: 0,
     groundBaseMaterial: () => { throw new Error('Fixture maps must specify terrainBase'); },
     selectedStudioAudio: () => w.editorDefinition?.audio,
-    drawEditorGrid: () => { w.syncEditorTerrainHistory(); w.redraws++; }, fitMapStudioViewport() {},
+    drawEditorGrid: () => { w.syncEditorTerrainHistory(); w.resourceBrushControls?.sync(); if (!w.editorDrag && !w.editorPanDrag) w.mapResourceDiagnostics?.sync(); w.redraws++; }, fitMapStudioViewport() {},
     syncEditorTriggerControls() {}, syncEditorScenarioEventControls() {}, syncEditorResourceControls() {},
     saveSelectedEditorTriggerFields() {}, saveSelectedEditorScenarioEventFields() {}, saveEditorTimedVictoryFields() {},
     saveEditorVictoryHoldFields() {}, saveSelectedEditorResourceStock: () => true,
@@ -96,6 +98,8 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {}, terrainGes
     between("document.querySelector('#studio-scenario-undo').addEventListener(", 'for (const field of [ui.studioEventRegion,'),
     'window.draftStore = mapStudioDraftStore; window.lastDraftSavedAt = () => editorDraftLastSavedAt; window.terrainEditHistory = terrainEditHistory;',
   ].join('\n'));
+  if (resourceDiagnostics) w.eval(between('mapResourceDiagnostics = mountMapResourceDiagnostics({',
+    'ui.studioAddEvent.addEventListener('));
   if (terrainGestures) {
     w.ELEVATION_EDITOR_TOOLS = new Set(['elevation:raise', 'elevation:lower', 'elevation:smooth',
       'elevation:0', 'elevation:1', 'elevation:2']);

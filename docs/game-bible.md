@@ -160,7 +160,10 @@ bank and harvest loop are not implemented.
   events, branching/joined event chains, named-region entry, registered construction/research
   completion and elimination.
 - Fog, minimap, Map Studio with graphical named regions and bounded region/event undo,
-  saved custom maps, elevation and cut-to-clear forests.
+  saved custom maps, terrain gesture undo/redo, elevation and cut-to-clear forests.
+  [Resource budgets/access](map-authoring.md#resource-budgets-and-access-diagnostics--14-october-2026)
+  help authors compare per-seat banks, finite supply and static routes; they
+  inform exploration without certifying income or map balance.
 - Versioned shipped audio delivery, authoritative applied-order feedback, unit ready/death
   hooks and bounded food/wood/repair execution samples using supplied placeholder content.
 - Seeded deterministic PvE through the same authoritative command rules.

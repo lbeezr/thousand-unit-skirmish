@@ -302,10 +302,80 @@ without new terrain art or composition. [Owner evidence](qa-map-studio-terrain-h
 separates CPU gesture/export checks from remaining rendered usability.
 
 The map-making owner (chat `01a13a87-26dd-70b1-9410-ffa2f8e6932e`) retains
-integration and identified served-release verification. Next ready authoring
-slices are combined stock/access diagnostics before publication, then shared
-Grove/Orchard presets with constrained previews. Higher-level contour tools
+integration and identified served-release verification. The combined
+[stock/access diagnostics](#resource-budgets-and-access-diagnostics--14-october-2026)
+now follow this history slice; constrained Grove/Orchard presets are next.
+Higher-level contour tools
 remain later work; no larger map or economy admission follows from history.
+
+### Resource budgets and access diagnostics — 14 October 2026
+
+The **Resource Budget & Access** panel beside resource-node controls analyzes
+the committed draft after edits; **Analyze Access** refreshes it immediately.
+Starting banks stay separate from finite node stock. Food, Wood and the explicit
+Stone profile show map total, stock closer to Azure/Ember by initial route,
+equal-distance stock and stock inaccessible from either spawn. A second table
+shows stock reachable from each seat; shared access is deliberately counted in
+both rows, so those rows must not be added into a map total. Closer is a route
+comparison, not ownership, reservation or a balance verdict.
+Budgets sum the canonical numeric stocks as exact decimals and retain decimal
+strings in the derived report; a tiny positive stock is never displayed as zero,
+and small nodes do not disappear from a very large total. This does not change
+the simulation's numeric stock or bank representation.
+
+**Node Access** expands all node IDs, source kind, stock, route-cell distance
+and reachable cardinal frontage for each seat. Sheep and shore fish retain
+their original finite food stock. Diagnostics name blocked markers, disconnected
+spawns and missing seat routes, with remedies for marker placement, forest/water
+gaps and level-1 ramps. These are advisory: existing portable/server validators
+continue to decide publication. Unfinished unrelated scenario fields do not
+prevent resource analysis; invalid analysis inputs hide the stale report.
+
+Forest potential is a separate total and uses the authority's shared
+[`FOREST_WOOD_PER_CELL`](../src/rules/forest-resources.mjs), still six Wood.
+Initial edges count forest cells adjoining reachable land. Potential reachable
+after cutting uses a second static graph with forest removed; water, stone,
+height barriers and both starting Town Centers remain. This assumes progressive
+clearance and does not claim immediate stock access or worker capacity.
+
+Routes use four cardinal cell edges and the existing maximum-one-level step
+rule, starting at each spawn marker with both actual initial Town Center
+footprints blocked. Node routes end at the marker cell; frontage counts its
+reachable cardinal neighbors. The report is not a Worker interaction-radius
+solver, weighted uphill route, paid trip/income measurement, congestion model,
+naval route or guarantee for displaced opening units. Starting banks, node
+stocks and forest potential exclude rewards, Farms and future buildings.
+
+The pure analysis lives in
+[`authoring/map-resource-diagnostics.mjs`](../src/authoring/map-resource-diagnostics.mjs);
+the panel/cache in
+[`authoring/map-resource-diagnostics-controls.mjs`](../src/authoring/map-resource-diagnostics-controls.mjs).
+[`authoring/map-resource-budgets.mjs`](../src/authoring/map-resource-budgets.mjs)
+owns the bounded decimal accumulator/formatter shared by those consumers.
+Main supplies only authored geometry, markers, profile and starting banks.
+Changed input is debounced 160 ms; unchanged redraws retain the report, and
+pointer previews do not change analysis. Closing cancels pending work. Four
+bounded graph traversals cover up to 256² cells and 128 nodes. Reports are
+derived, never serialized into maps or drafts, and never read live match state.
+All four modules have exact HTTP admission and recursive release inclusion.
+The shared forest constant also supplies the source/XL audit tools; its value,
+harvesting and checkpoint behavior are unchanged.
+
+Visual backing reuses the existing Map Studio typography, muted resource panel
+and [Vaelora interface reference](art-direction/vaelora-brand-v1/interface-reference.html).
+The selected treatment is a compact set of labeled tables beside the authoring
+controls, with local horizontal scrolling for narrow panels and an expandable
+node list. Storyboard: current draft/report → committed edit hides stale values
+and announces updating → new totals/routes → terrain/patch Undo restores the
+prior report → invalid input names a remedy → close cancels analysis. It adds
+no map art, density, terrain colors or live-game overlay.
+
+[Diagnostics QA](qa-map-resource-diagnostics-2026-10-14.md) owns the checks,
+source-bound catalog observations and remaining rendered editor acceptance.
+The map-making owner retains integration and served verification. Next: use
+path allocation and pocket/route observations to refine representative maps,
+then offer constrained Grove/Orchard presets using existing finite placement.
+Static unequal nearest-route allocation alone is not a balance-change decision.
 
 ### Portable-map validator boundary
 

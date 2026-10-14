@@ -298,6 +298,9 @@ try {
     'src/authoring/map-studio-form-state.mjs', 'src/authoring/map-studio-draft-store.mjs',
     'src/authoring/map-studio-terrain-packing.mjs',
     'src/authoring/map-studio-terrain-history.mjs',
+    'src/authoring/map-resource-diagnostics.mjs', 'src/authoring/map-resource-diagnostics-controls.mjs',
+    'src/authoring/map-resource-budgets.mjs',
+    'src/rules/forest-resources.mjs',
     'src/authoring/map-studio/draft/v1/contract.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
@@ -310,6 +313,9 @@ try {
   for (const filename of ['src/authoring/map-studio-form-state.mjs/extra',
     'src/authoring/map-studio-terrain-packing.mjs/extra',
     'src/authoring/map-studio-terrain-history.mjs/extra',
+    'src/authoring/map-resource-diagnostics.mjs/extra', 'src/authoring/map-resource-diagnostics-controls.mjs/extra',
+    'src/authoring/map-resource-budgets.mjs/extra',
+    'src/rules/forest-resources.mjs/extra',
     'src/authoring/map-studio-draft-store.mjs/extra',
     'src/authoring/map-studio/draft/v1/contract.mjs/extra',
     'src/authoring/map-studio/draft/v1/unknown.mjs',

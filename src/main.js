@@ -10,6 +10,7 @@ import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs'
 import { createMapImportValidator } from './authoring/map-import-validator.mjs';
 import { packGroundPaint, packGroundElevation, packTerrainObstacles } from './authoring/map-studio-terrain-packing.mjs';
 import { MapStudioTerrainHistory } from './authoring/map-studio-terrain-history.mjs';
+import { mountMapResourceDiagnostics } from './authoring/map-resource-diagnostics-controls.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from './authoring/map-studio-draft-store.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS } from './regions.mjs';
@@ -723,6 +724,7 @@ let selectedEditorScenarioEventId = null;
 let editorTriggerCreationPending = false;
 let editorResourceNodes = [];
 let resourceBrushControls = null;
+let mapResourceDiagnostics = null;
 let selectedEditorResourceId = null;
 let editorTool = 'stone';
 let editorDrag = null;
@@ -6892,6 +6894,7 @@ function paintEditorElevationStroke(drag, next) {
 function drawEditorGrid() {
   if (!editorDefinition) return;
   syncEditorTerrainHistory();
+  if (!editorDrag && !editorPanDrag) mapResourceDiagnostics?.sync();
   resourceBrushControls?.sync();
   const canvas = ui.studioGrid;
   const viewportSize = mapStudioViewportSize();
@@ -7111,6 +7114,14 @@ function withCurrentEditorElevation(definition) {
 function compressEditorObstacles() {
   return packTerrainObstacles(editorDefinition.width, editorDefinition.height,
     editorCellMaterials, editorCellElevations, EDITOR_MATERIALS);
+}
+
+function readEditorResourceDiagnosticMap() {
+  if (!editorDefinition) return null;
+  return withCurrentEditorElevation({ width: editorDefinition.width, height: editorDefinition.height,
+    economyProfileId: editorDefinition.economyProfileId, spawnPoints: editorDefinition.spawnPoints,
+    obstacles: compressEditorObstacles(), resourceNodes: editorResourceNodes,
+    startingResources: { food: Number(ui.studioStartingFood.value), wood: Number(ui.studioStartingWood.value) } });
 }
 
 function collectEditorMap() {
@@ -9799,6 +9810,7 @@ for (const eventType of ['input', 'change', 'click', 'pointerdown', 'pointerup']
       && !event.target.closest('#studio-grid')) return;
     if (eventType === 'click' && !event.target.closest('button, input, select, textarea, canvas')) return;
     scheduleMapStudioDraftSave();
+    mapResourceDiagnostics?.sync();
   });
 }
 window.addEventListener('pagehide', () => persistMapStudioDraft(true));
@@ -9897,6 +9909,9 @@ document.querySelector('#studio-download').addEventListener('click', downloadEdi
 ui.studioAddTrigger.addEventListener('click', beginAddingEditorTrigger);
 ui.studioRemoveTrigger.addEventListener('click', removeSelectedEditorTrigger);
 ui.studioRemoveResource.addEventListener('click', removeSelectedEditorResourceNode);
+mapResourceDiagnostics = mountMapResourceDiagnostics({
+  host: ui.mapStudio.querySelector('.resource-node-fields'), readMap: readEditorResourceDiagnosticMap,
+});
 resourceBrushControls = mountResourceBrushControls({
   host: ui.mapStudio.querySelector('.resource-node-fields'),
   readMap: () => editorDefinition ? withCurrentEditorElevation({

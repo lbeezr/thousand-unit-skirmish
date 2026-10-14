@@ -227,8 +227,11 @@ records recommended economy choices for explicit later decisions. Map Studio's
 [terrain history](map-authoring.md#terrain-edit-history--14-october-2026) now adds
 bounded gesture undo/redo, displaced-node restoration and reversible hill
 generation. The maps/map-making owner retains served-release and rendered tool
-acceptance; the next authoring slice is combined stock/access diagnostics,
-then constrained Grove/Orchard presets. This roadmap
+acceptance. [Resource diagnostics](map-authoring.md#resource-budgets-and-access-diagnostics--14-october-2026)
+now separates per-seat banks, finite node allocation/reachability and forest
+potential. Its [QA](qa-map-resource-diagnostics-2026-10-14.md) records the 32-map
+conservation checks and Medium/Large route-allocation comparison. Next: compare
+the affected pockets in paid play, then constrained Grove/Orchard presets. This roadmap
 remains the next-outcome queue; the saga is its detailed plan, not a second queue.
 
 Based on integration baseline `25488c8`, choose one bounded outcome in a stream.

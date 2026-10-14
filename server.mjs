@@ -1,5 +1,6 @@
 import { freshVoluntaryEndings, voluntaryCapability, decideVoluntaryEnding, cancelVoluntaryOffer, savedVoluntaryEndings, validSavedVoluntaryEndings, migrateVoluntaryEndingCheckpoint, VOLUNTARY_REASONS } from './src/server/voluntary-endings.mjs';
 import { createPeerOutput } from './src/server/transport/peer-output.mjs';
+import { FOREST_WOOD_PER_CELL } from './src/rules/forest-resources.mjs';
 import { findInvalidResourceVariant, isShoreFish, validResourceVariantState } from './src/shore-fishing.mjs';
 import { farmHarvestNode, farmHarvestNodeId, farmBuildingId, validFarmStock, eligibleFarmReplantWorker } from './src/farm-harvest.mjs';
 import { createWorkerPerimeterAccess } from './src/economy-perimeter-access.mjs';
@@ -282,7 +283,6 @@ const ATTACK_MOVE_MAX_CANDIDATES = 64;
 const ATTACK_MOVE_MAX_FLOW_BUILDS_PER_TICK = 1;
 const MIN_SEPARATION = 0.56;
 const GATHER_RATE = 1;
-const FOREST_WOOD_PER_CELL = 6;
 const WORKER_CARRY_CAPACITY = 10;
 const WORKER_INTERACTION_RANGE = 1.5;
 const BUILDER_INTERACTION_RANGE = 1.4;
