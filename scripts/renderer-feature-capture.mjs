@@ -18,6 +18,7 @@ export const CAPTURE_CASES = Object.freeze({
   'tree-targeting': './renderer-tree-targeting-scenario.mjs',
   'browser-resume': './renderer-browser-resume-scenario.mjs',
   'interaction-audio': './renderer-interaction-audio-scenario.mjs',
+  'tiny-farm': './renderer-tiny-farm-scenario.mjs',
 });
 export function selectedCases(selection) {
   if (selection === 'all') return Object.keys(CAPTURE_CASES);

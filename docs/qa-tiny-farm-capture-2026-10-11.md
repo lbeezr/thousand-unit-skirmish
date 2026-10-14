@@ -1,0 +1,201 @@
+# Normal Tiny Farm capture preparation — 11 October 2026
+
+[Farm rules and ownership](farm-finite-planting.md) ·
+[B1 acceptance](gameplay-foundation-plan.md#recommended-starter-progression-and-executable-backlog) ·
+[Qualified capture framework](renderer-qualification.md)
+
+Farm owner `01a0f784-c5d7-72e0-82e8-1747b4c840c1` owns this bounded capture
+slice through review, source packaging and ordinary-game verification. It starts
+from public main `819044363ad0d4270fbb99e95777c40770d7c5c1` (the Worker HUD pilot).
+Open PR639 remains audio-owned; this slice changes no audio or Farm gameplay.
+Existing default Farm lifecycle artwork and HUD treatment are the visual backing
+linked in [Farm rules](farm-finite-planting.md#manual-renewal-ownership-and-active-queue--5-october-2026);
+this tooling adds no presentation or new art.
+
+## Registered sequence and scope
+
+The [Farm adapter](../scripts/renderer-tiny-farm-scenario.mjs) uses the existing
+immutable version-1 context and shared screenshots. `tiny-farm` is an explicit
+choice in the existing [ordinary workflow](../.github/workflows/ordinary-game-capture.yml).
+Registration changes only the reviewed case choice and registry; permissions,
+sandbox, services, runner lifetime and the three-minute case deadline remain
+unchanged. No automatic trigger or arbitrary command/path input is added.
+
+Normal Create Room, visible Tiny selection, ordinary second-seat invitation,
+Ready and Launch admit the shipped fog-enabled Terraced Vale map. Neither a
+studio fixture nor `publishMap`, preview entry, stock injection or direct
+capture-command submission is used. Each seat selects its actual four opening
+Workers and uses real pointer Build controls to pay 75 wood for a Mill and
+60 wood for a Farm. Pointer Gather depletes the finite 200-food planting and
+finishes actual cargo deliveries. The existing
+[renewal step](../scripts/farm-renewal-capture-step.mjs) then uses the current
+visible Idle control, selects the real exhausted plot, clicks **Replant · 60 wood**,
+retains a fresh foundation and waits for the first automatic renewed depot credit.
+Both seats must finish with 55 opening wood remaining and conserved crop/bank/cargo.
+
+Eight shared checkpoint receipts per seat cover Mill/Farm foundations, complete
+Farm, natural exhaustion, selected Replant, renewed foundation, renewed delivery
+and strategic wheel zoom. Sidecars retain source SHA/release digest, map-file
+hash, own-seat bank/crop/typed cargo, selected identities, decoded default art and
+post-render WebGL2 readbacks. Frame observations bracket screenshots; this is
+not a claim of a same-frame authoritative snapshot. Invitation URLs, session
+tokens, raw socket envelopes and opponent banks are excluded.
+
+Independent source review identified that the initial Farm pad overlapped Tiny's
+home-food sheep. The corrected pad is `(spawn.x ± 6, spawn.z)`; the Mill remains
+at `(spawn.x, spawn.z + 5)`. A registered both-seat control executes the real
+client placement function and fixed-tick production server admission: corrected
+Mill/Farm pads must accept, while the original sheep pad must refuse without
+charging or creating a foundation. No gameplay placement rule was changed.
+
+## Evidence boundaries and next transition
+
+Preparation and CPU failure controls do not establish a rendered pass. The
+unchanged native Farm renewal fixture passed on clean preceding source
+`7524a0e13278cb9c3fb401c761827c2ec8559980` at 16:31:44 UTC on 11 October:
+both seats depleted naturally, paid renewal exactly once, rejected stale replay,
+survived a cold process restart and credited renewed Food. That authored 64×64
+authority fixture remains behavior reference, separate from normal Tiny pixels.
+
+The first exact-head Farm execution,
+[run38157309567](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157309567),
+completed failure at 16:56:40 UTC on clean `603de03624a3fcb9913d23f2cb5b37214439e795`.
+[Artifact11709575748](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38157309567/artifacts/11709575748)
+was created at 16:56:37 UTC (one-day retention), ZIP digest
+`sha256:6fc14e0d44c3d57285ad17ad7552cb872276618677f807910d4bece463f20619`.
+Sandboxed Chrome154 preflight passed; clean pack digest was
+`sha256:2150aab7428d5e24e6d8518fc491849ea636c60390c0a41be66c4cb379914fd5`
+with 1,836 files. The Farm case failed after approximately 4.3 seconds, before
+lifecycle entry, with zero frames/captures and one page still at menu, not ready
+and without a canvas. The generic scenario Error does not identify a UI cause.
+No deadline or readiness assertion is relaxed to get beyond it.
+
+A Farm-only failure sidecar now covers served identity and each menu/lobby step,
+retaining only a fixed stage, error category and safe DOM booleans/seat. Actual
+entry expressions and pointer orchestration run in CPU controls using the real
+menu and lobby modules with modeled CDP/network/layout boundaries; unavailable
+menu, absent lobby readiness and unavailable Launch refuse. These are not pixels.
+Paid foundation captures now enforce expected identity, unfinished state, zero
+Farm crop and exact debit on both observations bracketing the screenshot. A
+completion-during-capture control retains the failed partial evidence and refuses
+to qualify it as a foundation phase.
+
+The diagnostic [run38158673958](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38158673958)
+at clean `a606e40574818cfe3964f1fdff3301a03158765e` failed at 17:13:42 UTC.
+[Artifact11709403105](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38158673958/artifacts/11709403105)
+was created at 17:13:39 UTC, ZIP digest
+`sha256:fbe0cc58c5cf0479ac66b7d321e7e6a204d163b49b914035e221c46e291237a3`.
+It retains zero frames and the safe receipt `entry-host-menu` / `browser-type`:
+menu entry, no Create Room control, not ready. The unchanged clean pack and
+normal-sandbox preflight passed. CPU reproduction of the actual entry predicate
+throws TypeError while navigation has no document root and incorrectly accepts
+a partial menu without Create Room. The Farm-only correction safely waits for
+the document root and an explicitly present, enabled Create Room control. A
+regression exercises missing document, partial menu and disabled Create Room
+before the actual menu/lobby orchestration. It strengthens readiness; no deadline
+or browser policy changes. Subsequent capture follows exact-head checks/review.
+
+The reviewed navigation correction at clean
+`446af04c93a4170f3f0067170ecb8611c8e94323` advanced both pages to game entry
+in [run38159011993](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159011993),
+but failed at 17:19:48 UTC while waiting for second-seat lobby readiness.
+[Artifact11709723360](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159011993/artifacts/11709723360)
+was created at 17:19:45 UTC, ZIP digest
+`sha256:00a2244751b1a2dbc18c7829163d1f41d5d16f99746e60d83c0201d203409a9a`.
+It retains zero frames and `entry-second-seat` / `deadline`; both shared page
+boots are game/ready/canvas, while the owner receipt only describes the healthy
+host lobby. This local wait failure does not establish why the guest was absent
+or disabled, nor a three-minute case deadline failure. Canceled asset requests
+remain qualification failures, including audio paths; no audio change or separate
+audio capture is made here. The owner failure receipt now observes both opened
+pages, retaining only safe booleans, fixed entry values and seat0/1/null. A real
+entry control proves healthy host and broken guest remain distinguishable without
+retaining invite/session data. No guest-readiness correction is guessed.
+
+The two-page diagnostic at clean
+`167361413571a77c4e2216685bdd0d3600c1718e`, independently approved with
+52 Farm and 29 shared controls (owner focused67/67),
+[run38159468158](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159468158),
+failed at 17:26:44 UTC at `entry-second-seat` / `deadline`.
+[Artifact11709198433](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38159468158/artifacts/11709198433)
+was created at 17:26:41 UTC, ZIP digest
+`sha256:a14e55b2186995a5f1263c0dcb0af4a28c6f7410841015c3d225279dcdd8c42c`.
+The downloaded ZIP hash matches. It retains zero frames, a healthy host lobby
+(Tiny/Skirmish selected, ready enabled, owned seat0, observer installed), and a
+null guest observation because guest CDP evaluation failed. Shared qualification
+likewise could not retain the guest boot evidence; canceled requests remain
+failures. The specific guest cause remains unestablished. Further UI changes or
+a rendered Farm pass cannot be justified by this receipt. Preserve all four
+run artifacts and worktrees; do not repeat this unchanged failed capture.
+
+The existing supported Actions capability receipt is
+[run38153340669](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38153340669),
+artifact11706704507 created at 15:57:42 UTC: Linux uid1001, Chrome154.0.8037.97,
+normal sandbox, ready WebGL2 readbacks and game boot on clean `b4ad36cf`. It is
+older audio-owned evidence and contains zero gameplay frames; no new audio
+execution or Farm acceptance follows from it. The local Chromium helper remains
+the recorded `nobody`-owned sandbox blocker; this slice does not relaunch that
+unchanged browser or modify its provisioning.
+
+The authorized follow-up refreshed public main
+`3886719fae1f1a388ca4a8d3b94370c971a3307d`, bringing its already-owned audio/HUD
+changes into the capture branch without changing their implementation. Existing
+[version1 context](../scripts/renderer-capture-context.mjs),
+[page acquisition](../scripts/renderer-qualification.mjs) and
+[CDP fixture](../scripts/fortified-browser-fixture.mjs) explicitly support one
+primary and four additional isolated owned pages. This is not an established
+framework API gap. Prior receipts do not distinguish a guest runtime stall,
+channel closure or boot/readiness refusal.
+
+Farm-only diagnostics now divide guest admission into URL, acquisition, blank
+heartbeat, observer installation, navigation, readiness and identity stages.
+On failure, parallel read-only target/frame queries retain only booleans or fixed
+fault kinds, and DOM snapshot failures retain their safe fault separately.
+Existing CDP event subscriptions count context/load/crash/detach events up to100;
+no event payloads, frame/target IDs, URLs, titles, DOM text or exception text are
+retained. Controls distinguish missing methods from runtime timeout/channel
+closure and prove the diagnostic does not turn absent evidence into readiness.
+No new API authority, browser flags or deadline increase is required. One
+targeted capture follows exact-head current-main integration checks and
+independent review; no unchanged failed source is repeated.
+
+At reviewed clean `eb82eaec1d5f1e2394e5845212852cd655be0a15`,
+[run38160499137](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38160499137)
+failed at 17:41:44 UTC with zero frames.
+[Artifact11710051737](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38160499137/artifacts/11710051737),
+created17:41:40 UTC, has verified ZIP digest
+`sha256:59b93592245a898b5d918c1f9b24d02fd64f8b967a684074fc0a75271ed55049`.
+Clean pack: 1,845 files,
+`sha256:32bc41bc8492e3fce63368132a6d695fecba28e9b6e04b53f2071d7e68506b0b`.
+Owner69 focused and199 current-main integration controls passed, as did required
+checks and one unchanged native Farm recovery invocation. Independent54 Farm
+and30 shared controls passed. Guest acquisition, blank heartbeat, observer and
+navigation succeeded; the failure at `entry-second-seat-ready` is specifically
+`Runtime.evaluate` timeout. Both target/frame queries responded, both DOM
+snapshots became available, and both lobbies had Tiny/Skirmish, owned seats0/1
+and Ready enabled. This establishes a transient command failure, not an
+unsupported second-page API. It does not establish why the runtime stalled or
+how soon it recovered. Two canceled room-API Fetches remain qualification faults.
+
+The demonstrated capture-control correction distinguishes the fixture's
+15-second command timeout from its existing20-second guest readiness deadline.
+Only that exact transient command fault may be polled again, with a hard
+unchanged20-second overall window and the actual present/enabled guest control
+required. Late readiness, never-ready state, closure, missing method and browser
+TypeError still refuse. A successful entry receipt retains bounded elapsed time
+and transient-timeout count. This changes Farm capture tooling only; no
+gameplay, audio, HUD, browser flag or deadline changes. Recapture requires
+exact-head controls and independent review of that bounded correction.
+
+The Farm owner retains ordinary rendered verification. The draft PR preserves
+the reviewed source, focused checks, pack identity and failed run/artifact links.
+Further lifecycle corrections still require the diagnostic receipt, and eventual
+PR merge requires another current-main refresh and exact integration checks.
+
+Even a successful automated capture leaves appearance inspection, touch input,
+fresh-player Farm/Mill explanation and cold **process** recovery in the same
+rendered scenario open. Version-1 context exposes no server restart hook; no
+browser reload is substituted for process recovery. The native exact-source
+fixture can establish authority recovery separately. Source, clean pack,
+containing served/deployed release and ordinary rendered acceptance remain
+distinct receipts. No completed B1 or deployment claim is made here.

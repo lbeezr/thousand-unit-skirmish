@@ -205,6 +205,15 @@ settle contested balance or change the provisional planting values.
 
 ## Manual renewal ownership and active queue — 5 October 2026
 
+The [11 October normal Tiny capture preparation](qa-tiny-farm-capture-2026-10-11.md)
+adds the Farm-owned `tiny-farm` case to the existing qualified ordinary workflow.
+It covers both seats through pointer paid Mill/Farm build, Gather, natural
+depletion, explicit Replant and renewed depot credit with source-bound receipts.
+Preparation and native recovery are separate from actual rendered acceptance;
+appearance inspection, touch, fresh-player explanation and rendered cold process
+recovery remain open. The exact-head review, checks, clean pack and authorized
+capture result belong in the draft delivery PR.
+
 Farm renewal owner: delegated task `01a0f784-c5d7-72e0-82e8-1747b4c840c1`,
 retaining default integration, review, packaging, containing staging identity and
 ordinary-game acceptance. All unfinished rows below remain active; a blocked row
