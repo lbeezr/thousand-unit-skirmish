@@ -6,7 +6,7 @@ import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { QUEUE_CAPTURE_MAP, readQueueObservation, validateQueueObservation,
-  validateQueueRefund, dispatchQueueEnter, installQueueKeyObserver } from './renderer-qualification-building-queue.mjs';
+  validateQueueRefund, dispatchQueueEnter, installQueueKeyObserver, readQueueSetupFailure } from './renderer-qualification-building-queue.mjs';
 import { mapSizeIdentity } from '../src/map-size-policy.mjs';
 import { UNIT_DEFINITIONS } from '../src/gameplay-definitions.mjs';
 
@@ -100,6 +100,22 @@ test('queue readout reduces only known HUD and disclosed production facts', () =
   const value = vm.runInContext(`(${readQueueObservation.toString()})(7)`, context);
   validateQueueObservation(JSON.parse(JSON.stringify(value)), ['spearman']);
   assert.equal(value.focus, '0'); assert.doesNotMatch(JSON.stringify(value), /privateSession|must-not-retain/);
+});
+
+test('setup diagnostics retain bounded owned state without messages, URLs or unrelated controls', () => {
+  const element = { closest: () => null, getClientRects: () => [{}], getAttribute: () => 'false',
+    disabled: false, dataset: { activePanel: 'economy' }, textContent: 'private-unrelated-content' };
+  const context = vm.createContext({ window: { __rtsEnvironmentStateSnapshot: { mapId: QUEUE_CAPTURE_MAP.id,
+    team: 0, bank: { food: 1000, wood: 825, privateValue: 'private-unrelated-content' },
+    workers: [{ team: 0 }, { team: 1 }], buildings: [{ id: 7, team: 0, type: 'barracks', complete: false,
+      progress: .5, privateValue: 'private-unrelated-content' }, { id: 8, team: 1, type: 'house' }],
+    messages: ['private-unrelated-content'] }, __rtsBuildingPlacementSnapshot: { active: true, pending: false,
+      type: 'barracks', valid: true, visible: true, privateValue: 'private-unrelated-content' } },
+    document: { documentElement: { dataset: { entry: 'game' } }, querySelector: () => element } });
+  const value = vm.runInContext(`(${readQueueSetupFailure.toString()})()`, context);
+  assert.equal(value.workerCount, 1); assert.equal(value.buildings.length, 1); assert.equal(value.buildings[0].id, 7);
+  assert.equal(value.controls['#select-workers'].visible, true); assert.equal(value.drawer, 'economy');
+  assert.doesNotMatch(JSON.stringify(value), /private-unrelated-content|privateValue|messages/);
 });
 
 test('diagnostic production fields remain opt-in and never expose enemy queue data', () => {

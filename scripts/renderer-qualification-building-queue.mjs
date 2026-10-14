@@ -47,6 +47,25 @@ export function readQueueObservation(buildingId) {
     })), focus: document.activeElement?.dataset.queueIndex ?? null };
 }
 
+export function readQueueSetupFailure() {
+  const state = window.__rtsEnvironmentStateSnapshot, placement = window.__rtsBuildingPlacementSnapshot;
+  const controls = {};
+  for (const selector of ['#command-deck', '#dock-tab-economy', '#select-workers', '#build-barracks']) {
+    const element = document.querySelector(selector);
+    controls[selector] = element ? { visible: !element.closest('[hidden]') && element.getClientRects().length > 0,
+      disabled: element.disabled === true, ariaDisabled: element.getAttribute('aria-disabled') === 'true' } : null;
+  }
+  return { mapId: typeof state?.mapId === 'string' && /^[a-z0-9-]{1,80}$/.test(state.mapId) ? state.mapId : null,
+    team: [0, 1].includes(state?.team) ? state.team : null, bank: state?.bank ? { food: state.bank.food, wood: state.bank.wood } : null,
+    buildings: (state?.buildings || []).filter(row => row.team === state.team).slice(0, 32)
+      .map(row => ({ id: row.id, type: row.type, complete: row.complete, progress: row.progress })),
+    workerCount: (state?.workers || []).filter(row => row.team === state.team).length,
+    entry: document.documentElement.dataset.entry === 'game' ? 'game' : 'other', controls,
+    drawer: document.querySelector('#command-deck')?.dataset.activePanel ?? null,
+    placement: placement ? { active: placement.active, pending: placement.pending, type: placement.type,
+      valid: placement.valid, visible: placement.visible } : null };
+}
+
 export function validateQueueObservation(observation, queue) {
   assert.equal(observation.mapId, QUEUE_CAPTURE_MAP.id); assert.equal(observation.team, 0);
   assert.equal(observation.building?.team, observation.team); assert.equal(observation.building.type, 'barracks');
@@ -95,6 +114,7 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     appearanceReview: 'pending', ordinaryTinyAcceptance: 'unverified' };
   const file = path.join(directory, 'building-queue.json');
   const persist = () => writeFile(file, JSON.stringify(report, null, 2) + '\n');
+  const stage = value => { report.phase = value; onStage(value); };
   const point = async position => {
     assert.ok(position && Number.isFinite(position.x) && Number.isFinite(position.y), 'visible input point required');
     for (const type of ['mousePressed', 'mouseReleased'])
@@ -111,7 +131,7 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     report.transitions.push({ input, ...validateQueueRefund(before, after, index) }); await persist();
   }
   async function capture(name, queue) {
-    onStage(name);
+    stage(name);
     const before = await observe(); validateQueueObservation(before, queue);
     const frame = await page.cdp.evaluate('window.__rtsQualification.request()');
     assert.match(frame.version, /^WebGL 2\.0/); assert.equal(frame.contextLost, false); assert.equal(frame.glError, 0);
@@ -133,11 +153,13 @@ export async function captureBuildingQueue(page, directory, { source, release, o
       pngSha256: hash(png), canvasSha256: hash(canvas) }); await persist();
   }
   try {
-    onStage('queue-map'); await persist();
+    stage('queue-map'); await persist();
     assert.equal(await page.cdp.evaluate(`window.__rtsEnvironmentCaptureCommand(${JSON.stringify({ type: 'publishMap', map: QUEUE_CAPTURE_MAP })})`), true);
     await page.wait(`${snapshot}?.mapId===${JSON.stringify(QUEUE_CAPTURE_MAP.id)}&&${snapshot}.team===0`, 'applied owned queue fixture');
+    stage('queue-build-controls');
     if (await page.cdp.evaluate('document.querySelector("#command-deck").hidden')) await click('#dock-toggle');
     await click('#dock-tab-economy'); await click('#select-workers'); await click('#build-barracks');
+    stage('queue-placement-preview');
     const rect = await page.cdp.evaluate('(()=>{const r=document.querySelector("#viewport canvas").getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()');
     let pointer, ghost;
     for (const [x, y] of [[.5,.5],[.55,.45],[.45,.55],[.6,.4],[.4,.6]]) {
@@ -147,11 +169,14 @@ export async function captureBuildingQueue(page, directory, { source, release, o
       if (ghost.visible && ghost.valid) break;
     }
     assert.equal(ghost.visible, true); assert.equal(ghost.valid, true); await point(pointer);
+    stage('queue-paid-completion');
     const building = await page.wait(`${snapshot}?.buildings.find(b=>b.type==='barracks'&&b.team===0&&b.complete)`, 'paid Barracks completion', 60000);
     buildingId = building.id;
     assert.equal(await page.cdp.evaluate(`${snapshot}.bank.wood`), QUEUE_CAPTURE_MAP.startingResources.wood - 175);
+    stage('queue-building-selection');
     if (!await page.cdp.evaluate('document.querySelector("#command-deck").hidden')) await click('#dock-toggle');
     await point(await page.wait(`(${interactionTargetPoint.toString()})('building',${buildingId})`, 'ordinary Barracks picking'));
+    stage('queue-paid-products');
     const queue = ['spearman', 'infantry', 'spearman'];
     for (const kind of queue) await click(`[data-context-products] [data-product="${kind}"]`);
     await waitQueue(queue); await capture('building-queue-mixed', queue);
@@ -161,7 +186,7 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     // Readback/PNG transfer can consume most of the first 12-second timer on
     // the cloud renderer. Let that paid unit finish naturally, then buy one
     // waiting Spearman behind its fresh successor. No clock or stock mutation.
-    onStage('building-queue-fresh-active-head');
+    stage('building-queue-fresh-active-head');
     await waitQueue(['spearman']);
     const paidBefore = await observe();
     await click('[data-context-products] [data-product="spearman"]'); await waitQueue(['spearman', 'spearman']);
@@ -175,7 +200,7 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     await capture('building-queue-active-cancelled', ['spearman']);
     await page.wait(`${snapshot}.buildings.find(b=>b.id===${buildingId}).trainingRemaining<${UNIT_DEFINITIONS.spearman.trainSeconds}`, 'next paid head timer advances');
     before = await observe(); assert.equal(before.focus, '0', 'queue refresh preserves keyboard focus');
-    onStage('building-queue-enter');
+    stage('building-queue-enter');
     await page.cdp.evaluate(`(${installQueueKeyObserver.toString()})()`);
     await dispatchQueueEnter(page);
     report.keyboard = await page.cdp.evaluate('window.__rtsQueueKeyReceipt'); await persist();
@@ -184,5 +209,17 @@ export async function captureBuildingQueue(page, directory, { source, release, o
     await waitQueue([]); await retainRefund('Enter', before, 0);
     await capture('building-queue-empty', []); report.status = 'captured-needs-review';
     return report;
+  } catch (error) {
+    try {
+      report.failure = await page.cdp.evaluate(`(${readQueueSetupFailure.toString()})()`);
+      if (report.failure.entry === 'game' && report.failure.mapId === QUEUE_CAPTURE_MAP.id) {
+        const png = Buffer.from((await page.cdp.call('Page.captureScreenshot', { format: 'png', fromSurface: true })).data, 'base64');
+        assert.ok(png.length > 10000 && png.length < 10000000
+          && png.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex')));
+        await writeFile(path.join(directory, 'building-queue-failure.png'), png);
+        report.failureImage = { file: 'building-queue-failure.png', sha256: hash(png), scope: 'diagnostic-only' };
+      }
+    } catch { report.failureObservation = 'unavailable'; }
+    throw error;
   } finally { await persist(); }
 }
