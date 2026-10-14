@@ -29,12 +29,15 @@ for (const team of [0, 1]) for (const scenario of ['initial-reservation', 'late-
     await constructionAccessJourney(team, scenario, { cold });
   });
 }
-for (const team of [0, 1]) for (const scenario of ['stop', 'holdPosition', 'queuedMove', 'cancelConstruction']) {
+for (const team of [0, 1]) for (const scenario of ['stop', 'holdPosition', 'move', 'cancelConstruction']) {
   test(`seat ${team}: ${scenario} supersedes dynamically blocked paid work without stale retry`, async () => {
     await constructionAccessJourney(team, scenario, { cold: true });
   });
 }
 for (const team of [0, 1]) {
+  test(`seat ${team}: queued travel waits through blocked construction, cold recovery and released access`, async () => {
+    await constructionAccessJourney(team, 'queuedJob', { cold: true });
+  });
   test(`seat ${team}: real repair retains its paid target through occupied access and cold release`, async () => {
     await constructionRepairAccessJourney(team);
   });
@@ -178,10 +181,10 @@ for (const team of [0, 1]) for (const recoverAt of ['none', 'pending', 'active',
   });
 }
 
-for (const team of [0, 1]) for (const interruption of ['stop', 'cancelConstruction', 'queuedMove']) {
+for (const team of [0, 1]) for (const interruption of ['stop', 'cancelConstruction', 'move']) {
   test(`seat ${team}: ${interruption} supersedes pending construction without stale work or a second payment`, async () => {
     await constructionJourney(team, async ({ r, id, siteId, command, step, paidWood }) => {
-      if (interruption === 'queuedMove') command('move', { x: -3.5, z: -3.5, queue: true });
+      if (interruption === 'move') command('move', { x: -3.5, z: -3.5 });
       else command(interruption, { buildingId: siteId });
       r.drain();
       assert.equal(r.units[id].buildingTargetId, null);

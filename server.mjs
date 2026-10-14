@@ -5277,7 +5277,7 @@ function finishFarmReplantHarvest(unit, building) {
   if (intent?.kind !== 'construction' || intent.resumeFarmHarvest !== true
     || intent.siteIds[0] !== building.id || building.type !== 'farm') return;
   clearWorkIntent(unit);
-  if (building.team === unit.team && building.hp > 0 && building.complete && building.harvestStock > 0) {
+  if (!unit.queuedWaypoints.length && building.team === unit.team && building.hp > 0 && building.complete && building.harvestStock > 0) {
     assignGather({ team: unit.team, sendJson() {} }, { ids: [unit.id],
       unitGenerations: [unit.generation], nodeId: farmHarvestNodeId(building.id) });
   }
@@ -5465,7 +5465,6 @@ function destroyBuilding(building) {
     unit.attackBuildingTargetId = -1;
     unit.path = [];
     unit.pathIndex = 0;
-    unit.queuedWaypoints.length = 0;
     unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
   }
   navigationRevision++;
@@ -6359,6 +6358,11 @@ function finishActiveConstructionParking(unit, building, getEndpoints, nextStatu
   const activeRoute = unit.movePlanningPending || unit.pathIndex < unit.path.length;
   if (parkingAt(unit) === 'park' && !activeRoute) {
     unit.buildingTargetId = null;
+    // Travel accepted behind this job starts from its settled work pose.
+    if (unit.queuedWaypoints?.length) {
+      unit.moveGoalCell = nearestOpenCell(worldToCell(unit.x, unit.z));
+      unit.moveGoalPoint = null;
+    }
     constructionParkingRetries.delete(unit);
     return true;
   }
@@ -6487,7 +6491,7 @@ function updateWallBuildOrders(getEndpoints = constructionEndpointSnapshotGetter
       const point = cellToWorld(access[0]);
       assignFormationMove({ team: unit.team, sendJson() {} }, {
         type: 'move', ids: [unit.id], unitGenerations: [unit.generation], x: point.x, z: point.z,
-      }, building.id, 'WALL BUILD SEQUENCE', false);
+      }, building.id, 'WALL BUILD SEQUENCE', false, true);
       if (order) order.revision = unit.orderRevision;
       continue;
     }
@@ -6509,7 +6513,7 @@ function updateWallBuildOrders(getEndpoints = constructionEndpointSnapshotGetter
     const point = cellToWorld(approach.goal);
     assignFormationMove({ team: unit.team, sendJson() {} }, {
       type: 'move', ids: [unit.id], unitGenerations: [unit.generation], x: point.x, z: point.z,
-    }, building.id, 'WALL BUILD SEQUENCE');
+    }, building.id, 'WALL BUILD SEQUENCE', true, true);
     if (order) order.revision = unit.orderRevision;
   }
 }
@@ -6787,7 +6791,7 @@ function nearestBuilderAccessCell(unit, componentId, accessCells, reservedCells,
   return nearestOpen >= 0 ? nearestOpen : nearestShared;
 }
 
-function assignFormationMove(player, command, buildingTargetId = null, orderLabel = null, resetConstructionAttempts = true) {
+function assignFormationMove(player, command, buildingTargetId = null, orderLabel = null, resetConstructionAttempts = true, preserveQueuedWaypoints = false) {
   if (player.team === null || !Array.isArray(command.ids)) {
     sendOrderNotice(player, command, 'MOVE REJECTED · NO VALID UNITS');
     return;
@@ -6831,7 +6835,10 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
   }
   const queueWaypoint = command.queue === true && buildingTargetId === null;
   const precisePoint = command.type === 'move' && buildingTargetId === null && selectedUnits.length === 1;
+  const finiteWorkerJob = unit => unit.kind === 'worker'
+    && (unit.buildingTargetId !== null || activeWorkIntent(unit)?.kind === 'construction');
   const canQueueBehindCurrentRoute = (unit) => unit.queuedWaypoints.length > 0
+    || finiteWorkerJob(unit)
     || (unit.gatherNodeId === null && unit.gatherForestCell < 0 && unit.buildingTargetId === null
       && (unit.movePlanningPending || unit.pathIndex < unit.path.length
         || unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0 || unit.attackMove));
@@ -6882,8 +6889,10 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       const retainFollowCatchUp = (followTravelMovementActive(unit) || workerFollowTravelMovementActive(unit))
         && (unit.movePlanningPending || unit.pathIndex < unit.path.length)
         && Number.isInteger(unit.moveGoalCell) && unit.moveGoalCell >= 0 && unit.moveGoalCell < CELL_COUNT;
-      clearWorkIntent(unit);
-      unit.wallBuildOrder = null;
+      if (!finiteWorkerJob(unit)) {
+        clearWorkIntent(unit);
+        unit.wallBuildOrder = null;
+      }
       unit.persistentOrder = null;
       // The accepted catch-up becomes ordinary travel without changing its job,
       // route or revision. Ordinary point validity is meaningful after Follow clears.
@@ -6899,7 +6908,7 @@ function assignFormationMove(player, command, buildingTargetId = null, orderLabe
       dirty = true;
       return;
     }
-    if (!queueWaypoint || unit.queuedWaypoints.length > 0) unit.queuedWaypoints.length = 0;
+    if (!preserveQueuedWaypoints && (!queueWaypoint || unit.queuedWaypoints.length > 0)) unit.queuedWaypoints.length = 0;
     unit.moveGoalCell = destination;
     if (buildingTargetId === null || command.type === 'repairBuilding') clearWorkIntent(unit);
     else clearGatherWorkIntent(unit);
@@ -7404,6 +7413,7 @@ function advanceQueuedWaypoints() {
       || unit.attackTargetId >= 0 || unit.attackBuildingTargetId >= 0
       || unit.gatherPhase === 'to-base'
       || unit.gatherNodeId !== null || unit.gatherForestCell >= 0 || unit.buildingTargetId !== null
+      || (unit.workIntent?.kind === 'construction' && activeWorkIntent(unit))
       || unit.pathIndex < unit.path.length
       || (unit.attackMoveResumePath !== null
         && unit.attackMoveResumePathIndex < unit.attackMoveResumePath.length)) continue;

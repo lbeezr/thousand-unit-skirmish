@@ -84,13 +84,19 @@ export async function constructionNextLegJourney(team, { cold = 'none', interrup
       order(id, interruption === 'queuedMove' ? 'move' : interruption,
         interruption === 'queuedMove' ? { x: 8.5, z: 8.5, queue: true } : {});
       const revision = worker().orderRevision;
-      assert.equal(worker().buildingTargetId, null); assert.equal(worker().workIntent, null);
+      if (interruption === 'queuedMove') {
+        assert.equal(worker().buildingTargetId, siteId); assert.deepEqual(worker().workIntent, remembered);
+        assert.equal(worker().queuedWaypoints.length, 1, 'queued travel waits for safe completion egress');
+      } else {
+        assert.equal(worker().buildingTargetId, null); assert.equal(worker().workIntent, null);
+      }
       const checkpoint = r.checkpoint(); assert.ok(r.validate(structuredClone(checkpoint)));
       await fixture.dispose();
       fixture = await createPathingReplayFixture(map, { traceLandSteps: true }); r = fixture.replay;
       assert.ok(r.validate(structuredClone(checkpoint))); r.restore(structuredClone(checkpoint));
       for (let i = 0; i < 180; i++) step();
-      assert.equal(worker().orderRevision, revision, 'superseded parking retry never replaces the new order');
+      if (interruption === 'queuedMove') assert.ok(worker().orderRevision > revision, 'completion starts queued travel');
+      else assert.equal(worker().orderRevision, revision, 'superseded parking retry never replaces the new order');
       assert.equal(worker().buildingTargetId, null); assert.equal(worker().workIntent, null);
       assert.ok(site().complete, 'completed paid footprint survives replacement');
       if (interruption === 'queuedMove') assert.deepEqual({ x: worker().x, z: worker().z }, { x: 8.5, z: 8.5 });

@@ -129,8 +129,12 @@ Legacy wallBuildOrder stays transient execution/compatibility, not durable inten
 - Economy owns accepted external Move/AttackMove, Stop/Hold, Attack,
   Patrol/Follow, Gather, Return Cargo and repair cancellation, per actually accepted
   living owned unit. Rejected/full-queue/foreign/stale-generation orders preserve
-  the current intent. Accepted queued movement cancels work intent too, preserving
-  the existing queue-versus-active-work behavior.
+  the current intent. Accepted queued movement preserves finite construction and
+  repair work and waits for its completion; it still cancels gather work intent.
+  The remaining paid construction sequence precedes the route. Automatic
+  construction approaches preserve the queued route; ordinary replacement orders
+  clear both. Site removal retains later travel, and Farm renewal with queued
+  travel omits its automatic harvest continuation.
 - Construction owns accepted Build/Resume/Wall/Gate installation: replace the
   old intent, or perform the explicit adjoining-Gate priority extension above.
   Install the resulting intent before starting its internal builder route.

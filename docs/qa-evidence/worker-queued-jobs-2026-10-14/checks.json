@@ -1,0 +1,63 @@
+{
+  "sourceRevision": "a1264e30f95f3be02edd9eaae8fa2e61ba2909ea",
+  "sourceDirty": false,
+  "serverSha256": "fd630008087101f6104347a2beecc95def5ee56cdb7c4865f75c3442fea5293a",
+  "focused": {
+    "status": "passed",
+    "tests": 438,
+    "command": "node --test scripts/worker-queued-job.test.mjs scripts/construction-work-intent.test.mjs scripts/construction-next-leg-journeys.test.mjs scripts/queued-cargo-return.test.mjs scripts/stationary-command.test.mjs scripts/persistent-command.test.mjs scripts/farm-replant.test.mjs scripts/palisade-runtime.test.mjs"
+  },
+  "staticChecks": [
+    "architecture:check",
+    "check:types",
+    "docs:check"
+  ],
+  "cleanPack": {
+    "sourceRevision": "a1264e30f95f3be02edd9eaae8fa2e61ba2909ea",
+    "sourceDirty": false,
+    "digest": "sha256:d802937a7d9671c02a5644f38decf44000f7f8257f0e35a38317d258ee95ade2",
+    "fileCount": 1846,
+    "includesServer": true
+  },
+  "fastLane": {
+    "status": "failed",
+    "passed": 1139,
+    "failed": 1,
+    "unrun": 214,
+    "selected": 1354,
+    "scope": "started on candidate working tree, not final clean commit",
+    "failure": "Cloud install fixture compares a logical /var temporary root with its physical /private/var path on macOS"
+  },
+  "publication": {
+    "status": "approval-pending",
+    "repository": "lbeezr/thousand-unit-skirmish",
+    "reason": "Automatic approval review denied private source push and connector tree publication"
+  },
+  "independentReview": {
+    "status": "pending",
+    "resumeCondition": "User authorizes a review subagent or supplies review"
+  },
+  "deployed": {
+    "status": "not-deployed",
+    "observedStagingSource": "dcde6da3150151a3c4b7398fa369345611096b59"
+  },
+  "ordinaryGame": {
+    "status": "not-run"
+  },
+  "broaderSelection": {
+    "tests": 574,
+    "passed": 554,
+    "failed": 20,
+    "scope": "earlier broader selection includes the focused checks and unchanged military stance contracts",
+    "failureClasses": [
+      "19 Team 0 actors arrive setup failures",
+      "1 schema25 pre-migration Gather cargo failure"
+    ]
+  },
+  "packedHttp": {
+    "status": "passed",
+    "sourceRevision": "a1264e30f95f3be02edd9eaae8fa2e61ba2909ea",
+    "command": "node scripts/railway-release-scenario.mjs",
+    "scope": "disposable local packed HTTP, authentication, WebSocket, imports and assets; no hosted or render claim"
+  }
+}
