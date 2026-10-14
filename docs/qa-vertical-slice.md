@@ -93,6 +93,14 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Map Studio terrain history — 14 October 2026
+
+[Terrain history evidence](qa-map-studio-terrain-history-2026-10-14.md) records
+atomic ground/elevation/obstacle undo/redo, displaced resource restoration,
+reversible hill generation, canceled/foreign pointer handling and portable
+draft recovery. The map-making owner retains identified served-release and
+rendered editor acceptance; CPU/tool checks do not establish that observation.
+
 ### Fortified 2,000-unit construction clearance — 3 October 2026
 
 The reported rendered ceiling is reproducible with native clients on `7f9c8fd`:

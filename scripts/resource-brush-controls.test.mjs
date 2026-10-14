@@ -114,7 +114,8 @@ function fixture(t) {
     MAX_MAP_RESOURCE_NODES: 128, editorTriggerCreationPending: false, getSelectedEditorTrigger: () => null,
     drawEditorGrid: () => { w.redraws++; w.resourceBrushControls?.sync(); },
     scheduleMapStudioDraftSave: () => { w.saves++; },
-    editorTool: 'pan', editorCellFromPointer: () => ({ column: 23, row: 21 }),
+    editorTool: 'pan', editorDrag: null, editorPanDrag: null,
+    editorCellFromPointer: () => ({ column: 23, row: 21 }),
   });
   w.ui.studioTerrainBase.value = 'meadow'; w.ui.studioResourceStock.value = 13.5; w.ui.studioId.value = 'brush-ui';
   w.ui.mapStudio.open = true;
@@ -293,7 +294,7 @@ test('one-shot anchor picking precedes the pan/paint branch and generates the sa
   const event = new f.w.MouseEvent('pointerdown', { button: 0, bubbles: true, cancelable: true });
   f.w.ui.studioGrid.dispatchEvent(event); assert.equal(event.defaultPrevented, true);
   assert.equal(f.w.resourceBrushControls.picking, false); assert.deepEqual(f.markers(), expected);
-  assert.equal(f.w.editorPanDrag, undefined); assert.equal(f.w.editorResourceNodes.length, 1);
+  assert.equal(f.w.editorPanDrag, null); assert.equal(f.w.editorResourceNodes.length, 1);
 });
 
 test('Enter previews; Escape and dialog cancel consume only pending preview/pick and keep history', t => {

@@ -297,6 +297,7 @@ try {
     'src/authoring/scenario-authoring.mjs', 'src/authoring/map-resize.mjs',
     'src/authoring/map-studio-form-state.mjs', 'src/authoring/map-studio-draft-store.mjs',
     'src/authoring/map-studio-terrain-packing.mjs',
+    'src/authoring/map-studio-terrain-history.mjs',
     'src/authoring/map-studio/draft/v1/contract.mjs']) {
     const response = await fetch(`${base}/${filename}`, { headers: { authorization } });
     assert.equal(response.status, 200, filename);
@@ -308,6 +309,7 @@ try {
   }
   for (const filename of ['src/authoring/map-studio-form-state.mjs/extra',
     'src/authoring/map-studio-terrain-packing.mjs/extra',
+    'src/authoring/map-studio-terrain-history.mjs/extra',
     'src/authoring/map-studio-draft-store.mjs/extra',
     'src/authoring/map-studio/draft/v1/contract.mjs/extra',
     'src/authoring/map-studio/draft/v1/unknown.mjs',
