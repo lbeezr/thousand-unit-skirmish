@@ -265,6 +265,48 @@ exactly; all compatibility paths and server-private denials remain. Architecture
 authoring retains source and identified-release rendered acceptance at the existing
 cloud capability gap; a pure/packed check does not establish ordinary-game use.
 
+### Terrain edit history — 14 October 2026
+
+**Undo Terrain / Redo Terrain** sit above the grid and cover ground materials,
+ground levels (including Smooth), obstacle rectangles/round strokes, Erase and
+mirrored rolling-ground generation. Each completed drag or generation is one
+step. An obstacle edit that removes resource nodes restores their exact IDs,
+stock, wildlife fields and selected node when undone. Hill generation restores
+the prior optional seed as well as heights. Scenario and resource-patch history
+retain their separate controls.
+
+Pointer-down and movement preview cells without changing the draft. Only the
+pointer that started the gesture can finish it; cancel or lost capture discards
+the preview. Undo/Redo are unavailable during a gesture. A no-op keeps redo;
+a new changed gesture replaces the abandoned redo branch. Loading, recovering,
+importing or resizing starts fresh history. Independent resource/terrain/seed
+changes invalidate stale terrain history before it can overwrite those edits;
+resource selection alone does not invalidate it.
+
+[`authoring/map-studio-terrain-history.mjs`](../src/authoring/map-studio-terrain-history.mjs)
+stores typed cell deltas, with at most 64 steps and an 8 MiB delta/node-text
+budget, plus one current-grid snapshot for stale-edit detection. Oldest steps
+are evicted first. This is a shipped editor module with exact HTTP admission,
+no imports and no authoritative consumer. Undo updates the ordinary arrays and
+resource list, redraws the grid and schedules the existing local draft save;
+draft/export/publication serialize the resulting map through existing packers
+and validators. No history format or runtime map rule is added.
+
+The selected treatment reuses the existing Map Studio grid and
+`.studio-trigger-actions` button design from `index.html` and `style.css`.
+The bounded interaction storyboard is: unchanged grid → stroke preview with
+disabled history → committed cells with Undo enabled → original cells/nodes
+with Redo enabled → restored committed cells. This supports reversible
+exploration of the [existing landscape treatment](#organic-landscape-composition)
+without new terrain art or composition. [Owner evidence](qa-map-studio-terrain-history-2026-10-14.md)
+separates CPU gesture/export checks from remaining rendered usability.
+
+The map-making owner (chat `01a13a87-26dd-70b1-9410-ffa2f8e6932e`) retains
+integration and identified served-release verification. Next ready authoring
+slices are combined stock/access diagnostics before publication, then shared
+Grove/Orchard presets with constrained previews. Higher-level contour tools
+remain later work; no larger map or economy admission follows from history.
+
 ### Portable-map validator boundary
 
 The source slice based on main `fec90d44` places the existing 298-line
@@ -470,7 +512,7 @@ techniques; they do not certify this implementation or imply copying their code.
 5. **Expose landscape tools in Map Studio.** Add round falloff, connected grove,
    path and contour brushes with previews, undo and JSON round-trip checks. Use
    the same compiler for authored shapes and shipped maps. Round blocker strokes
-   are implemented; higher-level grove/contour brushes and terrain undo remain.
+   and terrain history are implemented; higher-level grove/contour brushes remain.
 6. **Polish materials after silhouette approval.** Use quiet texture families,
    habitat transitions and sparse decals. Existing stochastic ground sampling
    helps repetition; extra texture resolution cannot correct a square coastline.
@@ -485,8 +527,9 @@ retains the previous drag-box behavior. Marker and ground/elevation tools keep
 their separate placement rules. A blocker stroke removes resource nodes only
 from painted cells, including when the curve encloses an unpainted corner.
 Download and Save & Play use the existing compressed rectangle schema. The
-current Undo Scenario Edit still covers regions/events, not terrain strokes;
-terrain undo and more expressive grove/contour brushes remain follow-ups.
+Undo Scenario Edit covers regions/events; Undo Terrain covers the complete
+terrain gesture, including displaced resources. More expressive grove/contour
+brushes remain follow-ups.
 
 Review each slice in the actual renderer at ordinary and strategic zoom, with
 units, buildings, selection and fog. Require recognizable landscape masses,
@@ -859,9 +902,9 @@ to replace the draft's heights with deterministic hills. It preserves mirrored
 flat pads around spawns, Town Centers, resource nodes, objectives and water.
 Generation uses levels 0/1 so it introduces no impassable cliffs. Save/download
 serializes the resulting elevation patches and seed; no randomness runs during
-the match. Elevation edits use local draft recovery, but the scenario Undo button
-still covers only named regions and events. Download first to retain an earlier
-height layout.
+the match. Elevation edits use local draft recovery and **Undo Terrain / Redo
+Terrain**, including rolling-ground generation and its seed. The scenario Undo
+button covers named regions and events.
 
 Level 0 to 2 directly creates an impassable edge. Paint level 1 between them to
 create a ramp. The existing authoritative rules remain: uphill steps cost 115

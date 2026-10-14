@@ -213,7 +213,12 @@ The [maps and resourcing saga](maps-resourcing-saga-plan.md) expands the map
 stream into nine incremental epics and evidence milestones: coherent Millrace,
 shared editor/wildlife rules, one polished biome with a mature current-roster
 scenario, then regional kits. It preserves the verified food/wood baseline and
-records recommended economy choices for explicit later decisions. This roadmap
+records recommended economy choices for explicit later decisions. Map Studio's
+[terrain history](map-authoring.md#terrain-edit-history--14-october-2026) now adds
+bounded gesture undo/redo, displaced-node restoration and reversible hill
+generation. The maps/map-making owner retains served-release and rendered tool
+acceptance; the next authoring slice is combined stock/access diagnostics,
+then constrained Grove/Orchard presets. This roadmap
 remains the next-outcome queue; the saga is its detailed plan, not a second queue.
 
 Based on integration baseline `25488c8`, choose one bounded outcome in a stream.

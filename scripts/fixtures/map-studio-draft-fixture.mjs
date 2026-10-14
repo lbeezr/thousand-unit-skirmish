@@ -4,6 +4,10 @@ import { JSDOM } from 'jsdom';
 import { createMapImportValidator } from '../../src/authoring/map-import-validator.mjs';
 import { createMapStudioFormState } from '../../src/authoring/map-studio-form-state.mjs';
 import * as terrainPacking from '../../src/authoring/map-studio-terrain-packing.mjs';
+import { MapStudioTerrainHistory } from '../../src/authoring/map-studio-terrain-history.mjs';
+import { generateRollingGround, smoothGround } from '../../src/terrain-authoring.mjs';
+import { resizeWorldMarkers } from '../../src/authoring/map-resize.mjs';
+import { mapStudioCellAtPointer } from '../../src/map-studio-viewport.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../../src/authoring/map-studio-draft-store.mjs';
 import { ScenarioEditHistory, createScenarioEditCoordinator,
   scenarioEventCaptureRootId, scenarioEventSourceWouldCycle } from '../../src/authoring/scenario-authoring.mjs';
@@ -28,7 +32,7 @@ function between(start, end) {
 
 // Real host draft, map population/validation/import/export and dialog handlers.
 // Only rendering/audio/subpanel synchronization and browser platform APIs are stubbed.
-export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
+export function mapStudioDraftFixture(t, { roomId = null, saved = {}, terrainGestures = false } = {}) {
   const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'http://localhost/' });
   t.after(() => dom.window.close());
   const w = dom.window, d = w.document, timers = new Map(), downloads = [];
@@ -41,6 +45,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
   }
   Object.assign(w, mapUtils, scenarioRegions, definitions, terrainPacking, {
     createMapImportValidator, createMapStudioFormState, MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore,
+    MapStudioTerrainHistory, generateRollingGround, smoothGround, resizeWorldMarkers, mapStudioCellAtPointer,
     economyResources, validateMapAudioReference, validateMapRegion, validWildlifeNodeDefinition,
     findInvalidResourceVariant, TERRAIN_MATERIALS, ROOM_ID: roomId,
     SESSION_STORAGE_KEY: 'thousand-unit-skirmish-session', isHost: true, knownMaps: [],
@@ -55,7 +60,7 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
     selectedEditorRegionId: null, resourceBrushControls: null, redraws: 0,
     groundBaseMaterial: () => { throw new Error('Fixture maps must specify terrainBase'); },
     selectedStudioAudio: () => w.editorDefinition?.audio,
-    drawEditorGrid: () => { w.redraws++; }, fitMapStudioViewport() {},
+    drawEditorGrid: () => { w.syncEditorTerrainHistory(); w.redraws++; }, fitMapStudioViewport() {},
     syncEditorTriggerControls() {}, syncEditorScenarioEventControls() {}, syncEditorResourceControls() {},
     saveSelectedEditorTriggerFields() {}, saveSelectedEditorScenarioEventFields() {}, saveEditorTimedVictoryFields() {},
     saveEditorVictoryHoldFields() {}, saveSelectedEditorResourceStock: () => true,
@@ -89,8 +94,24 @@ export function mapStudioDraftFixture(t, { roomId = null, saved = {} } = {}) {
     between('ui.mapStudioOpen.addEventListener(', "document.querySelector('#studio-import').addEventListener("),
     between("ui.mapStudio.addEventListener('close'", "window.addEventListener('resize'"),
     between("document.querySelector('#studio-scenario-undo').addEventListener(", 'for (const field of [ui.studioEventRegion,'),
-    'window.draftStore = mapStudioDraftStore; window.lastDraftSavedAt = () => editorDraftLastSavedAt;',
+    'window.draftStore = mapStudioDraftStore; window.lastDraftSavedAt = () => editorDraftLastSavedAt; window.terrainEditHistory = terrainEditHistory;',
   ].join('\n'));
+  if (terrainGestures) {
+    w.ELEVATION_EDITOR_TOOLS = new Set(['elevation:raise', 'elevation:lower', 'elevation:smooth',
+      'elevation:0', 'elevation:1', 'elevation:2']);
+    w.ui.studioGrid.setPointerCapture = () => {};
+    w.ui.studioGrid.getBoundingClientRect = () => ({ left: 0, top: 0, width: 320, height: 320 });
+    w.eval([
+      between('function getSelectedEditorResourceNode(', 'let audioLibraryStorePromise'),
+      between('function isGroundEditorTool(', 'function setEditorTool('),
+      between('function resizeEditorMap(', 'function drawEditorGrid('),
+      between("ui.studioGrid.addEventListener('pointerdown'", "ui.studioGridZoomIn.addEventListener("),
+      between("document.querySelector('#studio-generate-hills').addEventListener(",
+        "ui.studioElevationBrushSize.addEventListener("),
+      "ui.studioWidth.addEventListener('change', resizeEditorMap);",
+      "ui.studioHeight.addEventListener('change', resizeEditorMap);",
+    ].join('\n'));
+  }
   return { w, d, timers, downloads, copy,
     open() { w.ui.mapStudioOpen.click(); },
     click(id) { d.getElementById(id).click(); },
