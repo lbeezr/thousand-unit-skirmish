@@ -1,0 +1,47 @@
+name: Terraced Vale appearance
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Exact active staging source SHA confirmed before dispatch
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: battlefield-surround-capture
+  cancel-in-progress: false
+jobs:
+  setting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci
+      - name: Verify the bounded scene contract
+        run: node --test scripts/renderer-battlefield-surround-staging.test.mjs
+      - name: Establish normal sandboxed WebGL2 once
+        run: |
+          test "$(id -u)" -gt 0
+          node scripts/renderer-qualification.mjs --preflight "${{ runner.temp }}/setting-preflight"
+      - name: Capture ordinary Terraced Vale on public staging
+        env:
+          SOURCE: ${{ inputs.source }}
+          RUNNER_REVISION: ${{ github.sha }}
+        run: node scripts/renderer-battlefield-surround-staging.mjs "$SOURCE" "$RUNNER_REVISION" "${{ runner.temp }}/setting-capture" "${{ runner.temp }}/setting-preflight/preflight.json"
+      - name: Retain source and rendered evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: terraced-vale-setting-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/setting-capture/
+            ${{ runner.temp }}/setting-preflight/preflight.json
+          retention-days: 1
+          if-no-files-found: warn
