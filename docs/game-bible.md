@@ -116,6 +116,14 @@ persistently ordered workers are excluded from idle-worker selection.
 4. Contest objectives and react to the opposing plan and scenario events.
 5. Reach a clear result, then rematch or try another authored scenario.
 
+The result explains the actual cause in ordinary words and preserves authored
+place names. Recap facts remain optional and do not invent a battle history.
+The host's next action names its destination: Back to lobby for invite rooms,
+Play again for immediate rooms. Either player can return through Main menu.
+The [result/return treatment](qa-vaelora-result-return-2026-10-14.md) connects
+this resolution to the established Vaelora welcome and command interface;
+source/delivery evidence remains separate from ordinary rendered acceptance.
+
 Ordinary two-seat play starts Tiny Terraced Vale in economy Skirmish; reviewed
 Small Threefold Basin, Medium Riven Escarpment and Large Crownroads are human map choices.
 [Bellweather · Millrace](maps.md) remains a historical authored regional scenario.

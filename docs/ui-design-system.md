@@ -202,6 +202,16 @@ or broad file reorganization is required.
 
 ## Acceptance and ownership
 
+The [result/return increment](qa-vaelora-result-return-2026-10-14.md) extends
+the same Obsidian system to the end of a match. It retains Barlow identity,
+DM Sans working text, quiet boundaries and a mint replay/lobby action. Outcome
+and reason use sentence case; optional recap follows them; a secondary Main menu
+path returns to the existing branded portal. This keeps the completed map useful
+behind the card while giving the next decision a clear place. Its
+[state storyboard](art-direction/creative-atlas-v1/result-return-storyboard.svg)
+is source backing; ordinary result/camera/reconnect/focus rendering remains owned
+and incomplete in its QA record.
+
 The HUD redesign owner retains the outcome through source integration, packaging,
 the relevant deployed build and ordinary-game verification. Art reuse, icon
 production and delivery dependencies should be named in each slice; a handoff or

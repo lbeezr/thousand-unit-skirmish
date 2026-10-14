@@ -41,8 +41,11 @@ Its [connected direction and reference atlas](creative-direction.md) provide
 the first source-only outcome: curated existing art, provenance/status and a
 journey storyboard. The [pregame-lobby material/hierarchy increment](qa-vaelora-lobby-2026-10-14.md)
 now has runtime/contract work, retaining its room/mode behavior; the same owner
-retains identified release, staging and normal-room visual evidence. Result/return
-identity is the next independent creative seam. This complements core-match work without adding
+retains normal-room visual evidence; its package and staging receipts are recorded.
+The [result/return increment](qa-vaelora-result-return-2026-10-14.md) now carries
+the approved command language into readable outcome explanations and existing
+next-match/menu paths, with its own retained release and visual acceptance.
+This complements core-match work without adding
 another approval queue or changing approved client/HUD selections.
 
 The [canonical building action matrix](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)

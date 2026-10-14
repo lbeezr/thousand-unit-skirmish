@@ -2,6 +2,14 @@
 
 ## Approved voluntary-ending increment (5 October 2026)
 
+Current presentation follow-up, 14 October: the
+[Vaelora result/return increment](qa-vaelora-result-return-2026-10-14.md) updates
+the existing card's readable copy and styling, preserves authored objective names
+and makes its current replay/lobby/menu destinations explicit. Creative stewardship
+owns that appearance/copy outcome. The authoritative ending, recap data/privacy,
+single result cue and recovery contracts below remain unchanged; earlier evidence
+stays dated. Ordinary rendered acceptance of the new treatment remains open.
+
 The user approved Resign and Offer Draw, with explicit agreement from both players; automatic stalemate is a separate decision. Endings owner retains the integrated server/client/recovery outcome. [PR408](https://github.com/lbeezr/thousand-unit-skirmish/pull/408) reserves `src/server/voluntary-endings.mjs`, its focused/native tests and additive CI registration; server command admission, state projection, reset/release and checkpoint result validation only; a separate client HUD controller, main lifecycle bindings, compact native controls in `index.html`, exact module admission and result/recap reason labels. Checkpoint30 composition also needs only schema admission in the existing Tiny Sheep/Food Tools migration adapters and mechanical current-schema/historical-fixture test updates; those owning rules are unchanged. HUD selection/production/layout and movement/planner/core execution stay with their owners. Current open PR400 owns crowd steering, with no ending-boundary overlap; earlier HUD398 and movement395 merged. Cross-thread direct messaging is unavailable, so this scoped draft is the inspectable reservation before shared edits.
 
 Contract direction: separately versioned voluntary endings; real current human seat authority and current match identity; terminal result commits exactly once; no AI acceptance. Draw needs both connected human seats and remains pending until declined/withdrawn or canceled on disconnect/reset/cold restore. No invented timer, scoring or automatic draw. Legacy saved matches retain their existing termination contract until reset into a fresh match. Practice, PvE and spectators receive an explicit unavailable explanation. Existing modes' automatic victory conditions and the 3,600-second controls remain unchanged. Acceptance requires both seats, stale/duplicate commands, disconnect/resume, cold restore, reset, terminal recap, clean pack/HTTP, independent exact-head review and normal merge. Source, deployment, pixels and human acceptance remain separate.

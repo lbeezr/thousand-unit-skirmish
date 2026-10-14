@@ -44,6 +44,23 @@
 :is(.camera-toolbar button,.scenario-brief-toggle,.minimap-reopen,#guidance-toggle){border:1px solid var(--hud-line);border-radius:2px;background:var(--hud-surface);color:var(--hud-text);font-family:'HUD DM Sans',Arial,sans-serif;letter-spacing:0}
 :is(.camera-toolbar button,.scenario-brief-toggle,.minimap-reopen,#guidance-toggle):focus-visible,.minimap-panel button:focus-visible{outline:2px solid var(--hud-accent);outline-offset:2px}
 .map-label,.field-hint{font-family:'HUD DM Sans',Arial,sans-serif;color:var(--hud-muted)}
+/* A calm result/return surface using the approved Obsidian instrument.
+   Backing: docs/creative-direction.md and the result-return storyboard. */
+#match-result .match-result-kicker{color:var(--hud-muted);font:600 12px/1.4 'HUD DM Sans',Arial,sans-serif;letter-spacing:.04em}
+#match-result .match-result-title{font-size:32px;line-height:1.1}
+#match-result .match-result-detail{color:var(--hud-text);font:14px/1.55 'HUD DM Sans',Arial,sans-serif;letter-spacing:0;overflow-wrap:anywhere}
+#match-result #match-recap{margin-top:16px;padding-top:12px;border-top:1px solid var(--hud-line)}
+#match-result #match-recap summary{min-height:44px;padding:10px 0;cursor:pointer;color:var(--hud-muted)}
+#match-result #match-recap p{margin:8px 0}
+#match-result .match-result-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px;padding-top:14px;border-color:var(--hud-line)}
+#match-result .match-result-actions :is(button,a){display:inline-flex;align-items:center;justify-content:center;flex:1 1 130px;min-width:0;min-height:44px;text-decoration:none;font:14px/1.4 'HUD DM Sans',Arial,sans-serif;letter-spacing:0}
+#match-result #match-play-again{color:var(--hud-surface);background:var(--hud-accent);border-color:var(--hud-accent)}
+#match-result #match-play-again:hover:not(:disabled){background:#c1f2d9}
+#match-result #match-play-again:active:not(:disabled){background:#8dceac}
+#match-result #match-play-again:disabled{color:var(--hud-muted);background:var(--hud-surface);border-style:dashed;cursor:default}
+#match-result #match-waiting-for-host{flex-basis:100%;color:var(--hud-muted);font:14px/1.5 'HUD DM Sans',Arial,sans-serif;letter-spacing:0}
+#match-result .match-result-actions [hidden]{display:none}
+@media(forced-colors:active){#match-result #match-play-again{color:ButtonText;background:ButtonFace;border-color:ButtonText}}
 /* Existing measured positions, map preferences, alerts, scrim and input
    exclusions stay authoritative. These rules change surface treatment only. */
 .contextual-command-bar[data-context=wildlife] .unit-primary-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
