@@ -44,8 +44,8 @@ cues. Existing ordinary dialog consumers and public paths are reused; the brass
 material remains the portal's preserved source/runtime pair.
 
 - [x] Runtime implementation uses the normal pregame dialog, with no preview flag.
-- [ ] Clean release and served HTTP/hash receipts recorded.
-- [ ] Identified staging revision containing the increment verified.
+- [x] Clean release and served HTTP/hash receipts recorded separately in lobby QA.
+- [x] Staging source `115cbebd` verified at deployment `f13f0ef5-c3c5-4bf4-b165-6656e77076cd` (`SUCCESS`); provider-only pack digest remains unknown.
 - [ ] Actual host/guest room appearance and transition into the match verified.
 
 The same owner retains unchecked steps. The local task has no exposed qualified

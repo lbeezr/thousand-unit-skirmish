@@ -62,6 +62,40 @@ acceptance. A clean package and HTTP hashes cannot replace those observations.
 
 ## Integration and continuing acceptance
 
+### Verified source and staging delivery
+
+[PR #671](https://github.com/lbeezr/thousand-unit-skirmish/pull/671) merged the
+runtime increment as `115cbebd8b30dd4f7968b3db6fc5c5167f4cab47`. Its checked
+implementation head is `a997bea73f910eef96f357525f33cf7e4044d173`. The connected
+GitHub publication tree matched the reconciled local tree exactly.
+
+The [clean local package receipt](qa-evidence/vaelora-lobby-2026-10-14/clean-package.json)
+records `sourceDirty:false` at that implementation head and digest
+`sha256:0082e33843dfc9c34a2195fbeb44aa53875a92de4f50598f4b533251ff3f94d9`.
+The packed HTTP scenario passed guarded startup, authentication, WebSocket,
+import/asset delivery and private-path behavior. CSS, UI-module and brass-material
+bytes matched the source. Both type gates, architecture and documentation passed
+again at the containing main; 37 DOM tests also passed at the published head.
+No full CPU-suite or independent-review pass is claimed.
+
+Railway staging deployment `f13f0ef5-c3c5-4bf4-b165-6656e77076cd` reached
+`SUCCESS` on 14 October at 14:09:49 UTC. The
+[live HTTP receipt](qa-evidence/vaelora-lobby-2026-10-14/staging-http.json) verifies
+the protected `/health` identity at merge source `115cbebd`, matching exact
+served lobby CSS, UI and brass hashes/MIME, plus 142 served import checks.
+Its identity origin is **railway-git**: deployment cleanliness and pack digest
+are **unknown/null**. The local clean-package digest is not attributed to the
+deployed image. These are source/byte observations, with zero browser game frames.
+
+The existing staging configuration admits public gameplay. The older generic
+smoke stopped at `/` because it expected 401 and observed 200; that run is not
+reported as a pass. A scoped read-only probe verified the actual configured
+policy: unauthenticated `/` and `/ready` return 200, while `/health` and GET
+`/api/rooms` retain 401. Existing credentials stayed in memory, and no settings,
+rooms or security policy were changed by this delivery check.
+
+### Retained ordinary-room verification
+
 Default consumers: `index.html` loads `src/room-lobby.css`; `src/main.js` constructs
 the ordinary `createRoomLobby` dialog. Both source files already have exact public
 admission and release inclusion. The brass WebP is already admitted and shipped

@@ -1,0 +1,24 @@
+{
+  "sourceRevision": "a997bea73f910eef96f357525f33cf7e4044d173",
+  "sourceDirty": false,
+  "digest": "sha256:0082e33843dfc9c34a2195fbeb44aa53875a92de4f50598f4b533251ff3f94d9",
+  "files": [
+    {
+      "path": "src/room-lobby.css",
+      "bytes": 6816,
+      "sha256": "82bd770ccff5285ce4b1257bfbb4c91ba93c30018a546ae8d2a7fb72bf78b865"
+    },
+    {
+      "path": "src/room-lobby-ui.mjs",
+      "bytes": 11120,
+      "sha256": "99a20b9da7d0bf46b461c5b13ceb8d4a4d7a3997a68cea1d39e82226f9921c7d"
+    },
+    {
+      "path": "assets/ui/vaelora-brand-v1/brass-surface.webp",
+      "bytes": 2367054,
+      "sha256": "5f7407a4adeabe74200b90807a87b540d20ab225a7bfa423367df854374bca55"
+    }
+  ],
+  "packedHttpScenario": "passed",
+  "scope": "Clean local release and served fixture contracts; no browser game frames"
+}
