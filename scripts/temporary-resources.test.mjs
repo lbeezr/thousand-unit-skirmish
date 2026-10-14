@@ -18,7 +18,7 @@ async function fixture(action) {
     await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
     await mkdir(path.join(scratch, retained), { recursive: true });
     await writeFile(path.join(scratch, retained, 'screenshot.png'), 'unrelated screenshot bytes');
-    for (const script of ['pack-railway-release.mjs', 'release/pack-railway-release.mjs', 'railway-release-scenario.mjs', 'check-client-imports.mjs', 'browser/check-client-imports.mjs', 'check-served-build-identity.mjs', 'release/check-served-build-identity.mjs', 'check-runtime-imports.mjs', 'module-imports.mjs', 'temporary-resources.mjs']) {
+    for (const script of ['pack-railway-release.mjs', 'release/pack-railway-release.mjs', 'railway-release-scenario.mjs', 'validate-building-lifecycle.mjs', 'check-client-imports.mjs', 'browser/check-client-imports.mjs', 'check-served-build-identity.mjs', 'release/check-served-build-identity.mjs', 'check-runtime-imports.mjs', 'module-imports.mjs', 'temporary-resources.mjs']) {
       await mkdir(path.dirname(path.join(root, 'scripts', script)), { recursive: true });
       await copyFile(path.join(sourceRoot, 'scripts', script), path.join(root, 'scripts', script));
     }
@@ -26,11 +26,15 @@ async function fixture(action) {
     for (const file of ['client-asset-paths.mjs', 'build-identity.mjs']) {
       await copyFile(path.join(sourceRoot, 'src', 'server', file), path.join(root, 'src', 'server', file));
     }
-    const runtime = ['room-supervisor.mjs', 'server.mjs', 'origin-policy.mjs', 'simulation-scheduler.mjs'];
+    const runtime = ['room-supervisor.mjs', 'server.mjs'];
+    for (const file of ['transport/origin-policy.mjs', 'orchestration/simulation-scheduler.mjs']) {
+      await mkdir(path.dirname(path.join(root, 'src/server', file)), { recursive: true });
+      await writeFile(path.join(root, 'src/server', file), 'export {};\n');
+    }
     for (const file of runtime) await writeFile(path.join(root, file), 'process.exit(0);\n');
     await writeFile(path.join(root, 'src', 'kept.mjs'), 'export const kept = true;\n');
     await writeFile(path.join(root, 'Dockerfile'), 'FROM scratch\nCOPY ' + runtime.join(' ') + ' /app/\nCOPY src /app/src/\n');
-    await writeFile(path.join(root, '.dockerignore'), '*\n' + runtime.map(file => '!' + file).join('\n') + '\n');
+    await writeFile(path.join(root, '.dockerignore'), '*\n' + runtime.map(file => '!' + file).join('\n') + '\n!src/\n!src/**\n');
     await writeFile(path.join(root, 'package.json'), '{"type":"module"}\n');
     await writeFile(path.join(root, 'package-lock.json'), '{}\n');
     const git = (...args) => {
@@ -88,13 +92,53 @@ test('invalid Docker input fails before allocating a snapshot', () => fixture(as
   await onlyRetained(scratch);
 }));
 
+for (const rule of ['!src/', '!src/**']) {
+  test('recursive Docker input rejects missing admission ' + rule, () => fixture(async ({ root, scratch, run }) => {
+    const file = path.join(root, '.dockerignore');
+    await writeFile(file, (await readFile(file, 'utf8')).replace(rule + '\n', ''));
+    const result = run('pack-railway-release.mjs', ['--allow-dirty']);
+    assert.ifError(result.error); assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /Docker COPY source is excluded by .dockerignore: src/);
+    await onlyRetained(scratch);
+  }));
+}
+
+test('recursive Docker input rejects later exclusions unsupported by the packer', () => fixture(async ({ root, scratch, run }) => {
+  const file = path.join(root, '.dockerignore');
+  await writeFile(file, await readFile(file, 'utf8') + 'src/server/transport/origin-policy.mjs\n');
+  const result = run('pack-railway-release.mjs', ['--allow-dirty']);
+  assert.ifError(result.error); assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /explicit allowlist/);
+  await onlyRetained(scratch);
+}));
+
+test('unvalidated nested Docker copy cannot stand in for complete source admission', () => fixture(async ({ root, scratch, run }) => {
+  const file = path.join(root, 'Dockerfile');
+  await writeFile(file, (await readFile(file, 'utf8')).replace('COPY src /app/src/', 'COPY src/server/ /app/src/server/'));
+  await writeFile(path.join(root, '.dockerignore'), '*\n!server.mjs\n!room-supervisor.mjs\n');
+  const result = run('pack-railway-release.mjs', ['--allow-dirty']);
+  assert.ifError(result.error); assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /COPY sources must include runtime source src\/server\/transport\/origin-policy.mjs/);
+  await onlyRetained(scratch);
+}));
+
+for (const file of ['src/server/transport/origin-policy.mjs', 'src/server/orchestration/simulation-scheduler.mjs']) {
+  test('recursive Docker input must contain required server policy ' + file, () => fixture(async ({ root, scratch, run }) => {
+    await rm(path.join(root, file));
+    const result = run('pack-railway-release.mjs', ['--allow-dirty']);
+    assert.ifError(result.error); assert.notEqual(result.status, 0);
+    assert.ok(result.stderr.includes(file), result.stderr);
+    await onlyRetained(scratch);
+  }));
+}
+
 for (const stage of ['symlink', 'docker-assertion', 'after-volume']) {
   test('release scenario cleans up when setup fails at ' + stage, () => fixture(async ({ root, scratch, run }) => {
     const mock = 'import {mkdtemp, mkdir, writeFile} from "node:fs/promises";\n'
       + 'import os from "node:os"; import path from "node:path";\n'
       + 'const directory = await mkdtemp(path.join(os.tmpdir(), "rts-release-"));\n'
       + (stage === 'symlink' ? 'await mkdir(path.join(directory, "node_modules"));\n' : '')
-      + 'await writeFile(path.join(directory, "Dockerfile"), ' + JSON.stringify(stage === 'docker-assertion' ? 'FROM scratch\n' : 'COPY origin-policy.mjs /app/\n') + ');\n'
+      + 'await writeFile(path.join(directory, "Dockerfile"), ' + JSON.stringify(stage === 'docker-assertion' ? 'FROM scratch\n' : 'COPY src ./src/\n') + ');\n'
       + 'await writeFile(path.join(directory, "room-supervisor.mjs"), "process.exit(0);\\n");\n'
       + 'console.log(JSON.stringify({directory}));\n';
     await writeFile(path.join(root, 'scripts/release/pack-railway-release.mjs'), mock);

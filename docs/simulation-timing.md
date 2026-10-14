@@ -32,5 +32,5 @@ node scripts/simulation-scheduler-test.mjs
 ```
 
 The test covers normal cadence, an injected 150 ms stall, and the boundary that
-prevents immediate catch-up. See `simulation-scheduler.mjs` for the scheduling
+prevents immediate catch-up. See `src/server/orchestration/simulation-scheduler.mjs` for the scheduling
 helper and `server.mjs` for the simulation loop.

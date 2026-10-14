@@ -28,8 +28,8 @@ async function setupRelease() {
   await symlink(path.join(sourceRoot, 'node_modules'), path.join(root, 'node_modules'), 'dir');
   entry = path.join(root, 'room-supervisor.mjs');
   const dockerfile = await readFile(path.join(root, 'Dockerfile'), 'utf8');
-  assert.match(dockerfile, /^\s*COPY\b[^\n]*\borigin-policy\.mjs\b/m,
-    'the shared origin policy must be included in the Railway image');
+  assert.match(dockerfile, /^\s*COPY\b[^\n]*\bsrc\/?\s+\.\/src\//m,
+    'the server policy modules must be included in the Railway image');
   volume = await mkdtemp(path.join(os.tmpdir(), 'rts-railway-release-'));
   environment = {
     ...process.env,
@@ -530,6 +530,17 @@ try {
       const response = await fetch(`${base}/${filename}`, { method, headers: { authorization } });
       assert.equal(response.status, 404, `server-private module must not be served (${method}): ${filename}`);
       if (method === 'HEAD') assert.equal((await response.arrayBuffer()).byteLength, 0, filename);
+    }
+  }
+  for (const [canonical, retired] of [
+    ['src/server/transport/origin-policy.mjs', 'origin-policy.mjs'],
+    ['src/server/orchestration/simulation-scheduler.mjs', 'simulation-scheduler.mjs'],
+  ]) {
+    assert.ok(packedManifest.files.includes(canonical), `canonical server policy is packaged: ${canonical}`);
+    assert.deepEqual(await readFile(path.join(root, canonical)), await readFile(path.join(sourceRoot, canonical)));
+    assert.equal(packedManifest.files.includes(retired), false, `retired server policy is absent: ${retired}`);
+    for (const method of ['GET', 'HEAD']) {
+      assert.equal((await fetch(`${base}/${retired}`, { method, headers: { authorization } })).status, 404);
     }
   }
   const practiceCatalog = 'src/world/practice-entry-catalog.mjs';

@@ -28,6 +28,7 @@ export const SERVER_ENTRYPOINTS = ['room-supervisor.mjs', 'server.mjs'];
 // Reviewed migrations update every tracked consumer. Reject returning copies
 // or stubs at retired roots; supported compatibility entries remain separate.
 export const RETIRED_RUNTIME_PATHS = Object.freeze([
+  'origin-policy.mjs', 'simulation-scheduler.mjs',
   'src/pve-home-defense.mjs', 'src/pve-objective-rotation.mjs',
   'src/pve-reconnaissance.mjs', 'src/pve-regroup.mjs', 'src/pve-skirmish-targets.mjs',
   'src/water-surface-study.mjs', 'src/water-study-state.mjs',
@@ -172,6 +173,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'server/map-definition-validator', // Authoritative map policy; no browser/public admission.
     'server/checkpoint-scenario-state', // Ordered saved scenario-state checks; no live simulation mutation.
     'server/checkpoint-roster', // Saved living/queued population and mode roster/result invariants.
+    'server/transport/origin-policy', 'server/orchestration/simulation-scheduler',
     'server/transport/peer-output', // Explicit peer output; host retains queue policy and aggregate metrics.
     'server/persistence/room-index-store', // Serialized private index I/O; supervisor retains room lifecycle.
     'server/persistence/room-archive-store', // Atomic room archive/restore; supervisor retains admission and authority.
@@ -185,7 +187,6 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
 // main is the mixed browser composition root, not a lower-domain dependency.
 export const RUNTIME_DOMAIN_HOSTS = Object.freeze({
   'src/main.js': 'client', 'building-map.js': 'authoring',
-  'origin-policy.mjs': 'server', 'simulation-scheduler.mjs': 'server',
   'room-supervisor.mjs': 'server', 'server.mjs': 'server',
 });
 

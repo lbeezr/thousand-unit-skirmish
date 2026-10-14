@@ -2,6 +2,10 @@
  * Advance a fixed-rate simulation deadline past all slots that elapsed while
  * the previous tick was running. The caller executes exactly one simulation
  * step per timer callback; missed wall-clock slots are deliberately dropped.
+ * @param {number} deadlineMs
+ * @param {number} completedAtMs
+ * @param {number} intervalMs
+ * @returns {{nextDeadlineMs: number, skippedTickSlots: number}}
  */
 export function advanceTickDeadline(deadlineMs, completedAtMs, intervalMs) {
   if (!Number.isFinite(deadlineMs)) throw new TypeError('deadlineMs must be finite');

@@ -3,7 +3,7 @@
 [Documentation index](README.md) · [Local setup](getting-started.md) · [Deployment](deployment.md)
 
 Values below describe source defaults. Compose and a hosted service can override
-them. The definitions in `room-supervisor.mjs`, `server.mjs`, `origin-policy.mjs`,
+them. The definitions in `room-supervisor.mjs`, `server.mjs`, `src/server/transport/origin-policy.mjs`,
 and `src/pve-match.mjs` are authoritative.
 
 ## Server and room settings

@@ -115,6 +115,27 @@ The current five-policy slice changes no AI decisions, protocol, type rollout,
 asset, map, gameplay balance, security policy or deployment. Remaining subsystem
 batches and owners are recorded in the inventory, not allocated by this guide.
 
+### Private server policy modules — 14 October 2026
+
+The repository organization owner (chat `01a13a88-04f5-7e63-a31b-57f251a8731d`)
+moves the former root `origin-policy.mjs` implementation into
+`src/server/transport/origin-policy.mjs` and `simulation-scheduler.mjs` into
+`src/server/orchestration/simulation-scheduler.mjs`. The origin gate has two
+runtime callers, the supervisor and worker; tick scheduling has one, the worker.
+All tracked consumers, source-hash tooling and release inputs use these homes.
+The process launch entries and existing scenario commands remain supported;
+neither private helper has a supported browser URL or external launch command.
+No root forwarding entry is needed. The import guard rejects their return to
+the root and keeps both modules outside browser closures.
+
+Acceptance is unchanged executable policy, strict Node API checks with valid
+HTTP request types and invalid-call controls, existing origin/proxy/scheduler
+scenarios, and exact packaged bytes with GET/HEAD denial. Docker's recursive
+`src` copy includes both modules; the packer requires their canonical paths.
+The scheduler's previously standalone injected-stall regression now runs in
+normal CI. Presentation/art backing and rendered acceptance are N/A for this
+internal path/type change; no new gameplay or deployment observation is claimed.
+
 ### Worker HUD and retained design specimen — 11 October 2026
 
 `src/client/hud/worker-hud.mjs` and its stylesheet own the default Worker selection

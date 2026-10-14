@@ -265,7 +265,7 @@ export async function runAudit() {
   const constants = { defaultMapId, ticksPerSecond: integer('TICK_RATE'), maxBuildings: integer('MAX_BUILDINGS'),
     forestWoodPerCell: integer('FOREST_WOOD_PER_CELL'), defaultArmySize: integer('DEFAULT_STARTING_ARMY_SIZE') };
   const files = (await readdir(path.join(root, 'maps'))).filter(f => f.endsWith('.json')).sort();
-  const inputFiles = ['scripts/map-scale-audit.mjs', 'server.mjs', 'room-supervisor.mjs', 'simulation-scheduler.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs',
+  const inputFiles = ['scripts/map-scale-audit.mjs', 'server.mjs', 'room-supervisor.mjs', 'src/server/orchestration/simulation-scheduler.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs',
     'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/pve-match.mjs', 'src/match-modes.mjs', 'src/map-size-policy.mjs', 'src/bannerfall-rules.mjs', 'src/terrain-height.mjs', ...files.map(f => `maps/${f}`)];
   const hashes = {};
   for (const file of inputFiles) hashes[file] = hash(await readFile(path.join(root, file)));
