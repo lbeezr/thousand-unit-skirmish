@@ -12,6 +12,7 @@ import { readQueueObservation, validateQueueObservation, validateQueueRefund } f
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const stateExpression = 'window.__rtsInteractionAudioSnapshot()';
+export const HUD_BUILDING_SEQUENCE = Object.freeze(['house','barracks']);
 // Match the ordinary command gate before pressing a control. Studio keeps
 // Save & Play enabled during recovery so a human can retry; a capture must wait.
 export function hudInputReady() {
@@ -123,7 +124,13 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
     validateHudFrame(view,map.id,context,image,previousTick);
     return view;
   }
-  async function worker() { const unit=(await state()).units.find(u=>u.kind==='worker'&&u.point); assert.ok(unit); await select(page,'unit',unit.id); return unit; }
+  async function worker() {
+    // A tall building dock can cover every nearby Worker. Use the ordinary
+    // header selection and safe-area camera control before picking one body.
+    await control(page,'#quick-idle'); await control(page,'#camera-center-selection');
+    const unit=await page.wait(`${stateExpression}.units.find(u=>u.kind==='worker'&&u.selected&&u.point)`,'native camera reveals owned idle Worker');
+    await select(page,'unit',unit.id); return unit;
+  }
   try {
     await enter(page,origin,map,mapFile,bytes); await persist();
     await worker(); await capture('worker','workers');
@@ -146,16 +153,23 @@ export async function captureHudStaging({page,origin,subset,directory,signal}) {
       await control(page,'[data-context-products] [data-product="worker"]');
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Worker in production queue');
       await capture('town-center-training','building');
-      stage='paid-barracks';
-      await worker(); await control(page,'[data-worker-action="build"]'); await control(page,'[data-worker-build="barracks"]');
-      const pad=buildingPad('barracks');
-      const point=await page.wait(`window.__rtsInteractionAudioProject(${pad.x},${pad.z})`,'visible build site');
-      await page.cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
-      await page.wait('window.__rtsBuildingPlacementSnapshot?.active&&window.__rtsBuildingPlacementSnapshot.valid','valid Barracks placement');
-      await pointer(page,point);
-      const barracks=await page.wait(`${stateExpression}.buildings.find(b=>b.type==='barracks'&&b.complete&&b.point)`,'paid Barracks completes',60000);
-      stage='barracks-selection';
-      await select(page,'building',barracks.id); await capture('barracks','building');
+      let barracks;
+      // The paid Worker and first Infantry leave only one opening population
+      // slot. Build real capacity before buying the two-entry cancellation queue.
+      for(const type of HUD_BUILDING_SEQUENCE) {
+        stage=`paid-${type}`;
+        await worker(); await control(page,'[data-worker-action="build"]'); await control(page,`[data-worker-build="${type}"]`);
+        const pad=buildingPad(type);
+        const point=await page.wait(`window.__rtsInteractionAudioProject(${pad.x},${pad.z})`,'visible build site');
+        await page.cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',...point});
+        await page.wait('window.__rtsBuildingPlacementSnapshot?.active&&window.__rtsBuildingPlacementSnapshot.valid','valid paid building placement');
+        await pointer(page,point);
+        const building=await page.wait(`${stateExpression}.buildings.find(b=>b.type===${JSON.stringify(type)}&&b.complete&&b.point)`,'paid building completes',60000);
+        stage=`${type}-selection`;
+        await select(page,'building',building.id); await capture(type,'building');
+        if(type==='barracks') barracks=building;
+      }
+      assert.ok(barracks);
       await control(page,'[data-context-products] [data-product="infantry"]');
       await page.wait('document.querySelector("[data-building-queue-list]")?.children.length>0','paid Infantry queue');
       await capture('barracks-training','building');
