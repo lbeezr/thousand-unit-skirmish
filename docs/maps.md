@@ -18,6 +18,10 @@ seat, with the home Sheep visible at opening. Their stocks stay 650/1,000,
 all IDs/coordinates stay fixed and total map food stays 6,100. Valley food
 remains ordinary. [Tiny Sheep adoption](qa-terraced-vale-sheep-2026-10-04.md)
 records normal claim/Gather and exact pre-adoption checkpoint recovery.
+[The surrounding landscape](battlefield-surround.md) adds a default presentation
+experiment: connected slate slopes, distant low ridges and static valley clouds
+beyond the match bounds. [Its release/appearance record](qa-battlefield-surround-2026-10-14.md)
+keeps rendered acceptance separate from the map's existing gameplay evidence.
 [Map and native evidence](qa-terraced-vale-2026-10-03.md) records the paid economy,
 routes, recovery, diagnostic and remaining deployed/browser acceptance.
 

@@ -176,6 +176,27 @@ test('real patch Apply/Undo/Redo refreshes diagnostics and unsafe draft text sta
   assert.equal(f.panel.querySelector('img'), null); assert.ok(f.panel.textContent.includes('<img src=x onerror=alert(1)>'));
 });
 
+test('real preset apply, undo, export and recovery preserve derived budgets and ordinary nodes', async t => {
+  const f = fixture(t), before = f.report();
+  for (const [name, value] of [['column', '16'], ['row', '24'], ['stock', '101'], ['preset', 'wood-grove']]) f.edit(`studio-brush-${name}`, value);
+  const patch = f.d.querySelector('[data-brush="preview"]').closest('details');
+  patch.querySelector('[data-brush="preview"]').click(); f.flush();
+  assert.equal(patch.querySelector('[data-brush="apply"]').disabled, false, patch.textContent);
+  assert.deepEqual(f.report(), before); assert.equal(f.report().total.wood, '0');
+  patch.querySelector('[data-brush="apply"]').click(); f.flush();
+  assert.equal(f.report().total.wood, '101'); assert.equal(f.report().nodes.filter(n => n.type === 'wood').length, 9);
+  assert.equal(f.report().forest.cells, 0); assert.deepEqual(f.report().startingPerSeat, before.startingPerSeat);
+  patch.querySelector('[data-brush="undo"]').click(); f.flush(); assert.equal(f.report().total.wood, '0');
+  patch.querySelector('[data-brush="redo"]').click(); f.flush(); assert.equal(f.report().total.wood, '101');
+  f.w.downloadEditorMap(); const portable = JSON.parse(await f.downloads.at(-1).blob.text());
+  assert.equal(Object.hasOwn(portable, 'preset'), false);
+  assert.ok(portable.resourceNodes.every(node => !Object.hasOwn(node, 'preset')));
+  const recovered = mapStudioDraftFixture(t, { saved: f.saved(), resourceDiagnostics: true });
+  recovered.open(); recovered.click('studio-draft-restore'); recovered.flush();
+  assert.equal(recovered.d.querySelector('#studio-brush-preset').value, 'wood-grove');
+  assert.deepEqual(analyzeMapResources(recovered.w.readEditorResourceDiagnosticMap()), f.report());
+});
+
 test('exact decimal budgets preserve large-plus-small stocks, overflow-sized sums and tiny positive display', t => {
   const m = map(); m.resourceNodes = [{ id: 'large', type: 'food', x: -6.5, z: 4.5, stock: 1e16 },
     ...Array.from({ length: 4 }, (_, index) => ({ id: `small-${index}`, type: 'food', x: 5.5, z: 4.5 + index, stock: 1 }))];

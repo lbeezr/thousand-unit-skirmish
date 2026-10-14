@@ -1,0 +1,62 @@
+{
+  "implementationPullRequest": "https://github.com/lbeezr/thousand-unit-skirmish/pull/675",
+  "sourceRevision": "e50d499fccebf9de609ef059d5c7d340b315abec",
+  "reviewedTree": "72763bec09ede2e868cf52526efd3e3be90b4cda",
+  "contourSha256": "57cc04c0ac1cd76e9a9ab3ec89d01aa9894ad1c9629417bd47fb011a14d2f58b",
+  "release": {
+    "sourceRevision": "e50d499fccebf9de609ef059d5c7d340b315abec",
+    "sourceDirty": false,
+    "digest": "sha256:10563e120a7698e780272ca2f7c565044be680b4c1827d726ddea85a930bcf75"
+  },
+  "releaseFileCount": 1852,
+  "privateContourIncluded": true,
+  "checks": [
+    {
+      "name": "Infantry exits at merge",
+      "tests": 136,
+      "pass": 136,
+      "fail": 0
+    },
+    {
+      "name": "Crowd regressions",
+      "tests": 144,
+      "pass": 144,
+      "fail": 0
+    },
+    {
+      "name": "Stances and Worker/construction",
+      "tests": 184,
+      "pass": 183,
+      "fail": 1
+    },
+    {
+      "name": "Architecture",
+      "status": "passed"
+    },
+    {
+      "name": "Strict JavaScript/Node types",
+      "status": "passed"
+    },
+    {
+      "name": "Documentation links",
+      "status": "passed"
+    },
+    {
+      "name": "Guarded packed HTTP/WebSocket/import/assets/atlas hashes/startup/volume scenario",
+      "status": "passed"
+    }
+  ],
+  "independentReview": {
+    "noRemainingFindings": true,
+    "movingNeighborControls": 3,
+    "exactMixedCrowdComparisons": 90,
+    "retainedBaselineCrowdReceipt": "crowd-controls.json"
+  },
+  "limits": [
+    "No full CPU-suite pass",
+    "Schema25 real Gather cargo setup failure remains",
+    "64-unit queued-gate liveness stays incomplete at baseline63/64 and29/64",
+    "No browser pixels or rendered usability claim",
+    "Live release digest remains separate from locally verified digest"
+  ]
+}

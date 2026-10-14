@@ -230,8 +230,12 @@ generation. The maps/map-making owner retains served-release and rendered tool
 acceptance. [Resource diagnostics](map-authoring.md#resource-budgets-and-access-diagnostics--14-october-2026)
 now separates per-seat banks, finite node allocation/reachability and forest
 potential. Its [QA](qa-map-resource-diagnostics-2026-10-14.md) records the 32-map
-conservation checks and Medium/Large route-allocation comparison. Next: compare
-the affected pockets in paid play, then constrained Grove/Orchard presets. This roadmap
+conservation checks and Medium/Large route-allocation comparison.
+[Constrained presets](map-authoring.md#constrained-resource-presets--14-october-2026)
+now offer reusable Grove/Orchard shapes with unchanged author budgets and
+existing placement/history; [QA](qa-map-resource-presets-2026-10-14.md) retains
+rendered/ordinary use. Next: compare the affected pockets in paid play before
+selecting a map balance refinement. This roadmap
 remains the next-outcome queue; the saga is its detailed plan, not a second queue.
 
 Based on integration baseline `25488c8`, choose one bounded outcome in a stream.
@@ -323,9 +327,16 @@ with Farm renewal, cancellation and recovery coverage. PR669 is merged and
 staged at `03ef2666`; both ordinary Tiny Skirmish seats complete a paid House,
 retain two queued legs through reconnect and reach the final destination.
 Independent review, clean packaging and hosted native authority checks pass;
-rendered Shift-click usability remains owned. Next, diagnose the reproduced
-Team 0 army arrival failure and its separate migration-Gather case, then choose
-the next bounded control/movement correction on representative maps.
+rendered Shift-click usability remains owned. The current increment fixes
+[Infantry trapped in the parked starting formation](qa-infantry-formation-exit-2026-10-14.md)
+through local passage alignment. Every starting Infantry slot exits in eight
+cardinal/diagonal directions on both teams with body/static admission preserved.
+PR675 is merged and verified on staging `e50d499f`: both ordinary Tiny Skirmish
+seats complete selected Infantry/queued Moves through reconnect, and all eight
+Infantry per seat leave and settle after a group Move. Independent review and
+clean packaging pass; rendered usability remains open. Next: resolve the
+reproduced occupied Sheep approach in the schema-25 Gather setup, while retaining
+the separate incomplete 64-unit queued-gate journeys and broader qualification.
 
 Stop and Hold Position establish explicit task/route interruption and stationary
 in-range defense, with both-seat authority and checkpoint/rematch regressions.

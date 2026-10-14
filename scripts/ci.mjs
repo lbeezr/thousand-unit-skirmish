@@ -85,6 +85,7 @@ run(['--test', 'scripts/map-studio-draft-recovery.test.mjs'], 'Map Studio draft 
 run(['--test', 'scripts/map-studio-import-errors.test.mjs'], 'Map Studio import read and parse failure contracts');
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');
 run(['scripts/check-docs.mjs'], 'Documentation links');
+run(['--test', 'scripts/battlefield-surround.test.mjs'], 'Terraced Vale scenic hole, grounded lip, static clouds and noninteractive batches');
 run(['--test', 'scripts/meshy-source-archive.test.mjs'], 'Permanent Meshy source integrity, deduplication and CLI write boundary');
 run(['--test', 'scripts/cloud-install.test.mjs'], 'Cloud install paths, failure propagation and Start skill');
 run(['--test', 'scripts/public-gameplay.test.mjs'], 'Default-off anonymous gameplay and protected private routes');
@@ -202,6 +203,7 @@ run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical inte
 run(['--test', 'scripts/stationary-command.test.mjs'], 'Stationary command tasks and controls');
 run(['--test', 'scripts/army-attack-continuation.test.mjs'], 'Focused military attack continuation and ordinary attack-move input');
 run(['--test', 'scripts/military-stance.test.mjs'], 'Military stances, idle defense, bounded return and command precedence');
+run(['--test', 'scripts/infantry-formation-exit.test.mjs'], 'Both-seat Infantry starting formation exits and cold order recovery');
 run(['scripts/military-stance-native-scenario.mjs'], 'Native two-seat stance commands and defensive return recovery');
 run(['scripts/automatic-stance-pursuit-native.mjs'], 'Native two-seat automatic pursuit and active cold recovery');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');

@@ -1,0 +1,64 @@
+{
+  "scope": "scenery focused CPU contracts; not game pixels",
+  "baseRevision": "a22819577ae1d93c84b8df1b44718019ffc4ec3a",
+  "sourceDirty": true,
+  "focused": {
+    "passed": 38,
+    "failed": 0
+  },
+  "types": "both configurations passed",
+  "imports": "263 modules, 512 local edges, no cycles",
+  "docs": "729 Markdown files, 5775 links",
+  "geometry": {
+    "landVertices": 7680,
+    "landTriangles": 12804,
+    "drawCalls": 2,
+    "cloudMotion": "static",
+    "minimumLandY": -21.920364379882812,
+    "maximumLandY": 1.5750000476837158,
+    "playableInteriorVertices": 0
+  },
+  "files": [
+    {
+      "path": "src/presentation/rendering/battlefield-surround.mjs",
+      "sha256": "268ca43b354decabfc04cce32d9c1a273a18813c2e947cc149f4e7c428a42035"
+    },
+    {
+      "path": "src/main.js",
+      "sha256": "bec09f9f2afe60f46265b4ddef5f1c33291e5f7035efd74209202a05d7dcdec7"
+    },
+    {
+      "path": "src/server/client-asset-paths.mjs",
+      "sha256": "10131aedeea8a7c2bb615ee91663c220f38469fb6f100bb8942ba49d6a1941cd"
+    },
+    {
+      "path": "scripts/check-runtime-imports.mjs",
+      "sha256": "1a002ae81116cd1979075e56911787854db16852cac4fb8e44bbe0d3eda3e1cb"
+    },
+    {
+      "path": "scripts/ci.mjs",
+      "sha256": "8d7f1fea4ad49316ba1be427a38275eef6f31da0c62cf1cc65940d1d89bf6cfe"
+    },
+    {
+      "path": "scripts/battlefield-surround.test.mjs",
+      "sha256": "d73464bb0030353c90275aad1f60c41feaf56cd9353091155cf070327cbc368e"
+    },
+    {
+      "path": "maps/veyrholds-terraced-vale.json",
+      "sha256": "b7910f0e181484eac2906261412377aba0e688be08d12eb28994e94f76b14956"
+    }
+  ],
+  "limits": [
+    "no GPU/browser capture",
+    "source files verified over a working patch; not a clean-release identity",
+    "broader first fast/simulation runs failed and do not claim full CPU acceptance"
+  ],
+  "review": {
+    "status": "no actionable findings after correction",
+    "method": "user-authorized read-only sub-agent",
+    "corrected": "cell-owned boundary corner pairs and four exterior discontinuity closure faces",
+    "limits": [
+      "no browser/shader compilation or in-game appearance"
+    ]
+  }
+}
