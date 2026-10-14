@@ -45,7 +45,7 @@ presentation and starting arrangement remain unchanged; no visual baseline is re
 
 ## Validation and delivery
 
-`scripts/infantry-formation-exit.test.mjs` covers 136 cases:
+`scripts/infantry-formation-exit.test.mjs` passes 136 cases at merge `e50d499f`:
 eight naturally spawned Infantry per seat, eight cardinal/diagonal Move directions,
 plus both-seat cold continuation, Stop/new-Move replacement and unchanged
 Tiny Terraced Vale geometry, plus whole-army Moves with active peers. Every observed
@@ -77,7 +77,44 @@ separates baseline, rejected and corrected outcomes.
 Architecture, strict types and documentation checks pass. Independent review
 resolved the missing diagonal passage and group fixture contract, then passed
 the formation/crowd scope and moving-neighbor activation/invalidation controls.
-Clean pack, main integration and exact hosted verification are being completed.
-The owner will record source SHA, clean pack digest and served deployment identity
-separately. Native authority/transport evidence does not establish browser pixels;
+The [check receipt](qa-evidence/infantry-formation-exit-2026-10-14/checks.json)
+records 136/136 exit, 144/144 crowd and 183/184 stance/Worker/construction checks,
+the separate Gather failure and the exact clean package. Native authority/transport evidence does not establish browser pixels;
 ordinary rendered usability remains incomplete with no stopped Mac fallback.
+
+## Integrated and verified on staging
+
+[PR #675](https://github.com/lbeezr/thousand-unit-skirmish/pull/675) merged as
+`e50d499fccebf9de609ef059d5c7d340b315abec` at 14:46:08 UTC. Its tree
+`72763bec09ede2e868cf52526efd3e3be90b4cda` exactly matches the independently
+reviewed published head. All 136 exit tests repeat at the clean merge. The clean
+1,852-file release includes `src/crowd-parked-contour.mjs` and has digest
+`sha256:10563e120a7698e780272ca2f7c565044be680b4c1827d726ddea85a930bcf75`.
+Guarded packed HTTP/WebSocket, import/asset, atlas-hash and startup/volume checks
+pass at the same runtime tree. No new asset or browser admission is needed.
+
+Railway deployment `010f3fcb-2ca1-4333-bd6a-50fb0ae20275` reached SUCCESS
+at 14:51:45 UTC. Authenticated served source identity matches `e50d499f`.
+Provider metadata establishes the source; live cleanliness/digest remains
+unknown, separately from the locally verified clean pack. Staging auto-deploy
+is enabled and production auto-deploy disabled; neither setting was changed.
+
+The [hosted native receipt](qa-evidence/infantry-formation-exit-2026-10-14/staging-native.json)
+finished at 14:53:27 UTC. A fresh ordinary Create Room → two ready human seats
+→ Tiny Terraced Vale Skirmish launch uses the default roster, terrain, fog and
+stances, with no map or actor/state injection. Each seat's first Infantry takes
+an inward Move, retains one Shift Move through reconnect and reaches the exact
+second destination: Azure `(-51.5,7.5)` and Ember `(51.5,7.5)`. First-leg arrival
+is observed, with idle peer poses/HP and each seat's resource banks unchanged.
+Both full eight-Infantry armies then take a group Move, leave the opening and
+settle at their assigned cells for 60 ticks. Idle Workers stay fixed. All clients
+close and only this owned disposable room is recoverably archived. No room,
+session or service secrets are retained.
+
+PR creation to merge takes 79 seconds; merge to hosted verification takes
+7 minutes 19 seconds. Browser pixels remain unverified, and neither this native
+receipt nor the passing small roster qualifies the incomplete 64-unit queued-gate
+journeys or the full CPU suite. The unit owner retains those next outcomes.
+The remaining migration fixture's Gather failure is reproduced as a Worker
+waiting at an occupied Sheep approach (`to-node`, no cargo, unconsumed route);
+it remains a separate resource-approach correction.
