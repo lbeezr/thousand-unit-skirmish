@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import { JSDOM } from 'jsdom';
 import { mountResourceBrushControls } from '../src/resource-brush-controls.mjs';
 import { previewResourceBrush } from '../src/resource-brush-authoring.mjs';
+import { RESOURCE_PATCH_PRESETS } from '../src/authoring/resource-patch-presets.mjs';
 import { createMapStudioFormState } from '../src/authoring/map-studio-form-state.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
 import { mapStudioDraftFixture } from './fixtures/map-studio-draft-fixture.mjs';
@@ -155,6 +156,64 @@ test('actual client callbacks use live terrain; preview and overlay are read-onl
   assert.equal(f.w.ui.studioResourceStock.value, '13.5');
   f.set('seed', 93001); assert.equal(f.markers().length, 0); assert.notDeepEqual(f.preview(), a);
   assert.equal(f.w.captureMapStudioFormValues()['studio-brush-seed'].value, '93001');
+});
+
+test('preset selection preserves seed, anchor and budget; preview stays constrained and explicit', t => {
+  const f = fixture(t), original = copy(f.w.editorResourceNodes);
+  assert.equal(f.field('preset').value, 'custom');
+  f.set('stock', 101); f.set('seed', 12); const previous = f.preview();
+  for (const recipe of RESOURCE_PATCH_PRESETS) {
+    const banks = [f.field('seed').value, f.field('column').value, f.field('row').value, f.field('stock').value];
+    f.set('preset', recipe.id);
+    assert.deepEqual([f.field('seed').value, f.field('column').value, f.field('row').value, f.field('stock').value], banks);
+    assert.equal(f.button('apply').disabled, true); assert.equal(f.markers().length, 0);
+    assert.deepEqual(f.w.editorResourceNodes, original); assert.equal(f.w.saves, 0);
+    assert.equal(f.field('type').value, recipe.settings.type);
+    assert.equal(f.field('count').value, String(recipe.settings.nodesPerPatch));
+    assert.equal(f.field('radius').value, String(recipe.settings.radius));
+    assert.equal(f.field('distribution').value, recipe.settings.distribution);
+    const markers = f.preview(); assert.deepEqual(f.preview(), markers);
+    assert.equal(markers.length, recipe.settings.nodesPerPatch);
+    assert.equal(markers.reduce((sum, n) => sum + n.stock, 0), 101);
+    assert.ok(markers.every(n => Math.hypot(n.x - 23.5, n.y - 21.5) <= recipe.settings.radius));
+    for (const [i, a] of markers.entries()) for (const b of markers.slice(i + 1)) assert.ok(Math.hypot(a.x - b.x, a.y - b.y) >= 2);
+    assert.match(f.panel.querySelector('[data-brush-preset-description]').textContent, /Seed, anchor and total stock stay unchanged/);
+  }
+  assert.deepEqual(f.preview(), previous); // Orchard returns to the original shape/seed/budget.
+  f.w.blockers = [{ column: 23, row: 21, width: 1, height: 1, material: 'forest' }];
+  f.button('preview').click(); assert.equal(f.button('apply').disabled, true);
+  assert.match(f.status.textContent, /Unsafe or occupied/); assert.deepEqual(f.w.editorResourceNodes, original);
+});
+
+test('preset budgets are never raised silently and customized shapes lose the preset label', t => {
+  const f = fixture(t);
+  f.set('stock', 3); f.set('preset', 'wood-grove');
+  assert.equal(f.field('stock').value, '3'); assert.equal(f.field('stock').min, '9');
+  f.button('preview').click(); assert.equal(f.button('apply').disabled, true);
+  assert.match(f.status.textContent, /valid whole number.*TOTAL PATCH STOCK/);
+  f.set('stock', 101); f.preview(); f.set('count', 7);
+  assert.equal(f.field('preset').value, 'custom'); assert.equal(f.button('apply').disabled, true);
+  assert.match(f.status.textContent, /Preset customized/);
+  f.set('preset', 'food-orchard'); f.set('seed', 42); f.set('stock', 102);
+  assert.equal(f.field('preset').value, 'food-orchard');
+  f.set('preset', 'custom');
+  assert.equal(f.field('count').value, '5'); assert.equal(f.field('stock').value, '102');
+});
+
+test('preset nodes use ordinary history and form recovery; inconsistent recovered labels become custom', t => {
+  const f = fixture(t), original = copy(f.w.editorResourceNodes);
+  f.set('stock', 101); f.set('preset', 'wood-grove'); const markers = f.preview();
+  const forms = f.w.captureMapStudioFormValues(); assert.equal(forms['studio-brush-preset'].value, 'wood-grove');
+  f.button('apply').click(); const applied = copy(f.w.editorResourceNodes);
+  assert.deepEqual(applied.slice(original.length).map(n => ({ x: n.x + 32, y: n.z + 32, stock: n.stock })), markers);
+  assert.ok(applied.slice(original.length).every(n => n.type === 'wood' && !Object.hasOwn(n, 'preset')));
+  f.set('preset', 'food-orchard'); f.button('undo').click(); assert.deepEqual(f.w.editorResourceNodes, original);
+  f.button('redo').click(); assert.deepEqual(f.w.editorResourceNodes, applied);
+  f.w.restoreMapStudioFormValues(forms); f.w.resourceBrushControls.reset();
+  assert.equal(f.field('preset').value, 'wood-grove'); assert.deepEqual(f.w.editorResourceNodes, applied);
+  assert.equal(f.button('undo').disabled, true);
+  forms['studio-brush-count'].value = '3'; f.w.restoreMapStudioFormValues(forms); f.w.resourceBrushControls.reset();
+  assert.equal(f.field('preset').value, 'custom'); assert.equal(f.field('count').value, '3');
 });
 
 test('versioned draft contract preserves the store API, per-store methods and reference recovery', async () => {

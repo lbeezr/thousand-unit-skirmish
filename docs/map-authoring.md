@@ -304,7 +304,8 @@ separates CPU gesture/export checks from remaining rendered usability.
 The map-making owner (chat `01a13a87-26dd-70b1-9410-ffa2f8e6932e`) retains
 integration and identified served-release verification. The combined
 [stock/access diagnostics](#resource-budgets-and-access-diagnostics--14-october-2026)
-now follow this history slice; constrained Grove/Orchard presets are next.
+now follow this history slice, alongside
+[constrained Grove/Orchard presets](#constrained-resource-presets--14-october-2026).
 Higher-level contour tools
 remain later work; no larger map or economy admission follows from history.
 
@@ -373,8 +374,9 @@ no map art, density, terrain colors or live-game overlay.
 [Diagnostics QA](qa-map-resource-diagnostics-2026-10-14.md) owns the checks,
 source-bound catalog observations and remaining rendered editor acceptance.
 The map-making owner retains integration and served verification. Next: use
-path allocation and pocket/route observations to refine representative maps,
-then offer constrained Grove/Orchard presets using existing finite placement.
+path allocation and pocket/route observations to refine representative maps.
+The [constrained presets](#constrained-resource-presets--14-october-2026) now reuse
+existing finite placement as an independent authoring improvement.
 Static unequal nearest-route allocation alone is not a balance-change decision.
 
 ### Portable-map validator boundary
@@ -804,6 +806,52 @@ are isolated in [`src/resource-brush-controls.mjs`](../src/resource-brush-contro
 Run `node --test scripts/resource-brush-authoring.test.mjs scripts/resource-brush-controls.test.mjs`
 for operation, actual client-hook and DOM checks. These checks do not establish
 canvas appearance or unassisted human usability; those remain visual acceptance work.
+
+### Constrained resource presets — 14 October 2026
+
+The Resource Patches **Preset** selector offers **Wood Grove** and **Food
+Orchard**, alongside **Custom patch**. Grove uses nine finite Wood markers,
+radius six and Core falloff. Orchard uses five finite Food markers, radius four
+and Even spread. Both compile through the existing seeded constrained-placement
+helper: two-cell spacing, same ground level, clear non-dirt cells, six-cell spawn
+clearance, both-seat routes with Town Centers present and the 128-node limit.
+Insufficient safe space rejects the preview without writing a partial patch.
+
+A recipe sets only resource type, marker count, radius and distribution. It
+preserves the entered seed, anchor and total stock; choosing Grove with a budget
+of three keeps three and asks for at least nine at Preview. No stock is silently
+added. Selecting a recipe clears pending preview/pick, then authors explicitly
+Preview and Apply. Changing type/count/radius/distribution marks the recipe
+Custom; seed/anchor/stock edits keep its name. Custom retains current settings.
+The existing dashed marker/stock preview, Cancel, resource history and current
+budget/access diagnostics remain the comparison and recovery path.
+
+Recipes create ordinary finite nodes with current Food/Wood presentation.
+Grove contributes node Wood separately from forest-cell potential; Orchard
+uses current Food visuals and behavior. These authoring names introduce no
+species, Farm, regrowth, wildlife, new biome art or runtime economy rule. The
+selector and settings use existing draft form capture; restored labels that
+disagree with their shape become Custom. Export and Save & Play contain only
+the resulting nodes, with no recipe identity or preview receipt.
+
+The frozen recipe descriptors live in
+[`authoring/resource-patch-presets.mjs`](../src/authoring/resource-patch-presets.mjs),
+consumed by the retained Resource Patches DOM adapter. The new authoring module
+has exact browser HTTP admission, an authoring graph role and recursive release
+inclusion. No existing public entrypoint moves. Defaults stay Custom with the
+existing five-marker/four-cell Food patch until a recipe is chosen.
+
+Visual backing reuses the seeded/core-falloff patch exploration above, existing
+Map Studio controls and the preserved
+[Vaelora interface reference](art-direction/vaelora-brand-v1/interface-reference.html).
+The selected treatment adds one ordinary selector and a brief description to
+the resource panel; marker colors/materials remain the existing approved tool
+treatment. Storyboard: custom settings/old preview → recipe loads shape and
+clears overlay → unchanged budget/new seeded preview → Apply updates diagnostic
+totals → Undo restores nodes/totals → recover draft restores recipe/settings
+with fresh history. [Preset QA](qa-map-resource-presets-2026-10-14.md) retains
+rendered control/preview and ordinary use acceptance separately from DOM/native
+checks. The map-making owner retains integration and served verification.
 
 CI runs `node scripts/vaelora-map-layout-scenario.mjs --check-only` to validate
 all regional layouts without rewriting the SVG or dirtying the clean release

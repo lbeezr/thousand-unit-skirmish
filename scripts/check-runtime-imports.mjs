@@ -159,6 +159,7 @@ export const RUNTIME_DOMAINS = Object.freeze(Object.fromEntries(Object.entries({
     'authoring/map-studio-terrain-history',
     'authoring/map-resource-diagnostics', 'authoring/map-resource-diagnostics-controls',
     'authoring/map-resource-budgets',
+    'authoring/resource-patch-presets',
     'authoring/map-import-validator',
     'authoring/map-studio-draft-store',
     'authoring/map-studio/draft/v1/contract',

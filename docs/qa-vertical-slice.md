@@ -93,6 +93,14 @@ ordinary PRs use checks proportionate to their changes under
 
 ## Known findings and historical evidence
 
+### Map Studio constrained resource presets — 14 October 2026
+
+[Preset evidence](qa-map-resource-presets-2026-10-14.md) records reusable finite
+Wood Grove/Food Orchard shapes, unchanged author budgets, constrained previews,
+ordinary node history/export/recovery and live diagnostic totals. The map-making
+owner retains exact served and rendered/ordinary use acceptance; recipes add
+no runtime economy or map balance rule.
+
 ### Map Studio resource budgets and access — 14 October 2026
 
 [Diagnostics evidence](qa-map-resource-diagnostics-2026-10-14.md) records
