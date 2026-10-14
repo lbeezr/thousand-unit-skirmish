@@ -13,6 +13,7 @@ start; this index covers maintained guides, contracts, experiments, and evidence
 | What evidence supports a product claim? | [QA plan](qa-vertical-slice.md) |
 | How do we choose tests, qualify cloud rendering and close verification? | [Testing strategy](testing-strategy.md) |
 | How should the game look and read? | [Art direction](art-direction-contract-v1.md) |
+| What carries Vaelora's personality from homepage and lobby into modes, characters and battle? | [Connected creative direction](creative-direction.md), [curated reference atlas](art-direction/creative-atlas-v1/README.md) and [journey storyboard](art-direction/creative-atlas-v1/journey-storyboard.svg) |
 | Which art/storyboard backing exists, and where are the direction gaps? | [4 October stocktake](art-direction-gaps-2026-10-04.md), [visual development backing](art-direction-contract-v1.md#visual-development-backing) |
 | Where can I compare a civilization's full buildings and village/town/city layouts? | [Frontier and Boughward reference library](art-direction/civilization-settlements-v1/README.md) |
 | What are Vaelora’s selected zone maps and ecology keys? | [Art checkpoint](art-direction/vaelora-v1/README.md) |

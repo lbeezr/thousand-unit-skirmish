@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-14",
+  "baseline": "dcde6da3150151a3c4b7398fa369345611096b59",
+  "scope": "Documentation source checks, not rendered game or full CPU suite",
+  "sourceHashesVerified": 15,
+  "htmlRelativePathsVerified": 57,
+  "inlineScriptSyntax": "pass",
+  "filterProbe": "pass: subject, status intersection, empty result and restore all using minimal DOM fixture",
+  "svg": "XML parsed and rasterized with native sharp/libvips; inspected as source storyboard",
+  "browserLayout": "Not verified; no game/browser launch",
+  "fullCpuSuitePassed": false
+}

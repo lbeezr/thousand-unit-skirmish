@@ -10,6 +10,14 @@ The [selected world atlas, ten zone maps and ten ecology keys](art-direction/vae
 
 Azure and Ember remain match identities. Region and culture palettes must remain recognizable under either owner's team accents. Environment cutouts, unit geometry and captured building views must share scale, lighting and readable silhouettes within each region.
 
+The [creative direction](creative-direction.md) connects this world treatment
+across entry, lobby, modes, portraits, voices and results. Start with its
+[curated reference atlas](art-direction/creative-atlas-v1/README.md) when choosing
+backing; the original collections retain full provenance and status. Client
+pine/brass and battlefield Obsidian serve different attention levels within
+the same world. Keep brand ornament, cultural marks, ownership and functional
+state symbols distinct; an exploratory painted crest supplies no canonical sigil.
+
 The blueprint-derived peoples and faction explorations propose character anatomy, clothing, materials and architecture for the four working allegiances. They extend the world checkpoint as source concepts; ancestry is not restricted by allegiance, and their role labels add no gameplay abilities.
 
 ![Vaelora world atlas](art-direction/vaelora-v1/world-atlas.png)

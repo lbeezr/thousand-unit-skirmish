@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1190" role="img" aria-labelledby="title description">
+  <title id="title">Vaelora: the creative journey from welcome to result</title>
+  <desc id="description">Six annotated schematic screens. The world-first Bellweather welcome leads to a pine lobby naming Veyrholds Terraced Vale, a literal mode decision, an Obsidian battlefield opening with a portrait, urgent battle cues, and an honest result with the familiar frame. These are proposals, not screenshots or timed runtime transitions.</desc>
+  <defs>
+    <style>
+      .paper{fill:#f3eddf}.sage{fill:#bcc9bd}.brass{fill:#d0b376}.mint{fill:#a4e7c5}.azure{fill:#5aa7d7}.ember{fill:#e67a5e}
+      .heading{font:30px Georgia,serif;fill:#f3eddf}.label{font:20px system-ui,sans-serif;fill:#f3eddf}.small{font:17px system-ui,sans-serif;fill:#bcc9bd}.tiny{font:14px system-ui,sans-serif;fill:#bcc9bd}.note{font:18px system-ui,sans-serif;fill:#bcc9bd}.kicker{font:14px system-ui,sans-serif;fill:#d0b376;letter-spacing:2px}.panel{fill:#102c27;stroke:#809387;stroke-width:1}.working{fill:#101a22;stroke:#66747a;stroke-width:1}
+    </style>
+    <clipPath id="frame-clip"><rect width="414" height="196"/></clipPath>
+    <g id="hills" clip-path="url(#frame-clip)"><rect width="414" height="196" fill="#738577"/><path d="M0 90 Q65 24 141 100 T292 90 T414 105 V196 H0Z" fill="#4d6953"/><path d="M0 157 Q122 63 230 155 T414 130 V196 H0Z" fill="#8a9768"/><path d="M56 196 Q118 133 107 93 T200 0" fill="none" stroke="#c3b990" stroke-width="10"/><path d="M297 0 Q252 81 322 123 T361 196" fill="none" stroke="#819f9c" stroke-width="19"/></g>
+    <g id="ground" clip-path="url(#frame-clip)"><rect width="414" height="196" fill="#69796d"/><path d="M0 57 L75 12 126 78 189 30 260 79 338 5 414 67 V115 L348 65 269 129 189 83 126 138 73 70 0 121Z" fill="#8b9692"/><path d="M20 191 Q119 137 179 175 T401 116" fill="none" stroke="#c1b99e" stroke-width="10"/><path d="M250 0 Q200 72 291 116 T263 196" fill="none" stroke="#668b91" stroke-width="18"/><path d="M39 98 l12 -24 12 24Z M84 114 l12 -24 12 24Z M311 83 l12 -24 12 24Z M339 110 l12 -24 12 24Z" fill="#233e35"/></g>
+    <g id="house"><rect x="0" y="12" width="34" height="27" fill="#ddd1ac"/><path d="M-4 12 L17 -6 38 12Z" fill="#49615c"/><rect x="12" y="22" width="10" height="17" fill="#8e6b48"/></g>
+    <g id="portrait"><rect width="54" height="54" fill="#a58b64"/><path d="M6 54 Q6 35 27 35 T48 54" fill="#667c65"/><ellipse cx="27" cy="23" rx="12" ry="15" fill="#d0ad84"/><path d="M14 20 Q9 4 27 5 Q46 4 40 20 L31 13Z" fill="#514437"/></g>
+  </defs>
+  <rect width="1500" height="1190" fill="#0b201c"/>
+  <text x="48" y="47" class="kicker">VAELORA · CREATIVE JOURNEY · 14 OCTOBER 2026</text>
+  <text x="48" y="99" font-family="Georgia,serif" font-size="43" fill="#f3eddf">A world worth tending. A world worth contesting.</text>
+  <text x="48" y="136" class="small">Working storyboard · 1 → 2 → 3 → 4 → 5 → 6 · State changes drive the journey; no added waits.</text>
+
+  <g transform="translate(48 182)">
+    <text class="heading" y="0">1 · Welcome</text><text class="small" y="31">Inviting · broad world, clear entry</text>
+    <g transform="translate(0 50)"><use href="#hills"/><use href="#house" x="68" y="95"/><use href="#house" x="135" y="132"/><rect x="229" y="14" width="170" height="169" class="panel"/><text x="244" y="44" class="label">VAELORA</text><text x="244" y="78" class="tiny">Make your next move.</text><rect x="244" y="100" width="141" height="34" fill="#d0b376"/><text x="258" y="123" font-size="17" font-family="system-ui,sans-serif" fill="#0b201c">New Game</text><text x="244" y="155" class="tiny">Create Room</text><text x="244" y="176" class="tiny">Join Room</text><text x="12" y="25" class="tiny">Bellweather · concept art</text></g>
+    <text y="277" class="note">Trigger: real entry action.</text><text y="307" class="note">Keep: live name, literal actions, craft.</text><text y="337" class="note">Reading and world discovery are optional.</text>
+  </g>
+
+  <g transform="translate(543 182)">
+    <text class="heading">2 · Room / lobby</text><text y="31" class="small">Companionable · prepare a fair contest</text>
+    <g transform="translate(0 50)"><rect width="414" height="196" class="panel"/><text x="18" y="32" class="label">Pregame lobby</text><text x="18" y="59" class="small">Veyrholds · Terraced Vale</text><text x="18" y="85" class="tiny">Skirmish · recovery-aware elimination</text><rect x="18" y="101" width="10" height="10" class="azure"/><text x="38" y="112" class="tiny">Azure (host) · Ready</text><path d="M23 122 l6 6 -6 6 -6 -6Z" class="ember"/><text x="38" y="134" class="tiny">Ember · Ready</text><rect x="18" y="150" width="140" height="32" fill="#d0b376"/><text x="28" y="172" font-size="16" font-family="system-ui,sans-serif" fill="#0b201c">Launch match</text><text x="181" y="172" class="tiny">Both ready · host can launch</text></g>
+    <text y="277" class="note">Trigger: confirmed room and seat state.</text><text y="307" class="note">Keep: pine frame, explicit owner marks.</text><text y="337" class="note">A map change clears readiness.</text>
+  </g>
+
+  <g transform="translate(1038 182)">
+    <text class="heading">3 · Rules / mode</text><text y="31" class="small">Curious · know the contest before launch</text>
+    <g transform="translate(0 50)"><rect width="414" height="196" class="panel"/><text x="18" y="33" class="label">Match rules</text><rect x="18" y="51" width="378" height="52" fill="#1b3730" stroke="#a8d0bd"/><text x="31" y="81" class="label">✓ Skirmish</text><text x="18" y="126" class="small">Elimination with recovery.</text><text x="18" y="151" class="tiny">Town Center loss alone is not defeat.</text><text x="18" y="176" class="tiny">Flavor follows the actual rule.</text></g>
+    <text y="277" class="note">Trigger: compatible map / mode choice.</text><text y="307" class="note">Keep: selected state, plain rule meaning.</text><text y="337" class="note">A lobby detail, not a forced new screen.</text>
+  </g>
+
+  <g transform="translate(48 640)">
+    <text class="heading">4 · Arrival / work</text><text y="31" class="small">Capable · recognize the ground, begin</text>
+    <g transform="translate(0 50)"><use href="#ground"/><use href="#house" x="125" y="116"/><rect x="12" y="10" width="217" height="30" class="working"/><text x="22" y="31" class="tiny">Skirmish · Elimination</text><rect x="12" y="119" width="270" height="65" class="working"/><use href="#portrait" x="18" y="125"/><text x="83" y="145" class="label">Worker</text><text x="83" y="169" class="tiny">Gather · Build · Repair</text><text x="13" y="103" class="tiny">“What needs doing?” · proposed line</text></g>
+    <text y="277" class="note">Trigger: authoritative match launch.</text><text y="307" class="note">Keep: warm portrait; reduce ornament.</text><text y="337" class="note">Obsidian working surfaces protect the map.</text>
+  </g>
+
+  <g transform="translate(543 640)">
+    <text class="heading">5 · Pressure / battle</text><text y="31" class="small">Attentive · urgent meaning comes forward</text>
+    <g transform="translate(0 50)"><use href="#ground"/><rect x="105" y="111" width="10" height="10" class="azure"/><rect x="121" y="122" width="10" height="10" class="azure"/><rect x="137" y="112" width="10" height="10" class="azure"/><path d="M206 104 l7 7 -7 7 -7 -7Z M222 117 l7 7 -7 7 -7 -7Z M238 104 l7 7 -7 7 -7 -7Z" class="ember"/><path d="M133 95 Q179 73 206 95" fill="none" stroke="#a4e7c5" stroke-width="2"/><rect x="12" y="10" width="303" height="37" class="working"/><text x="23" y="35" font-size="17" font-family="system-ui,sans-serif" fill="#edc77c">! Your units are under attack.</text><rect x="12" y="153" width="201" height="31" class="working"/><text x="23" y="174" class="tiny">Army · orders and stances</text></g>
+    <text y="277" class="note">Trigger: disclosed combat / command event.</text><text y="307" class="note">Keep: role, facing and team readability.</text><text y="337" class="note">No invented attacker, bearing or victory.</text>
+  </g>
+
+  <g transform="translate(1038 640)">
+    <text class="heading">6 · Result / return</text><text y="31" class="small">Resolved · explain, then release attention</text>
+    <g transform="translate(0 50)"><rect width="414" height="196" class="panel"/><text x="18" y="37" class="label">Match result</text><text x="18" y="77" font-family="Georgia,serif" font-size="33" fill="#f3eddf">Victory / Defeat / Draw</text><text x="18" y="109" class="small">Only the confirmed result is shown.</text><text x="18" y="134" class="tiny">Actual reason and available next action.</text><rect x="18" y="153" width="187" height="31" fill="#d0b376"/><text x="30" y="175" font-family="system-ui,sans-serif" font-size="15" fill="#0b201c">Available replay action</text><text x="233" y="175" class="tiny">Main menu</text></g>
+    <text y="277" class="note">Trigger: authoritative terminal result.</text><text y="307" class="note">Keep: familiar frame and honest language.</text><text y="337" class="note">No forced joke or unsupported recap.</text>
+  </g>
+  <path d="M48 1040 H1452" stroke="#52634d"/>
+  <text x="48" y="1081" class="small">Client materials → quieter planning → Obsidian command instrument → familiar return.</text>
+  <text x="48" y="1115" class="tiny">Backing: selected Bellweather / Veyrholds art, Vaelora brand study, approved 72px Obsidian direction, role portraits and voice guide.</text>
+  <text x="48" y="1145" class="tiny">Code-authored schematic. Geometry, wording and state examples are illustrative; runtime contracts and source status remain authoritative.</text>
+</svg>
