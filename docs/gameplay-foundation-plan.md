@@ -818,3 +818,42 @@ food/wood refund before taking a post-cancel image. The same validation supports
 its explicitly named authored map and still rejects mixed map identities.
 Source/package, actual staging deployment and inspected game evidence remain
 separate receipts owned by the building workstream in PR665 and its follow-up.
+
+### 14 October — identified staging queue acceptance
+
+The [retained current-runtime receipt](qa-evidence/building-queue-2026-10-14/staged-queue-70301c1.json)
+closes the bounded queue interaction above. [Packed run38592843128](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38592843128)
+at clean tool source `70301c15` passes movement, paid building placement and all
+four inspected queue frames with the same 1,853-file `0cf56e1d` runtime digest.
+It verifies the full 50-food waiting refund, proportional active refunds by
+pointer and trusted Enter, and empty-queue focus recovery. The waiting-cancelled
+image follows natural completion and disclosed paid replenishment; the exact
+refund is retained in the before/after observations.
+
+[Staged run38593351398](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38593351398)
+at the same tool source passes native Worker/Town Center selection, paid Worker
+training, paid House and Barracks completion, and chosen waiting Spearman
+cancellation. It retains the active Infantry and returns exactly 60 food and
+20 wood. All eight whole-game PNGs were inspected and their hashes verified;
+production, refund guidance and the research choices are readable. The House
+adds real population capacity; native Idle/Center controls recover the Worker
+when the expanded dock covers nearby units. No state, bank, timer or capacity
+injection is used.
+
+Provider and authenticated health checks identify actual served source
+`ceb50db9`, Railway deployment `23e0f9a5-06b0-4bbe-8e43-a4eb152c2118`, before
+and after capture. It contains feature merge `5634501f`; 148 imports and 14 public
+HUD/font hashes match. Live image digest/cleanliness remain unknown and separate
+from the local clean package. Immutable ZIPs, reports and inspected images are
+preserved outside the worktree. Independent final review against `ceb50db9`
+finds no actionable issues; 81 final combined owner controls and 17 reviewer controls
+pass. PR679 owns integration of this verification increment.
+
+This acceptance uses an authored blue-seat map entered through the normal
+menu/Studio Save and Play at 1280×720. Default fresh Tiny, opposite seat,
+narrow/touch and unassisted human 1v1 remain unverified. Staging verifies waiting
+cancellation; active/keyboard cancellation is from the packed game. Research
+was opened, not purchased. No additional audio listening is claimed. The expanded
+dock's world occlusion remains a concrete next usability observation alongside
+construction/repair and utility-state feedback. Existing full-suite movement
+failures remain separate from these focused passes.

@@ -1,0 +1,201 @@
+{
+  "checkedAt": "2026-10-14T16:00:32.048847+00:00",
+  "featureRevision": "5634501f75676b36424e24daf4d43b9fc817b3b0",
+  "toolRevision": "70301c1564c297c8488131b56ad78f8af1098fb3",
+  "deployedRevision": "ceb50db99f6ffd2f7c8e619ca66bbb4292023855",
+  "deploymentId": "23e0f9a5-06b0-4bbe-8e43-a4eb152c2118",
+  "liveReleaseDigest": null,
+  "liveSourceDirty": null,
+  "localCleanRelease": {
+    "sourceRevision": "70301c1564c297c8488131b56ad78f8af1098fb3",
+    "digest": "sha256:0cf56e1d0a0d5c69651195caa1a1e20227b53999c71dbbec806221a8a316262f",
+    "files": 1853
+  },
+  "stagingRun": 38593351398,
+  "stagingArtifact": 11909675680,
+  "stagingArtifactSha256": "20df14d31842ddf11e7deda2d554540504408218a968be8cd3b1ad63bd311f15",
+  "inspection": "all eight actual whole-game PNGs visually inspected; frame hashes verified",
+  "sourceVerification": "provider commit and authenticated health identify ceb50db9 before/after capture;148 client imports and14 public HUD/font file hashes match; no runtime change between feature, tool and deployed source",
+  "scope": {
+    "entry": "ordinary-menu-studio-import-save-and-play",
+    "room": "fresh-owned-staging-room",
+    "mapId": "hud-buildings",
+    "mapSha256": "d6ef58dc56b7cf8120d82826ab63cdcb14d238b665027de53232763fdfaf0b4f",
+    "team": 0,
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  "observed": [
+    "native Town Center selection and paid Worker training",
+    "native Idle and Center selection recover a visible Worker from expanded building dock",
+    "paid House completion increases capacity from15 to23",
+    "paid Barracks completion and Infantry training",
+    "chosen waiting Spearman removed from Infantry/Spearman queue; exact60F20W refund; active Infantry retained; focus moves to remaining entry",
+    "building names, production controls, queue/refund note and bounded research choices readable"
+  ],
+  "steps": [
+    {
+      "action": "cancel-chosen-waiting-unit",
+      "buildingId": 2,
+      "before": {
+        "mapId": "hud-buildings",
+        "team": 0,
+        "bank": {
+          "food": 1790,
+          "wood": 2730
+        },
+        "building": {
+          "id": 2,
+          "team": 0,
+          "type": "barracks",
+          "complete": true,
+          "queue": [
+            "infantry",
+            "spearman"
+          ],
+          "remaining": 9.500000000000009,
+          "blocked": false
+        },
+        "selected": true,
+        "controls": [
+          {
+            "index": 0,
+            "label": "1. Infantry \u00b7 Cancel",
+            "enabled": true
+          },
+          {
+            "index": 1,
+            "label": "2. Spearman \u00b7 Cancel",
+            "enabled": true
+          }
+        ],
+        "focus": null
+      },
+      "after": {
+        "mapId": "hud-buildings",
+        "team": 0,
+        "bank": {
+          "food": 1850,
+          "wood": 2750
+        },
+        "building": {
+          "id": 2,
+          "team": 0,
+          "type": "barracks",
+          "complete": true,
+          "queue": [
+            "infantry"
+          ],
+          "remaining": 8.300000000000013,
+          "blocked": false
+        },
+        "selected": true,
+        "controls": [
+          {
+            "index": 0,
+            "label": "1. Infantry \u00b7 Cancel",
+            "enabled": true
+          }
+        ],
+        "focus": "0"
+      },
+      "kind": "spearman",
+      "index": 1,
+      "refund": {
+        "food": 60,
+        "wood": 20
+      }
+    }
+  ],
+  "frames": [
+    {
+      "file": "worker.png",
+      "sha256": "03c084ea0109bf005d0f725f574404114e9c5c4b8bcad6dfa0a5339342ecf392"
+    },
+    {
+      "file": "town-center.png",
+      "sha256": "9e625c9db72c8e3db2da22b260b40bea3baa91268c8fed74e713505325e40124"
+    },
+    {
+      "file": "town-center-training.png",
+      "sha256": "080b821ba23dbcd87d8065209be0c057fb195ee93a794a75f21ebe22c6acb679"
+    },
+    {
+      "file": "house.png",
+      "sha256": "f1a3abb8ce121f75c9269e680d28ea040c8d2dbb9676d44a5d279323aece1931"
+    },
+    {
+      "file": "barracks.png",
+      "sha256": "7e2be52b850cceb9dcb85a93c91c37d9d9b38f95bfe052e0d00b11c28e053071"
+    },
+    {
+      "file": "barracks-training.png",
+      "sha256": "8ff18597c52cef70b8e2b60edcb6485547dbe33e513132838e70ac6cf8443ea3"
+    },
+    {
+      "file": "barracks-queue-cancelled.png",
+      "sha256": "ae758132f303b00724cd56ee44fec71fb17b2fc4b227c5bfa76dfbb33fda8b61"
+    },
+    {
+      "file": "barracks-research.png",
+      "sha256": "fe94937d43d70b87f6cc885a193cd5a89924b789cc0d9f14792ff37d40ec1125"
+    }
+  ],
+  "packed": {
+    "run": 38592843128,
+    "artifact": 11908412624,
+    "source": "70301c1564c297c8488131b56ad78f8af1098fb3",
+    "artifactSha256": "0f002a579ee93d7831263306b67246ef5f20489603c6b064e0415004db49b08d",
+    "inspection": "passed; all four queue PNGs visually inspected",
+    "transitions": [
+      {
+        "input": "pointer",
+        "kind": "infantry",
+        "index": 1,
+        "refund": {
+          "food": 50,
+          "wood": 0
+        }
+      },
+      {
+        "input": "pointer",
+        "kind": "spearman",
+        "index": 0,
+        "refund": {
+          "food": 17.83333300000004,
+          "wood": 5.944443999999976
+        }
+      },
+      {
+        "input": "Enter",
+        "kind": "spearman",
+        "index": 0,
+        "refund": {
+          "food": 31.16666699999996,
+          "wood": 10.388889000000063
+        }
+      }
+    ],
+    "keyboard": {
+      "keydown": true,
+      "keypress": true,
+      "keyup": true,
+      "trustedClick": true
+    },
+    "waitingFrameNote": "after natural completion and disclosed paid replenishment;820F765W"
+  },
+  "review": "independent final diff against ceb50db9 has no actionable findings;17 focused controls;81 final combined owner controls pass",
+  "limitations": [
+    "Authored staging map through ordinary menu/Studio Save and Play; no fresh default Tiny or human1v1 acceptance.",
+    "Blue seat only; no opposite seat, narrow viewport or touch proof.",
+    "Packed run proves active pointer and keyboard cancellation; staging run proves waiting cancellation.",
+    "Expanded dock can cover the selected structure; retain compactness/camera follow-up.",
+    "Research panel opened; no claim that research was purchased or completed.",
+    "No audio listening claimed; the existing interaction-audio owner retains full-roster acceptance.",
+    "Local clean pack digest does not establish Railway image digest or cleanliness.",
+    "Existing full CPU pathing/movement failures remain open; focused checks are not full-suite green."
+  ],
+  "evidenceOwner": "building workstream, chat01a13a88-e316-7760-9201-6a5ba3a121c9"
+}

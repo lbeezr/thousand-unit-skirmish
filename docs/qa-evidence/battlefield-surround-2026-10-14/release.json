@@ -1,0 +1,11 @@
+{
+  "source": "5f2c653477016e3a0949fc01ba63bacd03757b46",
+  "sourceDirty": false,
+  "digest": "sha256:86d4394e9dedaa5578443be82b80a34cf2852b462d523d1ee8b16b33ceaa1e0b",
+  "files": 1853,
+  "deployedRevision": "5f2c653477016e3a0949fc01ba63bacd03757b46",
+  "deploymentId": "1dfb6b16-cb42-4b56-902e-ce1f19f928c3",
+  "status": "SUCCESS",
+  "inGameAppearance": "incomplete; qualified cloud capture or identified user observation pending",
+  "retainedCheckpoint": "https://github.com/lbeezr/thousand-unit-skirmish/pull/678"
+}
