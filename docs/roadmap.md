@@ -315,10 +315,13 @@ choices, rather than copying its dated statuses into new work.
 The unit functionality owner `01a13a88-6b18-7821-9ca1-5856d78ad67b` is delivering
 [Worker completion before queued travel](qa-worker-queued-jobs-2026-10-14.md):
 Shift Move/Attack Move waits for construction, remaining wall sites or repair,
-with Farm renewal, cancellation and recovery coverage. Review, clean release,
-identified integration and ordinary-game acceptance remain owned. Next, inspect
-queued combat targeting and mixed-roster control on representative maps; choose
-the next bounded outcome from a reproduced control or movement gap.
+with Farm renewal, cancellation and recovery coverage. PR669 is merged and
+staged at `03ef2666`; both ordinary Tiny Skirmish seats complete a paid House,
+retain two queued legs through reconnect and reach the final destination.
+Independent review, clean packaging and hosted native authority checks pass;
+rendered Shift-click usability remains owned. Next, diagnose the reproduced
+Team 0 army arrival failure and its separate migration-Gather case, then choose
+the next bounded control/movement correction on representative maps.
 
 Stop and Hold Position establish explicit task/route interruption and stationary
 in-range defense, with both-seat authority and checkpoint/rematch regressions.

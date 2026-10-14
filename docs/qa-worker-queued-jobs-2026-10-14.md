@@ -100,3 +100,47 @@ game controls. Staging still reports baseline `dcde6da3` on successful deploymen
 `324fc814-e3a6-477b-b760-b5d5087e351b`; this change is not deployed. Ordinary
 game observation remains incomplete. The continuing unit goal stays active;
 this receipt does not claim all unit functionality complete.
+
+## Integrated and staged — 14 October, 13:53 UTC
+
+The user explicitly authorized repository publication, staging integration and
+a review subagent. Independent review found no actionable findings, passed
+59 focused tests and eight additional both-seat completion-window/wall-cancellation
+replays. The GitHub app published a byte-identical tree; current-main integration
+required only clean rebases for the concurrent source-quality, creative-direction
+and Map Studio slices. All 438 focused checks, architecture, strict types and
+documentation checks pass on that integrated tree. Both-seat native job/restart
+checks repeat the House and three-wall outcomes in
+[integrated-native.json](qa-evidence/worker-queued-jobs-2026-10-14/integrated-native.json).
+
+[PR #669](https://github.com/lbeezr/thousand-unit-skirmish/pull/669) merged as
+`03ef26665cc9a79973cf75ca6d9ab59d9f7f0095`, with exactly the reviewed candidate
+tree `3180c6be8acd9aa392bda31ff2f31020596e1f16`. The 24 direct new contract tests
+pass at the merge. Clean merge packaging includes 1,847 files and has digest
+`sha256:60a9e7379ddf7df077e112b5a6ac63064cd54b4fc1ded18d98bd0f148c0d96fc`;
+packed HTTP/WebSocket, import/asset and guarded startup checks pass on the same
+tree. The unchanged broader failures above remain open.
+
+Railway staging deployment `b96aec7b-ad88-42d9-aa3f-8489dd702e10` succeeded
+at 13:52:22 UTC. Authenticated served identity matches merge `03ef2666`.
+GitHub-triggered identity supplies provider source metadata; live clean-pack
+digest remains unknown, distinct from the verified local digest. Staging
+auto-deploy is enabled and production auto-deploy disabled; neither setting was
+changed and no production promotion occurred.
+
+The [hosted native receipt](qa-evidence/worker-queued-jobs-2026-10-14/staging-native.json)
+uses fresh ordinary Create Room → two ready human seats → Tiny Terraced Vale
+Skirmish launch, with no authored-map or actor/state injection. Each seat pays
+75 Wood for a House, queues Move then Attack Move, reconnects with both legs
+and the building job retained, finishes the House and arrives at the final
+destination (`-54.5,11.5` / `54.5,11.5`). Work remains active until completion;
+the bank falls by exactly 75 Wood. All clients close, then only the owned
+disposable room is recoverably archived. No invite/session or service secrets
+are retained in the receipt. These are real hosted authority/transport checks,
+without browser pixels or a rendered Shift-click usability claim.
+
+Current unit owner next action: reproduce and diagnose the Team 0 army arrival
+setup failure, choose a bounded movement/control correction and retain the
+separate migration-Gather case. Ordinary browser usability for the Worker queue
+remains incomplete and owned by this chat; no stopped Mac/browser fallback is
+used to close that evidence. The broader unit goal remains active.
