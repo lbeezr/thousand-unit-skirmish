@@ -9,6 +9,9 @@
     "scripts/renderer-capture-context.mjs",
     "scripts/type-contracts/renderer-capture-context-valid.mjs",
     "src/server/transport/peer-output.mjs",
-    "scripts/type-contracts/peer-output-valid.mjs"
+    "scripts/type-contracts/peer-output-valid.mjs",
+    "src/server/transport/origin-policy.mjs",
+    "src/server/orchestration/simulation-scheduler.mjs",
+    "scripts/type-contracts/server-policy-valid.mjs"
   ]
 }

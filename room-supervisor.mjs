@@ -6,7 +6,7 @@ import { connect as connectTcp } from 'node:net';
 import { mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { configuredPublicOrigins, sameOriginRequest } from './origin-policy.mjs';
+import { configuredPublicOrigins, sameOriginRequest } from './src/server/transport/origin-policy.mjs';
 import { practiceEntryCatalog } from './src/world/practice-entry-catalog.mjs';
 import { NORMAL_MATCH_MAP_ID, NORMAL_HUMAN_MATCH_MODE } from './src/match-modes.mjs';
 import { isAnonymousGameplayRequest } from './src/server/public-gameplay.mjs';

@@ -2,10 +2,23 @@
 
 [Game bible](game-bible.md#world-and-presentation) · [Entry contract](game-entry.md) · [Visual studies](art-direction/vaelora-brand-v1/README.md)
 
-Version 0.2 · 11 October 2026. Owner: the Vaelora branding/portal chat (`01a12b79`).
+Version 0.4 · 14 October 2026. Creative owner: **Unify game art direction and lore**
+(`01a13a8a-37a9-7812-800a-12e48c842b52`). The 11 October portal delivery remains
+recorded under its original owner (`01a12b79`).
 Use this reference for the front page, player portal, dialogs and future client
 surfaces. [Open the visual component reference](art-direction/vaelora-brand-v1/interface-reference.html)
 to compare colors, materials, button families and states.
+
+The [creative direction](creative-direction.md) and
+[curated atlas](art-direction/creative-atlas-v1/README.md) now connect this client
+foundation to lobby planning, mode disclosure, character voice and the approved
+Obsidian battlefield treatment. The bridge reduces ornament as attention rises;
+it does not replace either selected visual system. Bellweather is the portal's
+world concept, while the actual selected battlefield is named before launch.
+The [pregame-lobby increment](qa-vaelora-lobby-2026-10-14.md) applies this palette,
+brass action, control boundaries and feedback treatment through scoped lobby
+tokens. Its runtime/source evidence and pending ordinary-room appearance checks
+remain separate from the atlas's earlier source-only milestone.
 
 **Selected foundation:** world-first composition, pine, parchment, textured brass
 and layered oak foliage. **Proposed extensions:** the semantic colors, component

@@ -83,6 +83,54 @@ test('installed Node ambient types stay outside the browser boundary', () => {
   assert.deepEqual(diagnostics.map(diagnostic => diagnostic.code), [2591, 2591]);
 });
 
+const policyFixturePath = path.join(root, 'scripts/type-contracts/server-policy-invalid.mjs');
+const policyImports = [
+  "import { configuredPublicOrigins, sameOriginRequest } from '../../src/server/transport/origin-policy.mjs';",
+  "import { advanceTickDeadline } from '../../src/server/orchestration/simulation-scheduler.mjs';",
+];
+const policyCases = [
+  { name: 'numeric configured domain', code: 2322,
+    source: 'configuredPublicOrigins({ RAILWAY_PUBLIC_DOMAIN: 4173 });' },
+  { name: 'numeric origin header', code: 2322,
+    source: 'sameOriginRequest({ headers: { origin: 4173 } });' },
+  { name: 'numeric host header', code: 2322,
+    source: 'sameOriginRequest({ headers: { host: 4173 } });' },
+  { name: 'text TLS marker', code: 2322,
+    source: "sameOriginRequest({ socket: { encrypted: 'true' } });" },
+  { name: 'numeric origin allowlist', code: 2322,
+    source: 'sameOriginRequest({}, { allowedOrigins: new Set([4173]) });' },
+  { name: 'text edge termination flag', code: 2322,
+    source: "sameOriginRequest({}, { httpsTerminatedAtEdge: 'true' });" },
+  { name: 'origin decision mistaken for text', code: 2339,
+    source: 'sameOriginRequest({}).toUpperCase();' },
+  { name: 'configured origins mistaken for a number', code: 2339,
+    source: 'configuredPublicOrigins().toFixed(0);' },
+  { name: 'text tick deadline', code: 2345,
+    source: "advanceTickDeadline('100', 250, 30);" },
+  { name: 'text tick completion', code: 2345,
+    source: "advanceTickDeadline(100, '250', 30);" },
+  { name: 'text tick interval', code: 2345,
+    source: "advanceTickDeadline(100, 250, '30');" },
+  { name: 'next deadline mistaken for text', code: 2339,
+    source: 'advanceTickDeadline(100, 250, 30).nextDeadlineMs.toUpperCase();' },
+  { name: 'skipped slot count mistaken for text', code: 2339,
+    source: 'advanceTickDeadline(100, 250, 30).skippedTickSlots.toUpperCase();' },
+];
+const policyDiagnostics = fixtureDiagnostics(parsed, policyFixturePath,
+  [...policyImports, ...policyCases.map(item => item.source)].join('\n'));
+
+test('server policy negative fixtures produce only the expected contract failures', () => {
+  assert.equal(policyDiagnostics.length, policyCases.length, describe(policyDiagnostics).join('\n'));
+  assert.ok(policyDiagnostics.every(diagnostic => diagnostic.file?.fileName === policyFixturePath));
+});
+for (const [index, item] of policyCases.entries()) {
+  test(`the checker rejects ${item.name}`, () => {
+    const onLine = policyDiagnostics.filter(diagnostic => diagnostic.file?.fileName === policyFixturePath
+      && diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start).line === index + policyImports.length);
+    assert.deepEqual(onLine.map(diagnostic => diagnostic.code), [item.code], describe(onLine).join('\n'));
+  });
+}
+
 const peerFixturePath = path.join(root, 'scripts/type-contracts/peer-output-invalid.mjs');
 const peerFixtureImports = [
   "import { Buffer } from 'node:buffer';",

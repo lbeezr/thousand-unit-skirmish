@@ -12,6 +12,7 @@ import { mapSizeIdentity, ordinaryMapCatalog } from '../src/map-size-policy.mjs'
 import { planWallLine } from '../src/wall-line-planner.mjs';
 import { createWaterRouteGraph } from '../src/water-route-graph.mjs';
 import { buildElevationGrid } from '../src/map-utils.mjs';
+import { FOREST_WOOD_PER_CELL } from '../src/rules/forest-resources.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { runCheckpointJsonBudgetAudit } from './checkpoint-json-budget-audit.mjs';
 import { createMapStudioDraftStore } from '../src/authoring/map-studio-draft-store.mjs';
@@ -227,7 +228,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
     'src/gameplay-definitions.mjs', 'src/elevation.mjs', 'src/map-utils.mjs',
     'src/world/scenario-event-chain.mjs',
     'src/world/capture-prerequisites.mjs',
-    'src/town-center-spawn.mjs', 'src/terrain-authoring.mjs', 'src/forest-fringe.mjs',
+    'src/town-center-spawn.mjs', 'src/terrain-authoring.mjs', 'src/forest-fringe.mjs', 'src/rules/forest-resources.mjs',
     'maps/veyrholds-slate-saddle.json', 'scripts/performance-run-evidence.mjs',
     'scripts/generate-far-marches.mjs', 'scripts/fixtures/xl-far-marches.json',
     'scripts/map-scale-audit.mjs', 'scripts/map-grid-cost-audit.mjs',
@@ -239,7 +240,7 @@ export async function runXlBoundaryAudit({ native = false } = {}) {
   const identity = await performanceIdentity(ROOT, 'scripts/fixtures/xl-far-marches.json');
   const grid = await runGridCostAudit();
   const constants = {
-    forestWoodPerCell: sourceNumber(source, /const FOREST_WOOD_PER_CELL = (\d+);/),
+    forestWoodPerCell: FOREST_WOOD_PER_CELL,
     defaultArmySize: sourceNumber(source, /const DEFAULT_STARTING_ARMY_SIZE = (\d+);/),
     maxBuildings: sourceNumber(source, /const MAX_BUILDINGS = (\d+);/),
   };

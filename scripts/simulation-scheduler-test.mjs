@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { advanceTickDeadline } from '../simulation-scheduler.mjs';
+import { advanceTickDeadline } from '../src/server/orchestration/simulation-scheduler.mjs';
 
 const intervalMs = 1000 / 30;
 

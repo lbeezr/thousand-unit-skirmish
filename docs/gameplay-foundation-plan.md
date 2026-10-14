@@ -780,6 +780,22 @@ ZIP `11902705128` SHA-256 is
 `4f83978977d405495956a3bf2c340a5e3a646243ba6dd3264269825f1847c562`.
 Keyboard acceptance remains open until the corrected native input succeeds.
 
+At `eba96491`, [run 38578365165](https://github.com/lbeezr/thousand-unit-skirmish/actions/runs/38578365165)
+passed the complete clean-pack movement, House/Mill/Farm/Dock placement and
+Barracks queue sequence. All four queue PNGs were inspected: labels/refund note
+fit, the waiting unit refunded 50 food, active pointer cancellation refunded
+38.333333 food / 12.777778 wood, and trusted Enter activation refunded
+29.166667 food / 9.722222 wood before the queue emptied and focus returned to
+Train Infantry. The [retained inspection receipt](qa-evidence/building-queue-2026-10-14/packed-eba96491.json)
+records source, release digest, ZIP hash, input and scope. This proves the
+authored blue-seat Barracks at 1280×720, not deployment, normal Tiny, the other
+seat, touch/narrow viewports or unassisted-human use. The expanded dock covers
+part of the selected structure in this camera view; framing remains a follow-up.
+The immutable ZIP, reports and four inspected images are retained outside the
+disposable worktree. [PR665](https://github.com/lbeezr/thousand-unit-skirmish/pull/665)
+owns current-main integration, independent review, current source/package and
+the remaining identified staging/ordinary-game acceptance.
+
 Next building work is ranked by actual observation: finish this queue interaction
 at an identified release; inspect construction/repair and utility-state feedback;
 then verify building purpose, research and characteristic audio together in

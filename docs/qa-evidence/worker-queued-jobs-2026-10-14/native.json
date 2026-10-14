@@ -1,0 +1,45 @@
+{
+  "sourceRevision": "a1264e30f95f3be02edd9eaae8fa2e61ba2909ea",
+  "sourceDirty": false,
+  "serverSha256": "fd630008087101f6104347a2beecc95def5ee56cdb7c4865f75c3442fea5293a",
+  "records": [
+    {
+      "job": "house",
+      "teams": [
+        0,
+        1
+      ],
+      "completedSites": 2,
+      "waypointsPerWorker": 2,
+      "restartedDuringWork": true,
+      "unselectedUnitsUnchanged": true,
+      "wood": [
+        925,
+        925
+      ],
+      "checkpointsChecked": 578,
+      "ticks": 720
+    },
+    {
+      "job": "three-wall-sequence",
+      "teams": [
+        0,
+        1
+      ],
+      "completedSites": 6,
+      "waypointsPerWorker": 2,
+      "restartedDuringWork": true,
+      "unselectedUnitsUnchanged": true,
+      "wood": [
+        955,
+        955
+      ],
+      "checkpointsChecked": 605,
+      "ticks": 750
+    }
+  ],
+  "limits": [
+    "actual local asynchronous server and two WebSocket seats; paid commands and process restart",
+    "no injected actor, cargo, progress or economy; no browser, hosted or performance claim"
+  ]
+}

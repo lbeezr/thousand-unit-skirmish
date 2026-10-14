@@ -9,6 +9,8 @@ import { mountResourceBrushControls } from './resource-brush-controls.mjs';
 import { createMapStudioFormState } from './authoring/map-studio-form-state.mjs';
 import { createMapImportValidator } from './authoring/map-import-validator.mjs';
 import { packGroundPaint, packGroundElevation, packTerrainObstacles } from './authoring/map-studio-terrain-packing.mjs';
+import { MapStudioTerrainHistory } from './authoring/map-studio-terrain-history.mjs';
+import { mountMapResourceDiagnostics } from './authoring/map-resource-diagnostics-controls.mjs';
 import { MAP_STUDIO_DRAFT_VERSION, createMapStudioDraftStore } from './authoring/map-studio-draft-store.mjs';
 import { setActiveTerrain, groundHeight } from './terrain-height.mjs';
 import { REGIONS } from './regions.mjs';
@@ -662,6 +664,35 @@ function recordScenarioEdit() {
 function restoreScenarioEdit(direction) {
   if (scenarioEditCoordinator.restore(direction)) scheduleMapStudioDraftSave();
 }
+const terrainEditHistory = new MapStudioTerrainHistory();
+function editorTerrainState() {
+  return { width: editorDefinition.width, height: editorDefinition.height,
+    groundMaterials: editorGroundMaterials, groundLevels: editorGroundLevels,
+    obstacleMaterials: editorCellMaterials, obstacleElevations: editorCellElevations,
+    resourceNodes: editorResourceNodes, selectedResourceId: selectedEditorResourceId,
+    terrainSeed: editorDefinition.terrainSeed };
+}
+function syncEditorTerrainHistory() {
+  if (editorDefinition) terrainEditHistory.sync(editorTerrainState());
+  document.querySelector('#studio-terrain-undo').disabled = !!editorDrag || !!editorPanDrag || !terrainEditHistory.canUndo;
+  document.querySelector('#studio-terrain-redo').disabled = !!editorDrag || !!editorPanDrag || !terrainEditHistory.canRedo;
+}
+function restoreTerrainEdit(direction) {
+  if (!editorDefinition || editorDrag || editorPanDrag) return;
+  const restored = terrainEditHistory.restore(direction, editorTerrainState());
+  if (restored) {
+    editorResourceNodes = restored.resourceNodes;
+    selectedEditorResourceId = restored.selectedResourceId;
+    if (restored.terrainSeed === undefined) delete editorDefinition.terrainSeed;
+    else editorDefinition.terrainSeed = restored.terrainSeed;
+    document.querySelector('#studio-elevation-seed').value = restored.terrainSeed ?? 93000;
+    resourceBrushControls?.reset();
+    syncEditorResourceControls();
+    ui.studioMessage.textContent = direction === 'undo' ? 'Terrain edit undone.' : 'Terrain edit redone.';
+    scheduleMapStudioDraftSave();
+  }
+  drawEditorGrid();
+}
 function syncEditorRegionControls() {
   const list = document.querySelector('#studio-region-list');
   let regions; try { regions = readEditorRegions(); } catch { return; }
@@ -693,6 +724,7 @@ let selectedEditorScenarioEventId = null;
 let editorTriggerCreationPending = false;
 let editorResourceNodes = [];
 let resourceBrushControls = null;
+let mapResourceDiagnostics = null;
 let selectedEditorResourceId = null;
 let editorTool = 'stone';
 let editorDrag = null;
@@ -6514,6 +6546,7 @@ ui.studioAudioProfile.addEventListener('change', scheduleMapStudioDraftSave);
 
 function populateMapEditor(definition, message) {
   scenarioEditHistory.clear();
+  terrainEditHistory.clear();
   selectedEditorRegionId = null;
   editorDefinition = JSON.parse(JSON.stringify(definition));
   editorDefinition.fogOfWar ??= false;
@@ -6738,6 +6771,8 @@ function resizeEditorMap() {
   const oldWidth = editorDefinition.width;
   const oldHeight = editorDefinition.height;
   if (width === oldWidth && height === oldHeight) return;
+  terrainEditHistory.clear();
+  editorDrag = null;
   const resizedSpawns = resizeWorldMarkers(editorDefinition.spawnPoints, oldWidth, oldHeight, width, height);
   const resizedResources = resizeWorldMarkers(editorResourceNodes, oldWidth, oldHeight, width, height);
   const resized = new Int8Array(width * height);
@@ -6863,6 +6898,8 @@ function paintEditorElevationStroke(drag, next) {
 
 function drawEditorGrid() {
   if (!editorDefinition) return;
+  syncEditorTerrainHistory();
+  if (!editorDrag && !editorPanDrag) mapResourceDiagnostics?.sync();
   resourceBrushControls?.sync();
   const canvas = ui.studioGrid;
   const viewportSize = mapStudioViewportSize();
@@ -7082,6 +7119,14 @@ function withCurrentEditorElevation(definition) {
 function compressEditorObstacles() {
   return packTerrainObstacles(editorDefinition.width, editorDefinition.height,
     editorCellMaterials, editorCellElevations, EDITOR_MATERIALS);
+}
+
+function readEditorResourceDiagnosticMap() {
+  if (!editorDefinition) return null;
+  return withCurrentEditorElevation({ width: editorDefinition.width, height: editorDefinition.height,
+    economyProfileId: editorDefinition.economyProfileId, spawnPoints: editorDefinition.spawnPoints,
+    obstacles: compressEditorObstacles(), resourceNodes: editorResourceNodes,
+    startingResources: { food: Number(ui.studioStartingFood.value), wood: Number(ui.studioStartingWood.value) } });
 }
 
 function collectEditorMap() {
@@ -9770,6 +9815,7 @@ for (const eventType of ['input', 'change', 'click', 'pointerdown', 'pointerup']
       && !event.target.closest('#studio-grid')) return;
     if (eventType === 'click' && !event.target.closest('button, input, select, textarea, canvas')) return;
     scheduleMapStudioDraftSave();
+    mapResourceDiagnostics?.sync();
   });
 }
 window.addEventListener('pagehide', () => persistMapStudioDraft(true));
@@ -9794,8 +9840,10 @@ document.querySelector('#studio-generate-hills').addEventListener('click',()=> {
   if(!editorDefinition) return;
   try {
     const seed=Number(document.querySelector('#studio-elevation-seed').value);
+    const before = terrainEditHistory.begin(editorTerrainState());
     editorGroundLevels=generateRollingGround(collectEditorMap(),seed);
     editorDefinition.terrainSeed=seed;
+    terrainEditHistory.record(before, editorTerrainState());
     ui.studioMessage.textContent=`Generated rolling ground with seed ${seed}. Bases, resources, water and objectives retain flat pads. Validate before Save & Play.`;
     drawEditorGrid();scheduleMapStudioDraftSave();
   } catch(error) {ui.studioMessage.textContent=error.message;}
@@ -9866,6 +9914,9 @@ document.querySelector('#studio-download').addEventListener('click', downloadEdi
 ui.studioAddTrigger.addEventListener('click', beginAddingEditorTrigger);
 ui.studioRemoveTrigger.addEventListener('click', removeSelectedEditorTrigger);
 ui.studioRemoveResource.addEventListener('click', removeSelectedEditorResourceNode);
+mapResourceDiagnostics = mountMapResourceDiagnostics({
+  host: ui.mapStudio.querySelector('.resource-node-fields'), readMap: readEditorResourceDiagnosticMap,
+});
 resourceBrushControls = mountResourceBrushControls({
   host: ui.mapStudio.querySelector('.resource-node-fields'),
   readMap: () => editorDefinition ? withCurrentEditorElevation({
@@ -9916,6 +9967,8 @@ for (const key of ['name','column','row','width','height']) document.querySelect
 });
 document.querySelector('#studio-scenario-undo').addEventListener('click', () => restoreScenarioEdit('undo'));
 document.querySelector('#studio-scenario-redo').addEventListener('click', () => restoreScenarioEdit('redo'));
+document.querySelector('#studio-terrain-undo').addEventListener('click', () => restoreTerrainEdit('undo'));
+document.querySelector('#studio-terrain-redo').addEventListener('click', () => restoreTerrainEdit('redo'));
 for (const field of [ui.studioEventRegion, ui.studioEventRegionTeam, ui.studioEventRegionKind,
   ui.studioEventRegionMinimum]) field.addEventListener('change', saveSelectedEditorScenarioEventFields);
 ui.studioEventObjective.addEventListener('change', saveSelectedEditorScenarioEventFields);
@@ -9969,7 +10022,7 @@ for (const button of document.querySelectorAll('[data-map-tool]')) {
   button.addEventListener('click', () => setEditorTool(button.dataset.mapTool));
 }
 ui.studioGrid.addEventListener('pointerdown', (event) => {
-  if (!editorDefinition) return;
+  if (!editorDefinition || editorDrag || editorPanDrag) return;
   if (event.button === 0 && resourceBrushControls?.picking) {
     const cell = editorCellFromPointer(event);
     if (cell && resourceBrushControls.pickAt(cell)) { event.preventDefault(); return; }
@@ -9984,6 +10037,7 @@ ui.studioGrid.addEventListener('pointerdown', (event) => {
       scrollTop: ui.studioGridViewport.scrollTop,
     };
     ui.studioGrid.classList.add('is-panning');
+    syncEditorTerrainHistory();
     ui.studioGrid.setPointerCapture(event.pointerId);
     event.preventDefault();
     return;
@@ -9998,10 +10052,10 @@ ui.studioGrid.addEventListener('pointerdown', (event) => {
       const region = [...regions].reverse().find(r => cell.column >= r.zone.column && cell.column < r.zone.column+r.zone.width && cell.row >= r.zone.row && cell.row < r.zone.row+r.zone.height);
       if (!region) { selectedEditorRegionId = null; syncEditorRegionControls(); drawEditorGrid(); return; }
       selectedEditorRegionId = region.id;
-      editorDrag = { tool: editorTool, start: cell, current: cell, regionId: region.id, zone: {...region.zone} };
+      editorDrag = { pointerId: event.pointerId, tool: editorTool, start: cell, current: cell, regionId: region.id, zone: {...region.zone} };
     } else {
       if (regions.length >= 32) { ui.studioMessage.textContent = 'At most 32 named regions.'; return; }
-      editorDrag = { tool: editorTool, start: cell, current: cell };
+      editorDrag = { pointerId: event.pointerId, tool: editorTool, start: cell, current: cell };
     }
     syncEditorRegionControls(); ui.studioGrid.setPointerCapture(event.pointerId); drawEditorGrid(); event.preventDefault(); return;
   }
@@ -10062,7 +10116,7 @@ ui.studioGrid.addEventListener('pointerdown', (event) => {
     beginAddingEditorTrigger();
   }
   if (editorTool === 'objective' && !getSelectedEditorTrigger() && !editorTriggerCreationPending) return;
-  editorDrag = { tool: editorTool, start: cell, current: cell };
+  editorDrag = { pointerId: event.pointerId, tool: editorTool, start: cell, current: cell };
   if (['rock', 'stone', 'cliff', 'forest', 'water', 'erase'].includes(editorTool) && ui.studioObstacleShape.value === 'stroke') {
     editorDrag.obstacleStroke = true;
     editorDrag.brushSize = Number(ui.studioObstacleBrushSize.value);
@@ -10098,7 +10152,7 @@ ui.studioGrid.addEventListener('pointermove', (event) => {
     }
     return;
   }
-  if (!editorDrag) return;
+  if (!editorDrag || editorDrag.pointerId !== event.pointerId) return;
   if (cell) {
     if (isGroundEditorTool(editorDrag.tool)) paintEditorGroundStroke(editorDrag, cell);
     else if (isElevationEditorTool(editorDrag.tool)) paintEditorElevationStroke(editorDrag, cell);
@@ -10115,9 +10169,10 @@ function finishEditorPointer(event, commit) {
     if (editorPanDrag.pointerId !== event.pointerId) return;
     editorPanDrag = null;
     ui.studioGrid.classList.remove('is-panning');
+    syncEditorTerrainHistory();
     return;
   }
-  if (!editorDrag) return;
+  if (!editorDrag || editorDrag.pointerId !== event.pointerId) return;
   const drag = editorDrag;
   editorDrag = null;
   if (drag.tool.startsWith('region-')) {
@@ -10135,6 +10190,7 @@ function finishEditorPointer(event, commit) {
     return;
   }
   if (commit) {
+    const terrainBefore = drag.tool === 'objective' ? null : terrainEditHistory.begin(editorTerrainState());
     const next = editorCellFromPointer(event) || drag.current;
     if (isGroundEditorTool(drag.tool)) paintEditorGroundStroke(drag, next);
     else if (isElevationEditorTool(drag.tool)) paintEditorElevationStroke(drag, next);
@@ -10229,11 +10285,16 @@ function finishEditorPointer(event, commit) {
         ? `${result} Removed ${removedNodes} resource node${removedNodes === 1 ? '' : 's'} on painted terrain.`
         : result;
     }
+    if (terrainBefore) {
+      terrainEditHistory.record(terrainBefore, editorTerrainState());
+      scheduleMapStudioDraftSave();
+    }
   }
   drawEditorGrid();
 }
 ui.studioGrid.addEventListener('pointerup', (event) => finishEditorPointer(event, true));
 ui.studioGrid.addEventListener('pointercancel', (event) => finishEditorPointer(event, false));
+ui.studioGrid.addEventListener('lostpointercapture', (event) => finishEditorPointer(event, false));
 ui.studioGridZoomIn.addEventListener('click', () => setMapStudioZoom(editorViewZoom * 1.25));
 ui.studioGridZoomOut.addEventListener('click', () => setMapStudioZoom(editorViewZoom / 1.25));
 ui.studioGridZoomFit.addEventListener('click', fitMapStudioViewport);
@@ -10254,6 +10315,7 @@ ui.mapStudio.addEventListener('close', () => {
   ui.studioGrid.classList.remove('is-panning');
   ui.studioPublish.disabled = false;
   editorDefinition = null;
+  terrainEditHistory.clear();
   editorDraftSourceMapId = null;
   editorDraftStorageKey = null;
   editorDraftDirty = false;

@@ -79,6 +79,8 @@ run(['--test', 'scripts/stone-authoring-fixture.test.mjs'], 'Proposed Stone layo
 run(['--test', 'scripts/stone-map-profile.test.mjs'], 'Typed Stone layout and map profile compatibility');
 run(['--test', 'scripts/resource-brush-authoring.test.mjs'], 'Resource brush preview and editor transactions');
 run(['--test', 'scripts/resource-brush-controls.test.mjs'], 'Resource brush editor controls');
+run(['--test', 'scripts/map-studio-terrain-history.test.mjs'], 'Map Studio terrain gestures, bounded undo and portable recovery');
+run(['--test', 'scripts/map-resource-diagnostics.test.mjs'], 'Per-seat authored resource budgets, access and live editor diagnostics');
 run(['--test', 'scripts/map-studio-draft-recovery.test.mjs'], 'Map Studio draft recovery container preflight');
 run(['--test', 'scripts/map-studio-import-errors.test.mjs'], 'Map Studio import read and parse failure contracts');
 run(['--test', 'scripts/map-publish-feedback.test.mjs'], 'Map Studio rejected publish feedback and explicit retry');
@@ -348,6 +350,8 @@ run(['--test', 'scripts/ruleset-revision.test.mjs'], 'Resolved ruleset identity 
 run(['--test', 'scripts/gameplay-definitions.test.mjs'], 'Gameplay definition validation');
 run(['--test', 'scripts/client-build-recovery.test.mjs'], 'Build placement connection recovery');
 run(['--test', 'scripts/construction-selection.test.mjs'], 'Selected-only construction client commands');
+run(['--test', 'scripts/worker-queued-job.test.mjs'], 'Both-seat Worker construction and repair before queued travel');
+run(['scripts/worker-queued-job-native-scenario.mjs'], 'Native two-seat paid Worker job queues and process recovery');
 run(['--test', 'scripts/construction-targeting.test.mjs'], 'Owned unfinished construction picking and contextual orders');
 run(['scripts/construction-targeting-scenario.mjs'], 'Both-seat paid Palisade right-click construction and cold recovery');
 run(['scripts/construction-selection-scenario.mjs'], 'Both-seat selected builders and unselected work recovery');
@@ -372,6 +376,7 @@ const scenarios = [
   ['scripts/client-asset-allowlist-scenario.mjs', 'Client static asset allowlist'],
   ['scripts/docker-ui-assets-context-scenario.mjs', 'Docker UI asset context'],
   ['scripts/origin-policy-scenario.mjs', 'Origin policy'],
+  ['scripts/simulation-scheduler-test.mjs', 'Fixed-step scheduler cadence and injected stall'],
   ['scripts/origin-proxy-scenario.mjs', 'Origin policy through room proxy'],
   ['scripts/audio-library.test.mjs', 'Audio library and portable originals'],
   ['scripts/validate-zone-audio.mjs', 'All-zone audio source coverage and integrity'],

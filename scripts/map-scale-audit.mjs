@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { buildElevationGrid } from '../src/map-utils.mjs';
+import { FOREST_WOOD_PER_CELL } from '../src/rules/forest-resources.mjs';
 import { canTraverseElevation, elevationPathCost } from '../src/elevation.mjs';
 import { townCenterFootprintCells } from '../src/town-center-spawn.mjs';
 import { UNIT_DEFINITIONS, BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
@@ -263,10 +264,10 @@ export async function runAudit() {
     throw new Error('Recheck default map contract.');
   const defaultMapId = matchModeDefinition(NORMAL_HUMAN_MATCH_MODE).defaultMapId ?? NORMAL_MATCH_MAP_ID;
   const constants = { defaultMapId, ticksPerSecond: integer('TICK_RATE'), maxBuildings: integer('MAX_BUILDINGS'),
-    forestWoodPerCell: integer('FOREST_WOOD_PER_CELL'), defaultArmySize: integer('DEFAULT_STARTING_ARMY_SIZE') };
+    forestWoodPerCell: FOREST_WOOD_PER_CELL, defaultArmySize: integer('DEFAULT_STARTING_ARMY_SIZE') };
   const files = (await readdir(path.join(root, 'maps'))).filter(f => f.endsWith('.json')).sort();
-  const inputFiles = ['scripts/map-scale-audit.mjs', 'server.mjs', 'room-supervisor.mjs', 'simulation-scheduler.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs',
-    'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/pve-match.mjs', 'src/match-modes.mjs', 'src/map-size-policy.mjs', 'src/bannerfall-rules.mjs', 'src/terrain-height.mjs', ...files.map(f => `maps/${f}`)];
+  const inputFiles = ['scripts/map-scale-audit.mjs', 'server.mjs', 'room-supervisor.mjs', 'src/server/orchestration/simulation-scheduler.mjs', 'src/map-utils.mjs', 'src/elevation.mjs', 'src/town-center-spawn.mjs',
+    'src/rules/forest-resources.mjs', 'src/gameplay-definitions.mjs', 'src/farm-harvest.mjs', 'src/palisade-profile.mjs', 'src/pve-match.mjs', 'src/match-modes.mjs', 'src/map-size-policy.mjs', 'src/bannerfall-rules.mjs', 'src/terrain-height.mjs', ...files.map(f => `maps/${f}`)];
   const hashes = {};
   for (const file of inputFiles) hashes[file] = hash(await readFile(path.join(root, file)));
   const maps = [];

@@ -1,0 +1,47 @@
+{
+  "expectedSource": "03ef26665cc9a79973cf75ca6d9ab59d9f7f0095",
+  "identity": {
+    "ok": true,
+    "expected": {
+      "sourceRevision": "03ef26665cc9a79973cf75ca6d9ab59d9f7f0095"
+    },
+    "served": {
+      "sourceRevision": "03ef26665cc9a79973cf75ca6d9ab59d9f7f0095",
+      "sourceDirty": null,
+      "digest": null,
+      "origin": "railway-git"
+    },
+    "scope": "source",
+    "issues": []
+  },
+  "records": [
+    {
+      "team": 0,
+      "mapId": "veyrholds-terraced-vale",
+      "paidHouseId": 1,
+      "complete": true,
+      "waypointOrders": 2,
+      "reconnectRetainedQueue": true,
+      "destination": {
+        "x": -54.5,
+        "z": 11.5
+      },
+      "woodSpent": 75
+    },
+    {
+      "team": 1,
+      "mapId": "veyrholds-terraced-vale",
+      "paidHouseId": 2,
+      "complete": true,
+      "waypointOrders": 2,
+      "reconnectRetainedQueue": true,
+      "destination": {
+        "x": 54.5,
+        "z": 11.5
+      },
+      "woodSpent": 75
+    }
+  ],
+  "archivedOwnedFixture": true,
+  "scope": "hosted native normal Tiny Skirmish entry, paid House and selected-worker route; no browser/render claim"
+}

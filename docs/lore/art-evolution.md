@@ -4,6 +4,16 @@
 `9990ed3`, plus an explicit recovery register. This page adds wiki access to
 saved iterations; it does not recover absent files or approve rejected art.
 
+## Curated creative starting shelf — 14 October 2026
+
+The [creative reference atlas](../art-direction/creative-atlas-v1/README.md)
+links fifteen preserved sources in place, with selection reasons, limits and
+observed hashes. It joins the regional art, client study, historical portal
+capture, HUD specimen, character/architecture sources and settlement/lifecycle
+explorations. Its new journey storyboard connects their intended treatments
+across the player experience. This curation neither moves originals nor
+reclassifies exploratory work as selected; the dated inventory below stays intact.
+
 ## Direction before the regional atlas
 
 ![26 September frontier direction study](../art-direction/frontier-skirmish-direction-study-2026-09-26.png)

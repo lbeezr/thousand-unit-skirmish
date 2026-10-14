@@ -35,6 +35,16 @@ preserved regional art and existing play/room/Resume contracts, then verify its
 identified served revision. Subsequent lobby and identity refinement are separate
 slices; no new account, matchmaking or game-mode system is implied.
 
+Creative stewardship across the entry, lobby, modes, art, voice and lore now
+belongs to **Unify game art direction and lore**, chat `01a13a8a-37a9-7812-800a-12e48c842b52`.
+Its [connected direction and reference atlas](creative-direction.md) provide
+the first source-only outcome: curated existing art, provenance/status and a
+journey storyboard. The [pregame-lobby material/hierarchy increment](qa-vaelora-lobby-2026-10-14.md)
+now has runtime/contract work, retaining its room/mode behavior; the same owner
+retains identified release, staging and normal-room visual evidence. Result/return
+identity is the next independent creative seam. This complements core-match work without adding
+another approval queue or changing approved client/HUD selections.
+
 The [canonical building action matrix](gameplay-foundation-plan.md#canonical-building-action-coverage--4-october-2026)
 owns all thirteen roles, six technologies, finite Farm diagnosis and small B0–B4
 action/production/ordinary-acceptance slices in the existing Interface/Content
@@ -213,7 +223,15 @@ The [maps and resourcing saga](maps-resourcing-saga-plan.md) expands the map
 stream into nine incremental epics and evidence milestones: coherent Millrace,
 shared editor/wildlife rules, one polished biome with a mature current-roster
 scenario, then regional kits. It preserves the verified food/wood baseline and
-records recommended economy choices for explicit later decisions. This roadmap
+records recommended economy choices for explicit later decisions. Map Studio's
+[terrain history](map-authoring.md#terrain-edit-history--14-october-2026) now adds
+bounded gesture undo/redo, displaced-node restoration and reversible hill
+generation. The maps/map-making owner retains served-release and rendered tool
+acceptance. [Resource diagnostics](map-authoring.md#resource-budgets-and-access-diagnostics--14-october-2026)
+now separates per-seat banks, finite node allocation/reachability and forest
+potential. Its [QA](qa-map-resource-diagnostics-2026-10-14.md) records the 32-map
+conservation checks and Medium/Large route-allocation comparison. Next: compare
+the affected pockets in paid play, then constrained Grove/Orchard presets. This roadmap
 remains the next-outcome queue; the saga is its detailed plan, not a second queue.
 
 Based on integration baseline `25488c8`, choose one bounded outcome in a stream.
@@ -297,6 +315,17 @@ The previous task-by-task ledger is preserved in the
 choices, rather than copying its dated statuses into new work.
 
 ## Army-command foundations
+
+The unit functionality owner `01a13a88-6b18-7821-9ca1-5856d78ad67b` is delivering
+[Worker completion before queued travel](qa-worker-queued-jobs-2026-10-14.md):
+Shift Move/Attack Move waits for construction, remaining wall sites or repair,
+with Farm renewal, cancellation and recovery coverage. PR669 is merged and
+staged at `03ef2666`; both ordinary Tiny Skirmish seats complete a paid House,
+retain two queued legs through reconnect and reach the final destination.
+Independent review, clean packaging and hosted native authority checks pass;
+rendered Shift-click usability remains owned. Next, diagnose the reproduced
+Team 0 army arrival failure and its separate migration-Gather case, then choose
+the next bounded control/movement correction on representative maps.
 
 Stop and Hold Position establish explicit task/route interruption and stationary
 in-range defense, with both-seat authority and checkpoint/rematch regressions.

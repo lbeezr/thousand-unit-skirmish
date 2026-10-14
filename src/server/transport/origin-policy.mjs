@@ -1,3 +1,12 @@
+/**
+ * The origin gate reads only these request fields. A plain socket projection
+ * supports fixtures; Node's Socket also fits, with an optional TLS marker.
+ * @typedef {object} OriginRequest
+ * @property {Pick<import('node:http').IncomingHttpHeaders, 'origin' | 'host'>} [headers]
+ * @property {(import('node:net').Socket & {encrypted?: boolean}) | {encrypted: boolean}} [socket]
+ */
+
+/** @param {string} value @param {string} label @returns {string} */
 function normalizeOrigin(value, label) {
   let parsed;
   try { parsed = new URL(value); } catch { throw new Error(`${label} must be a valid URL origin.`); }
@@ -9,7 +18,12 @@ function normalizeOrigin(value, label) {
   return parsed.origin;
 }
 
+/**
+ * @param {Readonly<Record<string, string | undefined>>} [environment]
+ * @returns {Set<string>}
+ */
 export function configuredPublicOrigins(environment = process.env) {
+  /** @type {Set<string>} */
   const origins = new Set();
   const extraOrigins = String(environment.RTS_PUBLIC_ORIGINS || '')
     .split(',').map((origin) => origin.trim()).filter(Boolean);
@@ -21,6 +35,11 @@ export function configuredPublicOrigins(environment = process.env) {
 }
 
 // Public deployments use explicit origins; only local runs derive an origin from Host.
+/**
+ * @param {OriginRequest} request
+ * @param {{allowedOrigins?: ReadonlySet<string>, httpsTerminatedAtEdge?: boolean}} options
+ * @returns {boolean}
+ */
 export function sameOriginRequest(request, {
   allowedOrigins = new Set(),
   httpsTerminatedAtEdge = false,

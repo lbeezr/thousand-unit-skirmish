@@ -46,11 +46,14 @@ test('host controls send supported configuration and suppress pending duplicate 
   assert.equal(f.root.open, true);
   assert.equal(f.root.querySelector('img'), null, 'catalog text cannot become markup');
   assert.equal(f.node('lobby-army-size').value, '8', 'actual map opening is represented');
+  assert.equal(f.node('lobby-map-summary').textContent, '<img src=x>', 'the full selected map label stays plain text');
   const map = f.node('lobby-map');
   map.value = 'map-b';
   map.dispatchEvent(new f.dom.window.Event('change'));
   assert.deepEqual(f.sent, [{ type: 'configureLobby', mapId: 'map-b', revision: 4 }]);
   assert.equal(f.node('lobby-ready').disabled, true);
+  assert.equal(f.node('lobby-map-summary').textContent, '<img src=x>', 'a pending choice does not claim a changed map');
+  assert.equal(f.node('lobby-ready').dataset.ready, 'false', 'pending orders do not invent readiness');
   f.node('lobby-ready').click();
   assert.equal(f.sent.length, 1);
   f.ui.reject('Lobby changed', { ...f.state, revision: 5 }, host);
@@ -215,13 +218,16 @@ test('guest/spectator authority, readiness and reconnect are presented accuratel
   assert.equal(f.node('lobby-ready').disabled, false);
   f.ui.update({ ...f.state, seats: f.state.seats.map(row => ({ ...row, ready: true })), canLaunch: true }, guest);
   assert.equal(f.node('lobby-ready').textContent, 'Not ready');
+  assert.equal(f.node('lobby-ready').dataset.ready, 'true');
   f.node('lobby-ready').click();
   assert.deepEqual(f.sent.at(-1), { type: 'setReady', ready: false, revision: 4 });
+  assert.equal(f.node('lobby-ready').dataset.ready, 'true', 'withdrawal waits for authoritative acknowledgement');
   f.ui.disconnect();
   assert.equal(f.node('lobby-ready').disabled, true);
   assert.match(f.node('lobby-status').textContent, /Reconnecting/);
   f.ui.update(f.state, { id: 'spectator-3', team: null });
   assert.equal(f.node('lobby-ready').disabled, true);
+  assert.equal(f.node('lobby-ready').dataset.ready, 'false', 'a spectator has no ready seat');
   assert.match(f.node('lobby-status').textContent, /Spectating/);
 });
 
@@ -360,6 +366,10 @@ test('Azure gets specific waiting/reconnect guidance while errors and pending re
   assert.match(f.node('lobby-status').textContent, /Ember disconnected.*reserved/);
   f.node('lobby-ready').click();
   assert.match(f.node('lobby-status').textContent, /Waiting for server/);
+  assert.equal(f.node('lobby-status').dataset.feedback, 'pending');
   f.ui.reject('Lobby changed', reserved, host);
   assert.match(f.node('lobby-status').textContent, /Lobby changed/);
+  assert.equal(f.node('lobby-status').dataset.feedback, 'error');
+  f.ui.disconnect();
+  assert.equal(f.node('lobby-status').dataset.feedback, 'information', 'connection recovery takes precedence over a stale error');
 });

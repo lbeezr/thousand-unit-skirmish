@@ -4,6 +4,14 @@ Draft derived from the author's writing, 30 September 2026. The [source study](l
 
 The author's direction is deep creative influence with freedom to transform the source material. Carry forward the sensibility and inventiveness; select literal names, events and cosmology deliberately. *The Soul Bandit* is a confirmed reference, currently available through secondary project notes rather than its original prose.
 
+The [creative direction's three speaking registers](creative-direction.md#three-speaking-registers)
+carry this sensibility into optional world notes and practical character
+responses while keeping system copy literal. The
+[performance guide](civilization-voice-language-guide.md) owns proposed audition
+scripts and semantic binding; the [reference atlas](art-direction/creative-atlas-v1/README.md)
+connects their intended treatment to preserved people, craft and place art.
+These pointers add no recorded dialogue or selected fictional events.
+
 ## The voice we should carry forward
 
 The strongest shared quality is a materially strange world observed by people with appetites, vanities, grudges and limited information. Wonder arrives through contact: grit, cold, weight, taste, a ruined body's awkward handling, the smell of food. Institutions have polished language and self-serving incentives. Characters rarely have the whole explanation. Their practical responses make the world feel inhabited.

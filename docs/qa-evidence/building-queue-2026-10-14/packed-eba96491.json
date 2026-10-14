@@ -1,0 +1,64 @@
+{
+  "sourceRevision": "eba96491ed7eb3d53d2b4f19f42d5e5eb9e45631",
+  "releaseDigest": "sha256:6f4c3a82196efe2087245b542d41335ae70947196e1ea6327ccc9e9b1ddd4090",
+  "workflowRun": 38578365165,
+  "artifactId": 11902642427,
+  "artifactSha256": "28a939cc32ff501f92b9434da022117d82a65042871275a3f224ee94d123ab7e",
+  "inspection": "four actual whole-game PNGs visually inspected",
+  "scope": {
+    "team": 0,
+    "building": "barracks",
+    "mapId": "rendered-building-queue",
+    "viewport": [
+      1280,
+      720
+    ],
+    "entry": "owned authored qualification map with ordinary HUD inputs"
+  },
+  "observed": [
+    "Three labelled Cancel controls and refund guidance remain readable inside the building dock.",
+    "Middle Infantry cancellation retains both Spearmen and refunds exactly 50 food.",
+    "Active cancellation retains the following Spearman and returns proportional food and wood.",
+    "Enter activates the focused queue entry, refunds unfinished work, empties the queue and restores focus to Train Infantry."
+  ],
+  "limitations": [
+    "Independent code review pending.",
+    "No deployed staging, normal Tiny, seat-1, narrow viewport, touch or unassisted-human acceptance.",
+    "The expanded dock covers part of the selected structure in this camera view; explicit camera/framing follow-up remains open."
+  ],
+  "transitions": [
+    {
+      "input": "pointer",
+      "kind": "infantry",
+      "index": 1,
+      "refund": {
+        "food": 50,
+        "wood": 0
+      }
+    },
+    {
+      "input": "pointer",
+      "kind": "spearman",
+      "index": 0,
+      "refund": {
+        "food": 38.33333300000004,
+        "wood": 12.777778000000012
+      }
+    },
+    {
+      "input": "Enter",
+      "kind": "spearman",
+      "index": 0,
+      "refund": {
+        "food": 29.16666699999996,
+        "wood": 9.722221999999988
+      }
+    }
+  ],
+  "keyboard": {
+    "keydown": true,
+    "keypress": true,
+    "keyup": true,
+    "trustedClick": true
+  }
+}

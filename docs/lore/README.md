@@ -4,6 +4,12 @@ Vaelora is a world of cultivated places, traveling peoples and tangible remnants
 
 This is the working lore reference, begun 30 September 2026. The author's stories steer its voice and imagination; Vaelora can transform their histories. Begin with the [world overview](world.md).
 
+For the world as a player experience, use the
+[connected creative direction](../creative-direction.md) and
+[curated inspiration atlas](../art-direction/creative-atlas-v1/README.md): entry,
+lobby, modes, art, symbols, character voice and pacing. Lore entries keep their
+existing selected/working/belief/open status.
+
 ## World atlas
 
 [Open the selected atlas](../art-direction/vaelora-v1/world-atlas.png) · [Art-direction collection and provenance](../art-direction/vaelora-v1/README.md)

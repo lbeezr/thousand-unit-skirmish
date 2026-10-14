@@ -83,6 +83,16 @@ existing `forest-age-scenario.mjs`, `forest-habitat-scenario.mjs`
 and `forest-composition-scenario.mjs` cover determinism, seed variation, spacing,
 glades, rectangle compression, root retention and input preservation.
 
+The Node boundary also checks
+[`origin validation`](../src/server/transport/origin-policy.mjs) and
+[`tick deadlines`](../src/server/orchestration/simulation-scheduler.mjs).
+Its valid consumer compiles Node's real `IncomingMessage`, `process.env` and
+the existing plain TLS-marker fixture shape. Thirteen invalid-call controls
+reject incorrect headers, environment values, allowlist/edge flags, timing inputs
+and result types. Finite/positive timing and URL validation remain runtime policy;
+types introduce no coercion or rejection change. Existing origin/proxy scenarios
+and `scripts/simulation-scheduler-test.mjs` run in the normal CI registry.
+
 Expand this boundary only with a bounded file scope and a zero-error result.
 Unselected gameplay/client files do not need a type cleanup to pass this check.
 Runtime validation of finite values, positive radius and unique cell IDs remains

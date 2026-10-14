@@ -265,6 +265,118 @@ exactly; all compatibility paths and server-private denials remain. Architecture
 authoring retains source and identified-release rendered acceptance at the existing
 cloud capability gap; a pure/packed check does not establish ordinary-game use.
 
+### Terrain edit history — 14 October 2026
+
+**Undo Terrain / Redo Terrain** sit above the grid and cover ground materials,
+ground levels (including Smooth), obstacle rectangles/round strokes, Erase and
+mirrored rolling-ground generation. Each completed drag or generation is one
+step. An obstacle edit that removes resource nodes restores their exact IDs,
+stock, wildlife fields and selected node when undone. Hill generation restores
+the prior optional seed as well as heights. Scenario and resource-patch history
+retain their separate controls.
+
+Pointer-down and movement preview cells without changing the draft. Only the
+pointer that started the gesture can finish it; cancel or lost capture discards
+the preview. Undo/Redo are unavailable during a gesture. A no-op keeps redo;
+a new changed gesture replaces the abandoned redo branch. Loading, recovering,
+importing or resizing starts fresh history. Independent resource/terrain/seed
+changes invalidate stale terrain history before it can overwrite those edits;
+resource selection alone does not invalidate it.
+
+[`authoring/map-studio-terrain-history.mjs`](../src/authoring/map-studio-terrain-history.mjs)
+stores typed cell deltas, with at most 64 steps and an 8 MiB delta/node-text
+budget, plus one current-grid snapshot for stale-edit detection. Oldest steps
+are evicted first. This is a shipped editor module with exact HTTP admission,
+no imports and no authoritative consumer. Undo updates the ordinary arrays and
+resource list, redraws the grid and schedules the existing local draft save;
+draft/export/publication serialize the resulting map through existing packers
+and validators. No history format or runtime map rule is added.
+
+The selected treatment reuses the existing Map Studio grid and
+`.studio-trigger-actions` button design from `index.html` and `style.css`.
+The bounded interaction storyboard is: unchanged grid → stroke preview with
+disabled history → committed cells with Undo enabled → original cells/nodes
+with Redo enabled → restored committed cells. This supports reversible
+exploration of the [existing landscape treatment](#organic-landscape-composition)
+without new terrain art or composition. [Owner evidence](qa-map-studio-terrain-history-2026-10-14.md)
+separates CPU gesture/export checks from remaining rendered usability.
+
+The map-making owner (chat `01a13a87-26dd-70b1-9410-ffa2f8e6932e`) retains
+integration and identified served-release verification. The combined
+[stock/access diagnostics](#resource-budgets-and-access-diagnostics--14-october-2026)
+now follow this history slice; constrained Grove/Orchard presets are next.
+Higher-level contour tools
+remain later work; no larger map or economy admission follows from history.
+
+### Resource budgets and access diagnostics — 14 October 2026
+
+The **Resource Budget & Access** panel beside resource-node controls analyzes
+the committed draft after edits; **Analyze Access** refreshes it immediately.
+Starting banks stay separate from finite node stock. Food, Wood and the explicit
+Stone profile show map total, stock closer to Azure/Ember by initial route,
+equal-distance stock and stock inaccessible from either spawn. A second table
+shows stock reachable from each seat; shared access is deliberately counted in
+both rows, so those rows must not be added into a map total. Closer is a route
+comparison, not ownership, reservation or a balance verdict.
+Budgets sum the canonical numeric stocks as exact decimals and retain decimal
+strings in the derived report; a tiny positive stock is never displayed as zero,
+and small nodes do not disappear from a very large total. This does not change
+the simulation's numeric stock or bank representation.
+
+**Node Access** expands all node IDs, source kind, stock, route-cell distance
+and reachable cardinal frontage for each seat. Sheep and shore fish retain
+their original finite food stock. Diagnostics name blocked markers, disconnected
+spawns and missing seat routes, with remedies for marker placement, forest/water
+gaps and level-1 ramps. These are advisory: existing portable/server validators
+continue to decide publication. Unfinished unrelated scenario fields do not
+prevent resource analysis; invalid analysis inputs hide the stale report.
+
+Forest potential is a separate total and uses the authority's shared
+[`FOREST_WOOD_PER_CELL`](../src/rules/forest-resources.mjs), still six Wood.
+Initial edges count forest cells adjoining reachable land. Potential reachable
+after cutting uses a second static graph with forest removed; water, stone,
+height barriers and both starting Town Centers remain. This assumes progressive
+clearance and does not claim immediate stock access or worker capacity.
+
+Routes use four cardinal cell edges and the existing maximum-one-level step
+rule, starting at each spawn marker with both actual initial Town Center
+footprints blocked. Node routes end at the marker cell; frontage counts its
+reachable cardinal neighbors. The report is not a Worker interaction-radius
+solver, weighted uphill route, paid trip/income measurement, congestion model,
+naval route or guarantee for displaced opening units. Starting banks, node
+stocks and forest potential exclude rewards, Farms and future buildings.
+
+The pure analysis lives in
+[`authoring/map-resource-diagnostics.mjs`](../src/authoring/map-resource-diagnostics.mjs);
+the panel/cache in
+[`authoring/map-resource-diagnostics-controls.mjs`](../src/authoring/map-resource-diagnostics-controls.mjs).
+[`authoring/map-resource-budgets.mjs`](../src/authoring/map-resource-budgets.mjs)
+owns the bounded decimal accumulator/formatter shared by those consumers.
+Main supplies only authored geometry, markers, profile and starting banks.
+Changed input is debounced 160 ms; unchanged redraws retain the report, and
+pointer previews do not change analysis. Closing cancels pending work. Four
+bounded graph traversals cover up to 256² cells and 128 nodes. Reports are
+derived, never serialized into maps or drafts, and never read live match state.
+All four modules have exact HTTP admission and recursive release inclusion.
+The shared forest constant also supplies the source/XL audit tools; its value,
+harvesting and checkpoint behavior are unchanged.
+
+Visual backing reuses the existing Map Studio typography, muted resource panel
+and [Vaelora interface reference](art-direction/vaelora-brand-v1/interface-reference.html).
+The selected treatment is a compact set of labeled tables beside the authoring
+controls, with local horizontal scrolling for narrow panels and an expandable
+node list. Storyboard: current draft/report → committed edit hides stale values
+and announces updating → new totals/routes → terrain/patch Undo restores the
+prior report → invalid input names a remedy → close cancels analysis. It adds
+no map art, density, terrain colors or live-game overlay.
+
+[Diagnostics QA](qa-map-resource-diagnostics-2026-10-14.md) owns the checks,
+source-bound catalog observations and remaining rendered editor acceptance.
+The map-making owner retains integration and served verification. Next: use
+path allocation and pocket/route observations to refine representative maps,
+then offer constrained Grove/Orchard presets using existing finite placement.
+Static unequal nearest-route allocation alone is not a balance-change decision.
+
 ### Portable-map validator boundary
 
 The source slice based on main `fec90d44` places the existing 298-line
@@ -470,7 +582,7 @@ techniques; they do not certify this implementation or imply copying their code.
 5. **Expose landscape tools in Map Studio.** Add round falloff, connected grove,
    path and contour brushes with previews, undo and JSON round-trip checks. Use
    the same compiler for authored shapes and shipped maps. Round blocker strokes
-   are implemented; higher-level grove/contour brushes and terrain undo remain.
+   and terrain history are implemented; higher-level grove/contour brushes remain.
 6. **Polish materials after silhouette approval.** Use quiet texture families,
    habitat transitions and sparse decals. Existing stochastic ground sampling
    helps repetition; extra texture resolution cannot correct a square coastline.
@@ -485,8 +597,9 @@ retains the previous drag-box behavior. Marker and ground/elevation tools keep
 their separate placement rules. A blocker stroke removes resource nodes only
 from painted cells, including when the curve encloses an unpainted corner.
 Download and Save & Play use the existing compressed rectangle schema. The
-current Undo Scenario Edit still covers regions/events, not terrain strokes;
-terrain undo and more expressive grove/contour brushes remain follow-ups.
+Undo Scenario Edit covers regions/events; Undo Terrain covers the complete
+terrain gesture, including displaced resources. More expressive grove/contour
+brushes remain follow-ups.
 
 Review each slice in the actual renderer at ordinary and strategic zoom, with
 units, buildings, selection and fog. Require recognizable landscape masses,
@@ -859,9 +972,9 @@ to replace the draft's heights with deterministic hills. It preserves mirrored
 flat pads around spawns, Town Centers, resource nodes, objectives and water.
 Generation uses levels 0/1 so it introduces no impassable cliffs. Save/download
 serializes the resulting elevation patches and seed; no randomness runs during
-the match. Elevation edits use local draft recovery, but the scenario Undo button
-still covers only named regions and events. Download first to retain an earlier
-height layout.
+the match. Elevation edits use local draft recovery and **Undo Terrain / Redo
+Terrain**, including rolling-ground generation and its seed. The scenario Undo
+button covers named regions and events.
 
 Level 0 to 2 directly creates an impassable edge. Paint level 1 between them to
 create a ramp. The existing authoritative rules remain: uphill steps cost 115

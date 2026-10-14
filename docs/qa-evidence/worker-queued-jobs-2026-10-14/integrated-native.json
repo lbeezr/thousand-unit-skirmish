@@ -1,0 +1,49 @@
+{
+  "sourceRevision": "a811776d58a9df2369a9f31c2a008454a8e976da",
+  "sourceDirty": false,
+  "serverSha256": "dd029da8c11146f05b490023bae77a95b82e5a47b26e82e6b543d19f41d163c6",
+  "records": [
+    {
+      "job": "house",
+      "teams": [
+        0,
+        1
+      ],
+      "completedSites": 2,
+      "waypointsPerWorker": 2,
+      "restartedDuringWork": true,
+      "unselectedUnitsUnchanged": true,
+      "wood": [
+        925,
+        925
+      ],
+      "checkpointsChecked": 569,
+      "ticks": 720
+    },
+    {
+      "job": "three-wall-sequence",
+      "teams": [
+        0,
+        1
+      ],
+      "completedSites": 6,
+      "waypointsPerWorker": 2,
+      "restartedDuringWork": true,
+      "unselectedUnitsUnchanged": true,
+      "wood": [
+        955,
+        955
+      ],
+      "checkpointsChecked": 593,
+      "ticks": 750
+    }
+  ],
+  "limits": [
+    "actual local asynchronous server and two WebSocket seats; paid commands and process restart",
+    "no injected actor, cargo, progress or economy; no browser, hosted or performance claim"
+  ],
+  "reviewedPublishedTree": "3180c6be8acd9aa392bda31ff2f31020596e1f16",
+  "publishedCandidate": "8cb016ee3f04b6f92ed9116212868f92f96db288",
+  "mergeSource": "03ef26665cc9a79973cf75ca6d9ab59d9f7f0095",
+  "note": "a811776d and 8cb016ee have identical trees; merge 03ef2666 has the same tree and clean digest"
+}

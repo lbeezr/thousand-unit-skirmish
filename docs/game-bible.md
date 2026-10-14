@@ -160,7 +160,10 @@ bank and harvest loop are not implemented.
   events, branching/joined event chains, named-region entry, registered construction/research
   completion and elimination.
 - Fog, minimap, Map Studio with graphical named regions and bounded region/event undo,
-  saved custom maps, elevation and cut-to-clear forests.
+  saved custom maps, terrain gesture undo/redo, elevation and cut-to-clear forests.
+  [Resource budgets/access](map-authoring.md#resource-budgets-and-access-diagnostics--14-october-2026)
+  help authors compare per-seat banks, finite supply and static routes; they
+  inform exploration without certifying income or map balance.
 - Versioned shipped audio delivery, authoritative applied-order feedback, unit ready/death
   hooks and bounded food/wood/repair execution samples using supplied placeholder content.
 - Seeded deterministic PvE through the same authoritative command rules.
@@ -236,6 +239,16 @@ text controls, menus and dialogs retain their keyboard behavior.
 ## World and presentation
 
 The working world name is **Vaelora**. Its visual identity combines warm, expressive everyday life with tangible remnants of immense lost power. The [art checkpoint](art-direction/vaelora-v1/README.md) defines ten regional palettes and ecology references, from Bellweather's farms and Ellionar's stepped gardens to the Pale Meridian's observatories and Ru’Lora's petrified jungle.
+
+The [connected creative direction](creative-direction.md) develops the through
+line **a world worth tending, and a world worth contesting**: inhabited craft,
+particular landscapes, companionable competence and material consequences of
+older power. It carries the selected welcome into clear room/rules decisions,
+the approved quiet command interface and honest results. The
+[curated reference atlas](art-direction/creative-atlas-v1/README.md) supplies
+inspectable backing and a journey storyboard. These new editorial studies add
+no canon or runtime capability; the client and battlefield retain their selected
+treatments and separate implementation evidence.
 
 The [Vaelora brand and interface bible](vaelora-brand.md) applies this world name to
 the player-facing entry and compact game lockup, with the proposed promise
@@ -429,6 +442,15 @@ attack order interrupts it, and another repair order can resume. Checkpoints
 retain active repair targets. Finishing construction and repairing damaged HP
 are separate jobs. No repair restores defeated buildings.
 
+Shift Move or Shift Attack Move during Worker construction or repair queues
+travel after the accepted job. A paid wall sequence finishes its remaining
+assigned sites before departing; a blocked approach or a repair waiting for Wood
+keeps the queued route waiting. Farm renewal finishes planting, then honors queued
+travel instead of automatically harvesting. Canceling or destroying the current
+site releases later travel, after any remaining assigned construction. Ordinary
+Move, Stop, Hold and other replacement orders still interrupt work immediately.
+Queue limits, selected-unit ownership and checkpoint recovery apply as usual.
+
 Town Center expansions cost 100 food and 400 wood, take 60 seconds to build,
 have 2,400 HP, and add five population slots when complete. They train Workers
 and accept food/wood cargo. Starting centers keep the initial population baseline
@@ -515,10 +537,12 @@ The normal game uses the Vaelora Human Worker, Infantry, Spearman and Archer spr
 
 ## Playable regional interpretation
 
-The default roster uses multiple local battlefields inspired by Vaelora's regional
-landscapes, with Bellweather Millrace as the first match. Region palettes determine
-current ground, vegetation, everyday music and terrain ambience; the shared Frontier gameplay rules
-remain usable throughout. A playable map does not settle unknown inhabitants,
+The roster includes local battlefields inspired by Vaelora's regional landscapes.
+Fresh normal entry starts Veyrholds · Terraced Vale in Skirmish; Bellweather ·
+Millrace remains a historical authored scenario, while Bellweather concept art
+welcomes players in the portal. Region palettes determine current ground,
+vegetation, everyday music and terrain ambience; the shared Frontier gameplay
+rules remain usable throughout. A playable map does not settle unknown inhabitants,
 exact atlas geography or divine histories. See the [map catalog](maps.md).
 
 

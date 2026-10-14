@@ -227,12 +227,24 @@ export async function constructionAccessJourney(team, scenario, { cold = false, 
       assert.deepEqual(infantryIds.map(id => orderIntent(r.units[id])), military);
     }
     assert.equal(repairs.length, 0, 'occupied access never enters shared route repair or consumes static retries');
-    const replace = ['stop', 'holdPosition', 'queuedMove', 'cancelConstruction'].includes(scenario);
+    if (scenario === 'queuedJob') {
+      const revision = unit().orderRevision;
+      const notices = order(builderId, 'move', { x: -8.5, z: 8.5, queue: true });
+      assert.ok(notices.some(n => /WAYPOINT QUEUED/.test(n.message)));
+      const queued = structuredClone(unit().queuedWaypoints);
+      for (let n = 0; n < 90; n++) {
+        step(); assert.equal(unit().buildingTargetId, siteId);
+        assert.equal(unit().orderRevision, revision); assert.deepEqual(unit().workIntent, savedIntent);
+        assert.deepEqual(unit().queuedWaypoints, queued);
+      }
+      await coldRestore();
+      assert.deepEqual(unit().queuedWaypoints, queued);
+    }
+    const replace = ['stop', 'holdPosition', 'move', 'cancelConstruction'].includes(scenario);
     const releasedIds = scenario === 'query-deferred' ? infantryIds.slice(15) : [infantryIds[0]];
     if (replace) {
       if (scenario === 'cancelConstruction') command(team, 'cancelConstruction', { buildingId: siteId });
-      else order(builderId, scenario === 'queuedMove' ? 'move' : scenario,
-        scenario === 'queuedMove' ? { x: -8.5, z: 8.5, queue: true } : {});
+      else order(builderId, scenario, scenario === 'move' ? { x: -8.5, z: 8.5 } : {});
       const revision = unit().orderRevision;
       releasedIds.forEach(id => order(id, 'move', { x: -16.5, z: -8.5 }));
       for (let n = 0; n < 200; n++) step();
@@ -243,8 +255,15 @@ export async function constructionAccessJourney(team, scenario, { cold = false, 
     } else {
       releasedIds.forEach(id => order(id, 'move', { x: -16.5, z: -8.5 }));
       const releasedAt = r.tick;
+      let availableAt = null;
       for (let n = 0; n < 700 && !site().complete; n++) {
         step(); positions.push({ tick: r.tick, x: unit().x, z: unit().z, progress: site().progress });
+        if (scenario === 'queuedJob' && availableAt === null) {
+          const availability = createOrdinaryMilitaryEndpointAvailability({ units: r.units,
+            width: map.width, height: map.height, maxUnits: 2000 });
+          if (accessPoints.some(position => availability.check({ team, position, radius: .18 }).status === 'available'))
+            availableAt = r.tick;
+        }
       }
       assert.ok(site().complete, 'a released endpoint resumes paid work at unchanged navigation revision');
       assert.equal(r.navigationRevision, nav); assert.equal(r.wood[team], wood - 75);
@@ -254,9 +273,17 @@ export async function constructionAccessJourney(team, scenario, { cold = false, 
       unchangedIndices.map(({ i }) => military[i]).map(u => [u.goal, u.queue, u.generation, u.point?.x, u.point?.z]),
       'ordinary military route repairs may revise their route, but construction never replaces their endpoints or queue');
       assert.equal(repairs.length, 1, 'one guarded replacement after a safe cell becomes available');
-      assert.ok(repairs[0].tick - releasedAt <= 30, 'at most one-second availability recheck');
+      assert.ok(repairs[0].tick - (scenario === 'queuedJob' ? availableAt : releasedAt) <= 30,
+        'at most one-second recheck after physical access is available');
       const endpoints = createOrdinaryMilitaryEndpointAvailability({ units: r.units, width: map.width, height: map.height, maxUnits: 2000 });
       assert.equal(endpoints.check({ team, position: unit(), radius: .18 }).status, 'available');
+      if (scenario === 'queuedJob') {
+        for (let n = 0; n < 700 && (unit().queuedWaypoints.length || unit().workIntent || unit().buildingTargetId !== null
+          || Math.hypot(unit().x + 8.5, unit().z - 8.5) >= .02); n++) step();
+        assert.equal(unit().buildingTargetId, null); assert.equal(unit().workIntent, null);
+        assert.equal(unit().queuedWaypoints.length, 0);
+        assert.ok(Math.hypot(unit().x + 8.5, unit().z - 8.5) < .02, 'released job completes before queued arrival');
+      }
     }
     assert.deepEqual(otherWorkers(), untouched, 'only the explicitly selected Worker acts');
     assert.ok(r.validate(structuredClone(r.checkpoint())));

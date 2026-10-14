@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { activeWallBuildOrder } from '../src/wall-build-order.mjs';
 import { palisadeConnections } from '../src/palisade-profile.mjs';
 import { BUILDING_DEFINITIONS } from '../src/gameplay-definitions.mjs';
-import { clearWorkIntent, createConstructionWorkIntent } from '../src/work-intent.mjs';
+import { clearWorkIntent, createConstructionWorkIntent, activeWorkIntent } from '../src/work-intent.mjs';
 import { createClearanceMoveGoalPoint } from '../src/unit-movement.mjs';
 import { followTravelMovementActive, workerFollowTravelMovementActive } from '../src/combat-movement.mjs';
 
@@ -55,7 +55,7 @@ test('provisional palisade geometry matches every cardinal mask, center pivot an
   assert.deepEqual(palisadeConnections(8, 9, 9, new Set([8, 9])), [], 'rows never wrap across the map edge');
 });
 
-for (const type of ['move', 'attackMove']) test(`accepted queued ${type} interrupts wall work in the segment-completion window`, () => {
+for (const type of ['move', 'attackMove']) test(`accepted queued ${type} waits for wall work in the segment-completion window`, () => {
   const server = readFileSync(new URL('../server.mjs', import.meta.url), 'utf8');
   const movement = server.slice(server.indexOf('function assignFormationMove('), server.indexOf('function assignPatrolOrder('));
   const unit = { id: 0, team: 0, hp: 100, generation: 3, orderRevision: 7, kind: 'worker',
@@ -63,15 +63,16 @@ for (const type of ['move', 'attackMove']) test(`accepted queued ${type} interru
     queuedWaypoints: [], persistentOrder: null, gatherNodeId: null, gatherForestCell: -1,
     movePlanningPending: true, path: [8, 9], pathIndex: 0, attackTargetId: -1, attackBuildingTargetId: -1, attackMove: false,
     x: 0, z: 0, workIntent: createConstructionWorkIntent(3, [1, 2], { minX: 0, maxX: 2, minZ: 0, maxZ: 2 }) };
-  const context = vm.createContext({ clearWorkIntent, createClearanceMoveGoalPoint, followTravelMovementActive, workerFollowTravelMovementActive, isWalkable: () => true, performance, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
+  const context = vm.createContext({ activeWorkIntent, clearWorkIntent, createClearanceMoveGoalPoint, followTravelMovementActive, workerFollowTravelMovementActive, isWalkable: () => true, performance, MAP_WIDTH: 16, MAP_HEIGHT: 16, MAX_QUEUED_WAYPOINTS: 16, dirty: false,
     commandUnits: () => [unit], unitHasCapability: () => true, worldToCell: () => 22,
     nearestOpenCell: cell => cell, walkableComponents: new Int32Array(256), buildingsById: new Map(),
     buildFormationSlots: () => ({ slots: [22] }), orderUnitsForFormation: units => units,
     findAvailableCellNear: cell => cell, sendOrderNotice() {} });
   vm.runInContext(movement, context);
+  const originalWall = unit.wallBuildOrder, originalWork = unit.workIntent;
   context.assignFormationMove({ team: 0 }, { type, ids: [0], x: 1, z: 1, queue: true });
-  assert.equal(unit.wallBuildOrder, null, 'queued player intent must prevent the automatic next-segment Move');
-  assert.equal(unit.workIntent, null, 'accepted external queue clears durable construction intent');
+  assert.equal(unit.wallBuildOrder, originalWall, 'queued travel waits for the remaining segments');
+  assert.equal(unit.workIntent, originalWork, 'queued travel preserves durable construction intent');
   assert.deepEqual(unit.queuedWaypoints.map(entry => ({ destination: entry.destination, attackMove: entry.attackMove })),
     [{ destination: 22, attackMove: type === 'attackMove' }]);
   assert.equal(unit.orderRevision, 7, 'ordinary queued-move semantics preserve the current route revision');

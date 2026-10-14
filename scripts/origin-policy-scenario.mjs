@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { configuredPublicOrigins, sameOriginRequest } from '../origin-policy.mjs';
+import { configuredPublicOrigins, sameOriginRequest } from '../src/server/transport/origin-policy.mjs';
 
 function request(origin, host, {
   encrypted = false,
