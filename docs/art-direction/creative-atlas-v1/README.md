@@ -101,3 +101,14 @@ meaning and keyboard focus. Run the existing lobby contracts; package an identif
 release and verify normal-room states in a qualified browser. The current neutral
 lobby is not described as already converted. The source atlas can be used by
 other streams immediately without making creative stewardship an approval queue.
+
+## Lobby follow-up — 14 October 2026
+
+The [runtime lobby increment](../../qa-vaelora-lobby-2026-10-14.md) follows the
+source milestone above. Its [six-state storyboard](lobby-state-storyboard.svg)
+shows waiting, both-ready, guest, pending, rejection and reconnecting treatments.
+This is new code-authored backing using the same selected material/color language;
+it was natively rasterized and visually inspected, not captured from a browser.
+Source integration, clean packaging, staging identity and ordinary-room appearance
+remain separate receipts in that QA record. The original fifteen references and
+their source hashes are unchanged.

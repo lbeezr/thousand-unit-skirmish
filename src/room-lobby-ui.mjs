@@ -24,14 +24,23 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
     return node;
   }
   root.setAttribute('aria-labelledby', 'room-lobby-title');
+  element('p', 'Vaelora').className = 'room-lobby-brand';
   element('h2', 'Pregame lobby').id = 'room-lobby-title';
-  element('p', 'PvP · 1v1 · Frontier faction');
+  element('p', 'PvP · 1v1 · Frontier rules').className = 'room-lobby-summary';
   const seats = element('ul');
   seats.setAttribute('aria-label', 'Player seats');
-  const rows = TEAMS.map(name => element('li', name, seats));
+  const rows = TEAMS.map((name, team) => {
+    const row = element('li', name, seats);
+    row.className = 'room-lobby-seat';
+    row.dataset.team = String(team);
+    return row;
+  });
   const mapLabel = element('label', 'Map');
   const map = element('select', null, mapLabel);
   map.id = 'lobby-map';
+  const mapSummary = element('p');
+  mapSummary.id = 'lobby-map-summary';
+  mapSummary.className = 'room-lobby-help room-lobby-map-summary';
   const modes = createMatchModeControls({ root: element('section'), id: 'lobby-match-mode',
     onChange: identity => submit({ type: 'configureLobby', ...identity }) });
   const sizeLabel = element('label', 'Total starting units');
@@ -110,6 +119,7 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
       option.disabled = !configuration;
     }
     map.value = lobby.mapId;
+    mapSummary.textContent = map.selectedOptions[0]?.textContent || lobby.mapId;
     size.replaceChildren();
     const fixedSize = fixedMatchArmySize(lobby);
     // Authored map openings can be smaller than the manual army-size presets.
@@ -126,6 +136,7 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
     size.title = fixedSize ? `This mode fixes the opening army at ${fixedSize} total units.` : '';
     ready.disabled = !online || waiting || !own || !modes.supported;
     ready.textContent = own?.ready ? 'Not ready' : 'Ready';
+    ready.dataset.ready = String(Boolean(own?.ready));
     launch.hidden = !host;
     launch.disabled = !online || waiting || !host || !lobby.canLaunch || !modes.supported;
     const joinFocused = doc.activeElement === join;
@@ -134,6 +145,8 @@ export function createRoomLobby({ root, send, copyInvite, rejoin = () => {
     if (joinFocused && join.hidden && root.open) invite.focus({ preventScroll: true });
     status.textContent = !online ? 'Reconnecting. Readiness clears when a player disconnects.'
       : rejection || (rejoining ? 'Rejoining room…' : waiting ? 'Waiting for server…' : seatGuidance(own));
+    status.dataset.feedback = !online ? 'information' : rejection ? 'error'
+      : rejoining || waiting ? 'pending' : 'information';
     if (opening) {
       root.showModal();
       (host && !map.disabled ? map : own && !ready.disabled ? ready : !join.disabled ? join : invite).focus({ preventScroll: true });

@@ -183,9 +183,12 @@ and can someone trace it to inspectable art or writing? Record implementation
 and ordinary-game evidence in the existing owning guide/QA, rather than treating
 this creative reference as a second acceptance queue.
 
-The nearest concrete seam is the pregame lobby: carry the selected client
-materials and hierarchy into its still-independent treatment, while preserving
-seat reservation, readiness resets, map/mode disclosure, focus and error behavior.
-The current creative owner retains that next slice. It needs a focused runtime
-change, a clean release identity and qualified normal-room captures; this source
-delivery does not claim that adoption.
+The [pregame-lobby implementation](qa-vaelora-lobby-2026-10-14.md) now carries the
+client palette, brass action and control hierarchy into match preparation, with
+full map naming and distinct written/team-shape seat identities. The original
+source milestone remains dated; the new runtime increment has its own checks
+and [state storyboard](art-direction/creative-atlas-v1/lobby-state-storyboard.svg).
+The current creative owner retains clean-release, staging and qualified normal-room
+appearance verification. The next independent creative seam is the result/return
+language and identity; it must keep the actual reason and replay availability
+clear without inventing a fictional history for a friendly match.
