@@ -400,6 +400,16 @@ art evolution. No new art or private files are published by this reconciliation.
 
 ## Resources, terrain and audio
 
+The user-selected [Terraced Vale surrounding landscape](battlefield-surround.md)
+is owned by **Explore map edge atmosphere**, chat
+`01a13aba-1a70-7322-9b8e-f71bb213dccd`. Default binding adds connected rocky
+slopes and static low valley clouds on this map alone, backed by the preserved
+setting comparison. CPU geometry/picking/terrain contracts are implemented;
+clean release, identified staging and actual ordinary-game appearance are
+tracked separately in [its QA record](qa-battlefield-surround-2026-10-14.md).
+The owner retains delivery and the first normal/strategic/edge-pan review;
+qualified cloud rendering is presently unavailable in this local task.
+
 The 11 October [interaction-audio goal](audio-event-asset-matrix.md#interaction-delivery-owner--11-october-2026)
 is owned by chat `01a12b6b-d181-79b1-97b4-05de79523245`. First increment:
 `audio/frontier-feedback-v1` and `audio/runtime/frontier-feedback/v1` supply

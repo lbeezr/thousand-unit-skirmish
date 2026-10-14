@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "createdAtUtc": "2026-10-14T14:11:45.954Z",
+  "ownerChat": "01a13aba-1a70-7322-9b8e-f71bb213dccd",
+  "sourceBaseline": "97202f4b6c8e81ed0cccb54ec5b7270445bac9c5",
+  "method": "built-in image generation",
+  "status": "exploratory; no runtime adoption or selected cosmology",
+  "sourceOutput": "/Users/lb/.codex/generated_images/01a13aba-1a70-7322-9b8e-f71bb213dccd/exec-9a66ec4b-a534-4e23-95bc-76de859e1a34.png",
+  "inputs": [
+    {
+      "path": "docs/art-direction/vaelora-v1/veyrholds-map.png",
+      "role": "Selected regional material, palette and landscape reference",
+      "status": "selected regional direction; concept art",
+      "bytes": 3855262,
+      "sha256": "3c889e3ede6435c6541558eace534a4e88dc4b0b05941db614cec89faf008a02",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "path": "docs/qa-evidence/interaction-audio-2026-10-11/roster-eleventh-cloud-attempt2/roster-audio/ordinary-game.png",
+      "role": "Historical orthographic game view and HUD reference; flat roster/audio fixture",
+      "status": "historical evidence; expected source e24c8a56dc7ee251ccc0e5553f89aaa2401b8965; deployed revision and release digest unavailable",
+      "bytes": 653389,
+      "sha256": "dfaee68b1ca47a62714c31c52133ceb937b26c2a22519d2ae4210d0f96b23add",
+      "dimensions": {
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "path": "docs/qa-evidence/vaelora-veyrholds-understory-2026-09-30/veyrholds-renderer-strategic.png",
+      "role": "Historical abrupt terrain/background boundary reference",
+      "status": "historical renderer study; README base b8b41cf7",
+      "bytes": 129380,
+      "sha256": "36a0e4028235ad3bc0f157f41231da248c9b0b8bd554606d6ba13fafee35f004",
+      "dimensions": {
+        "width": 1000,
+        "height": 750
+      }
+    }
+  ],
+  "output": {
+    "path": "docs/art-direction/battlefield-setting-2026-10-14/setting-comparison-v1.png",
+    "role": "Four-panel setting comparison",
+    "status": "exploratory; unmodified generated output",
+    "bytes": 3204014,
+    "sha256": "a17933cf79a4a37d65635eb556c5d7c56ac4a0e2635e2092911e9c09b518b9e7",
+    "dimensions": {
+      "width": 1536,
+      "height": 1024
+    }
+  },
+  "prompt": {
+    "path": "docs/art-direction/battlefield-setting-2026-10-14/prompt.txt",
+    "role": "Exact submitted generation prompt",
+    "status": "retained production input",
+    "bytes": 4520,
+    "sha256": "26383e9687fc02460550f1fd66b6cd30bfaa77964e4ef9632c943c6b443057eb"
+  },
+  "readSources": [
+    "docs/game-bible.md",
+    "docs/creative-direction.md",
+    "docs/art-direction-contract-v1.md",
+    "docs/lore/world.md",
+    "docs/lore/regions/veyrholds.md",
+    "docs/lore-voice-bible.md",
+    "src/main.js",
+    "src/presentation/rendering/ground-surfaces.mjs",
+    "src/terrain-cliff-faces.mjs",
+    "src/camera-controls.mjs"
+  ],
+  "externalReferences": [
+    {
+      "url": "https://www.leagueoflegends.com/en-us/news/dev/clarity-in-league/",
+      "published": "2021-03-12",
+      "read": "2026-10-14",
+      "use": "Primary textual reference for visual hierarchy and restrained noise. Application to scenery is our interpretation; no source art imported."
+    }
+  ],
+  "delivery": {
+    "scope": "source exploration",
+    "runtimeBinding": "not changed",
+    "releaseDigest": null,
+    "deployedRevision": null,
+    "inGameVerification": "not performed; historical references and concept art only"
+  }
+}

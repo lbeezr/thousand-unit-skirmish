@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "scope": "battlefield setting source exploration only",
+  "sourceBaseline": "97202f4b6c8e81ed0cccb54ec5b7270445bac9c5",
+  "registryInspected": "node scripts/ci.mjs --list",
+  "checks": [
+    {
+      "name": "Documentation links",
+      "exitCode": 0,
+      "output": "Documentation links passed: 726 Markdown files, 5737 local links."
+    },
+    {
+      "name": "Retained hashes, unmodified output, text whitespace and git diff --check",
+      "exitCode": 0,
+      "output": "Verified all 5 retained source/output/prompt hashes, unmodified generated copy and new text whitespace."
+    }
+  ],
+  "imageReview": {
+    "status": "visually inspected generated board",
+    "readableLabels": true,
+    "distinctAlternatives": [
+      "continuous land",
+      "highland cloud valley",
+      "detached fragments with falling water",
+      "land-bearing tortoise"
+    ],
+    "limits": [
+      "B's cloud-obscured connection to larger mountain range remains ambiguous",
+      "Broad concept framing does not establish ordinary zoom, input, fog or command readability",
+      "Buildings and HUD are illustrative"
+    ]
+  },
+  "execution": {
+    "browserLaunched": false,
+    "gameServerStarted": false,
+    "fullCpuSuite": false,
+    "packaging": false,
+    "deployment": false
+  },
+  "outcome": "source comparison delivered; runtime experiment remains proposed"
+}
