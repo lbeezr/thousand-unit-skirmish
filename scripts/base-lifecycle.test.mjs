@@ -54,3 +54,50 @@ for (const team of [0, 1]) test(`cancellations release exactly one reservation a
   assert.equal(context.teamFood[team], 315); assert.equal(context.teamWood[team], 205);
   context.cancelResearch({ team }, { buildingId: 1 }); assert.equal(context.teamFood[team], 315);
 });
+
+for (const team of [0, 1]) test(`seat ${team}: guarded queue slots refund exactly once across all producers`, () => {
+  const messages = [];
+  const context = vm.createContext({ ...economyServerBindings(), UNIT_DEFINITIONS, BUILDING_DEFINITIONS,
+    TECHNOLOGY_DEFINITIONS, unfinishedRefund, buildingsById: new Map(), teamFood: [100, 100], teamWood: [100, 100],
+    dirty: false, workerProduction: [{ queue: 3, trainingRemaining: 12.5 }, { queue: 3, trainingRemaining: 12.5 }],
+    sendOrderNotice: (_, __, message) => messages.push(message) });
+  vm.runInContext(economyServerFunctions + functions, context);
+  let id = 100;
+  for (const rule of Object.values(BUILDING_DEFINITIONS).filter(rule => rule.products.length)) {
+    for (const home of rule.id === 'town-center' ? [true, false] : [false]) {
+      const kinds = [rule.products[0], rule.products.at(-1), rule.products[0]];
+      const building = { id: id++, type: rule.id, team, complete: true, home, queue: 3,
+        productionQueue: [...kinds], trainingRemaining: UNIT_DEFINITIONS[kinds[0]].trainSeconds / 2 };
+      const production = home ? context.workerProduction[team] : building;
+      Object.assign(production, { queue: 3, trainingRemaining: UNIT_DEFINITIONS[kinds[0]].trainSeconds / 2 });
+      context.buildingsById.set(building.id, building);
+      const command = { buildingId: building.id, queueIndex: 1, expectedQueue: [...kinds] };
+      const before = [context.teamFood[team], context.teamWood[team]];
+      context.cancelTraining({ team: 1 - team }, command);
+      assert.equal(production.queue, 3, `${rule.id}: opponent cannot cancel`);
+      for (const expectedQueue of [null, {}, [], kinds.slice(1), [...kinds, kinds[0]], ['unknown', ...kinds.slice(1)]]) {
+        context.cancelTraining({ team }, { ...command, expectedQueue });
+        assert.equal(production.queue, 3); assert.match(messages.at(-1), /QUEUE CHANGED/);
+        assert.deepEqual([context.teamFood[team], context.teamWood[team]], before);
+      }
+      context.cancelTraining({ team }, command);
+      const cost = UNIT_DEFINITIONS[kinds[1]].cost;
+      assert.equal(production.queue, 2);
+      if (!home) assert.deepEqual([...building.productionQueue], [kinds[0], kinds[2]]);
+      assert.deepEqual([context.teamFood[team], context.teamWood[team]], [before[0] + cost.food, before[1] + cost.wood]);
+      context.cancelTraining({ team }, command);
+      assert.equal(production.queue, 2, 'replayed slot cannot cancel its replacement');
+      assert.deepEqual([context.teamFood[team], context.teamWood[team]], [before[0] + cost.food, before[1] + cost.wood]);
+      const headCost = UNIT_DEFINITIONS[kinds[0]].cost;
+      context.cancelTraining({ team }, { buildingId: building.id, queueIndex: 0, expectedQueue: [kinds[0], kinds[2]] });
+      assert.equal(production.queue, 1);
+      assert.deepEqual([context.teamFood[team], context.teamWood[team]],
+        [before[0] + cost.food + headCost.food / 2, before[1] + cost.wood + headCost.wood / 2]);
+      production.trainingRemaining = 0; production.productionBlocked = true;
+      context.cancelTraining({ team }, { buildingId: building.id, queueIndex: 0, expectedQueue: [kinds[2]] });
+      assert.equal(production.queue, 0); assert.equal(production.productionBlocked, false);
+      assert.deepEqual([context.teamFood[team], context.teamWood[team]],
+        [before[0] + cost.food + headCost.food / 2, before[1] + cost.wood + headCost.wood / 2], 'finished blocked head refunds nothing');
+    }
+  }
+});

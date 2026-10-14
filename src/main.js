@@ -4066,13 +4066,16 @@ function updateContextualCommands(priorFocus = document.activeElement) {
     matchFinished: matchWinner >= 0, research: latestTeamResearch[localTeam],
     rallySupported: Boolean(building && buildingSupportsRally(building.type)),
     targeting: tapOrderArmed, profileId: mapDefinition?.economyProfileId,
-  }, action => {
+  }, (action, request) => {
     if (action === 'details') { selectDockTab('selection', true); return; }
     const current = latestBuildings.find(row => row.id === selectedBuildingId && row.team === localTeam);
     if (!current || current.id !== building?.id || current.hp <= 0 || matchWinner >= 0
       || socket?.readyState !== WebSocket.OPEN) return;
     if (action === 'rally') setTapOrderArmed(!tapOrderArmed);
     if (action === 'clear-rally') ui.clearBuildingRally.click();
+    if (action === 'cancel-training' && request?.buildingId === current.id)
+      sendCommand({ type: 'cancelTraining', buildingId: current.id,
+        queueIndex: request.queueIndex, expectedQueue: request.expectedQueue });
   });
   updateUnitHud(document, {
     context, units: selectedIds().map(id => units[id]), team: localTeam,

@@ -681,3 +681,54 @@ the existing qualified workflow. Exact-head review, clean package, default
 integration and identified deployment remain recorded in the slice PR. Further
 progression design depends on B1/B3 observations; no additional economy
 technology or farmhouse action is justified by this source audit alone.
+
+### Building production queue control — 14 October 2026
+
+Building outcome owner: chat `01a13a88-e316-7760-9201-6a5ba3a121c9` retains
+implementation, review, integration, clean packaging, identified staging delivery
+and ordinary-game verification. At main `dcde6da3`, the authority already supports
+indexed training cancellation, but the normal Obsidian queue is an inert ordered
+list and the lifecycle surface exposes only Cancel last queued unit. A player
+cannot choose a waiting product or stop the active product from that list.
+
+The bounded increment puts a Cancel button in each existing queue slot across
+Town Center (home and expansion), Barracks, Range, Stable, Workshop and Dock.
+Waiting entries disclose full refunds; active training discloses remaining-work
+refunds, including no refund when a finished timer is waiting for spawn space.
+The server remains responsible for debits, refunds, FIFO advancement and reserved
+population. New controls submit the observed ordered kinds with their index;
+an ordered-content mismatch refuses without mutating the queue or bank. Legacy
+Cancel last and Worker cancellation commands keep their existing behavior.
+This guard compares queue contents, not durable individual production IDs.
+
+Backing reuses the approved [72px Obsidian building specimen](art-direction/hud-design-system-2026-10-11/README.md#component-specimen--11-october-2026),
+including its active-versus-waiting refund exploration. The selected treatment
+keeps the queue inside the current building dock with existing theme variables,
+wrapped compact buttons, 44px narrow-screen targets and no new artwork. State
+storyboard: select producer → enqueue mixed products → inspect ordered entries
+and refund explanation → cancel chosen entry → authoritative queue/bank update
+→ focus moves to the next slot (or product when empty). Reconnect, match end and
+unfinished/opponent selection block activation; an unrendered queue change
+refreshes the controls before a new choice. Timer-only updates preserve nodes.
+
+Write scope is the existing building HUD module/CSS, its main-client callback,
+the queue explanation in `index.html`, the optional authority content guard,
+existing building/contextual/lifecycle tests and this guide/game bible. No
+production, research, audio, economy, checkpoint or asset-format redesign is
+required. The public module and stylesheet already have exact HTTP admission;
+the ordinary HTML imports and release inputs already include these files.
+
+Acceptance uses both-seat actual DOM input/command tests, all-producer authority
+refund and stale-request controls, and the existing native lifecycle scenario
+for paid mixed-slot cancellation, duplicate refusal and cold reservations.
+The slice PR retains exact checks, source and clean release digest. Ordinary
+game screenshots, native keyboard/touch usability and identified deployment
+remain incomplete until separately observed at the containing release. Owner
+retains the existing Linux staging HUD capture route; stopped Mac captures are
+not a fallback. The source change is useful independently of that evidence.
+
+Next building work is ranked by actual observation: finish this queue interaction
+at an identified release; inspect construction/repair and utility-state feedback;
+then verify building purpose, research and characteristic audio together in
+ordinary matches. Existing B1 Farm/progression capture and audio-roster listening
+remain their own retained artifacts; this increment does not claim them closed.

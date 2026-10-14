@@ -5309,6 +5309,14 @@ function cancelTraining(player, command) {
     sendOrderNotice(player, command, 'CANCEL REJECTED · SELECT YOUR PAID TRAINING QUEUE'); return;
   }
   const index = command.queueIndex ?? production.queue - 1;
+  // New queue controls bind their slot to the disclosed ordered queue. A unit
+  // completing, another cancellation or an enqueue in flight requires a fresh
+  // choice instead of silently cancelling a different paid entry.
+  if (command.expectedQueue !== undefined && (!Array.isArray(command.expectedQueue)
+    || command.expectedQueue.length !== production.queue
+    || command.expectedQueue.some((kind, position) => kind !== (legacyWorker ? 'worker' : production.productionQueue[position])))) {
+    sendOrderNotice(player, command, 'CANCEL REJECTED · QUEUE CHANGED · SELECT THE UNIT AGAIN'); return;
+  }
   if (!Number.isInteger(index) || index < 0 || index >= production.queue) {
     sendOrderNotice(player, command, 'CANCEL REJECTED · QUEUE ENTRY NOT FOUND'); return;
   }
