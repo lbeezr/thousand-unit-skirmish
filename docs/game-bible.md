@@ -77,6 +77,10 @@ after target loss. Workers finish a focused Attack without starting this local
 continuation. Stop, Hold Position and a replacement Move still interrupt combat.
 New military defaults to Aggressive and defends locally while idle. Ordinary Move
 and every queued waypoint retain priority; stance resumes on final arrival.
+An Infantry Move can align with a clear passage between parked starting rows
+before crossing it. Idle units retain their positions and orders; body clearance
+and the requested destination remain authoritative. [Formation exit evidence](qa-infantry-formation-exit-2026-10-14.md)
+records both-seat movement, interruption and recovery coverage.
 Aggressive acquisition uses a fixed idle anchor across successive kills. Defensive
 acquires within three cells or weapon range, travels at most three cells from its
 anchor and returns after combat. Stand Ground acquires only within weapon range

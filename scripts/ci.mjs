@@ -202,6 +202,7 @@ run(['--test', 'scripts/persistent-command.test.mjs'], 'Persistent tactical inte
 run(['--test', 'scripts/stationary-command.test.mjs'], 'Stationary command tasks and controls');
 run(['--test', 'scripts/army-attack-continuation.test.mjs'], 'Focused military attack continuation and ordinary attack-move input');
 run(['--test', 'scripts/military-stance.test.mjs'], 'Military stances, idle defense, bounded return and command precedence');
+run(['--test', 'scripts/infantry-formation-exit.test.mjs'], 'Both-seat Infantry starting formation exits and cold order recovery');
 run(['scripts/military-stance-native-scenario.mjs'], 'Native two-seat stance commands and defensive return recovery');
 run(['scripts/automatic-stance-pursuit-native.mjs'], 'Native two-seat automatic pursuit and active cold recovery');
 run(['--test', 'scripts/waypoint-backpressure.test.mjs'], 'Waypoint metadata under backpressure');
