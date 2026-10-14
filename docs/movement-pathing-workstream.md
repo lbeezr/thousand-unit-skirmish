@@ -5,6 +5,15 @@ movement lane; the [roadmap](roadmap.md) remains the product priority source.
 Each slice owns its regression, review, normal authorized merge and acceptance.
 Evidence must name the source/workload and preserve failures.
 
+The unit functionality owner `01a13a88-6b18-7821-9ca1-5856d78ad67b` owns the
+14 October [Infantry starting-formation exit increment](qa-infantry-formation-exit-2026-10-14.md).
+Its write boundary is the private parked-contour selector and its regressions:
+precise gap alignment, one connected passage turn and full body sweep preview.
+It retains existing host terrain/body admission, original destinations, parked
+peer state and transient invalidation. It changes no planner, public command,
+spawn layout or durable schema. Review, packaging and exact staging acceptance
+remain with that owner; broader movement and rendered acceptance stay open.
+
 ## Write boundaries
 
 Function/subsection contracts, rather than whole-file locks, keep these lanes independent.

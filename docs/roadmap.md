@@ -327,9 +327,12 @@ with Farm renewal, cancellation and recovery coverage. PR669 is merged and
 staged at `03ef2666`; both ordinary Tiny Skirmish seats complete a paid House,
 retain two queued legs through reconnect and reach the final destination.
 Independent review, clean packaging and hosted native authority checks pass;
-rendered Shift-click usability remains owned. Next, diagnose the reproduced
-Team 0 army arrival failure and its separate migration-Gather case, then choose
-the next bounded control/movement correction on representative maps.
+rendered Shift-click usability remains owned. The current increment fixes
+[Infantry trapped in the parked starting formation](qa-infantry-formation-exit-2026-10-14.md)
+through local passage alignment. Every starting Infantry slot exits in eight
+cardinal/diagonal directions on both teams with body/static admission preserved; independent
+review and exact-release staging verification remain in progress. The separate
+schema-25 migration-Gather setup failure remains owned and unresolved.
 
 Stop and Hold Position establish explicit task/route interruption and stationary
 in-range defense, with both-seat authority and checkpoint/rematch regressions.
